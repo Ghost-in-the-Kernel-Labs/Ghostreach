@@ -4,8 +4,8 @@ Ghostreach is the tool for the people who reach out to find Suite Builder's clie
 
 ## Status
 
-No feature exists yet. The project is stamped from Ghost-Core 9a29945; it begins at TODO 0.1, and
-`docs/HANDOFF.md` says what the human fills in first.
+`ghostreach <site>` crawls a site and writes its review as a PDF (Phases 1 and 2). The project is
+stamped from Ghost-Core 9a29945; `docs/HANDOFF.md` says where it stands and what waits on Ghost.
 
 ## Running the fast loop
 
