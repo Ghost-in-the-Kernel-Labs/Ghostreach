@@ -5,7 +5,7 @@
  * (test/golden/fixture-site.AUDIT.html) but for the differences test/support/audit-golden.ts names, both recorded by the parent's
  * own code (scripts/parent-findings.mjs). The live crawl against the parent's page is the behaviour proof of the copy's cuts and
  * of src/crawl/state.ts's split (J-014). Its PDF (TODO 2.3) is US Letter (GR-006) on every page, and the tests' PDF reader
- * (test/support/pdf-text.ts) recovers every finding heading of the page from it.
+ * (test/support/pdf-text.ts) recovers every finding heading of the page from it; its cover and footer carry the brand (TODO 2.4).
  */
 import { test, expect } from 'playwright/test';
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -19,6 +19,7 @@ import { siteFindings } from '../../src/findings/findings.js';
 import { auditedCrawl } from '../../src/project/crawl.js';
 import { pdfName } from '../../src/project/review.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
+import { ADDRESS, BYLINE } from '../../src/leaf/words.js';
 
 const PARENT = readFileSync(join(process.cwd(), 'test/golden/fixture-site.findings.json'), 'utf8');
 /** The text with the fixture's random port replaced, as the parent's golden crawl names its origin. */
@@ -97,6 +98,12 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
     expect(at, heading).toBeGreaterThanOrEqual(0);
     from = at + heading.length;
   }
+  // TODO 2.4: the brand. The cover first, naming the wordmark, the site, the day, the byline and Ghost's address (GR-012); the
+  // address in the footer of every page; this program's name on none (the data folder's name is ours, and never printed).
+  const cover = squeezed(pages[0].text);
+  for (const part of ['Suite Builder', '127.0.0.1', day, BYLINE, ADDRESS]) expect(cover, part).toContain(part);
+  pages.forEach((p, i) => expect(p.text, `page ${i + 1}`).toContain(ADDRESS));
+  expect(text).not.toMatch(/ghostreach/i);
   // The crawler kept to robots.txt and never asked for the PDF, as the parent's does.
   expect(site.pagePaths().filter((p) => p.startsWith('/private/') || p.endsWith('.pdf'))).toEqual([]);
 });

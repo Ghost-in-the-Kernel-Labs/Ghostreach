@@ -568,7 +568,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 ### GR-012: the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel
 - **Decision:** The address every PDF carries, on its cover and in its running footer, is `github.com/ghost-in-the-kernel`, written once as a constant; the byline "Prepared with Suite Builder, Ghost in the Kernel Labs" stands beside it.
 - **Why:** Ghost, 2026-11-14: "Ghost in the kernel labs is my git hub organization. Used for managing projects that are complicated/private/need selective sharing." A prospect is sent to the public face, Ghost's own GitHub, as `docs/ROADMAP.md` §1 says ("carrying Ghost's GitHub").
-- **Held by:** `src/leaf/` (TODO 2.4), `test/unit/words.test.ts`.
+- **Held by:** `src/leaf/words.ts` (`ADDRESS`, `BYLINE`; TODO 2.4), read by `src/pdf/brand.ts`; `test/unit/words.test.ts`, `test/crawl/ghostreach.spec.ts`.
 - **Source:** Ghost, in chat, 2026-11-14 ("Yes that works", to "The PDF address: is github.com/ghost-in-the-kernel right?"; J-022).
 - **Status:** in force
 - **See also:** GR-006

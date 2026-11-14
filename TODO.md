@@ -16,13 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 2: the PDF
 
-### 2.4 The brand: cover page and footer
-
-`src/pdf/pdf.ts` prints `AUDIT.html` as it is (2.3); the test's PDF reader is `test/support/pdf-text.ts` (`pdfPages`: each page's
-text). The address is `github.com/ghost-in-the-kernel` (GR-012, Ghost's, J-022), one constant under `src/leaf/`.
-
-Check: `test/unit/words.test.ts` finds the address 2.2 chose on every page's text and no banned word (P-18).
-
 ### 2.5 The PDF is the one artefact
 
 Check: the local UI and the guide link only to the PDF; `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty.

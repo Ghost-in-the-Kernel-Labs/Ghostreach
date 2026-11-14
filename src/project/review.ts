@@ -106,7 +106,7 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   writeFileSync(join(folder, 'findings.json'), `${JSON.stringify(findings, null, 2)}\n`);
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
-  await printPdf(file, join(folder, pdfName(summary.host)));
+  await printPdf(file, join(folder, pdfName(summary.host)), { site: summary.host, date: day });
   const { major, minor } = summary.bySeverity;
   request.say(`The review of ${summary.host}: ${findings.length} finding${findings.length === 1 ? '' : 's'} (${major} major, ${minor} minor), ${summary.pagesRead} page${summary.pagesRead === 1 ? '' : 's'} read. ${folder}`);
   return { code: 0, folder };

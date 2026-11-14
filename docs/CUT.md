@@ -256,12 +256,14 @@ at their defaults). A dash: nothing.
 
 Files under `src/` that are not copies; every other file there is a row above. A new file of Ghostreach's own (the PDF,
 the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5, REV-06) is one review, from the site to
-`<data>/<host>-<date>/`. `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter.
+`<data>/<host>-<date>/`. `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter; `src/pdf/brand.ts`
+(2.4, GR-012) is the PDF's cover and running footer, added only in print, so the page stays 1.6's.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
 - `src/project/review.ts`
 - `src/pdf/pdf.ts`
+- `src/pdf/brand.ts`
 
 ## Traced, not copied: left unused by the cut
 

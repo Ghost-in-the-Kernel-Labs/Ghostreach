@@ -33,3 +33,10 @@ export function bannedIn(sentence: string): string[] {
 function phrasePattern(phrase: string): RegExp {
   return new RegExp(`\\b${phrase.split(' ').join('\\s+')}\\b`, 'i');
 }
+
+/** Ghost's address, which the review's PDF carries on its cover and in the footer of every page (TODO 2.2, 2.4). */
+// Decision: GR-012
+export const ADDRESS = 'github.com/ghost-in-the-kernel';
+
+/** Who prepared the review, as the PDF's cover and the audit page's footer say it (J-019): Suite Builder's name, never this program's. */
+export const BYLINE = 'Prepared with Suite Builder, Ghost in the Kernel Labs';

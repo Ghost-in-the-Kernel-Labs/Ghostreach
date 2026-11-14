@@ -7,8 +7,11 @@ import { deflateSync } from 'node:zlib';
 import type { Browser } from 'playwright';
 import { describe, expect, it } from 'vitest';
 import { PAGE_SIZE, PRINT_CSS, printPdf } from '../../src/pdf/pdf.js';
+import { COVER_CSS, FOOTER_TEMPLATE, HEADER_TEMPLATE, MARGIN, coverHtml } from '../../src/pdf/brand.js';
 import { pdfName } from '../../src/project/review.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
+
+const COVER = { site: 'x', date: '2026-11-14' };
 
 /** A browser that records what is asked of it. */
 function fakeBrowser() {
@@ -16,6 +19,7 @@ function fakeBrowser() {
   const page = {
     goto: async (url: string) => void calls.push(`goto ${url}`),
     addStyleTag: async (tag: { content: string }) => void calls.push(`style ${tag.content}`),
+    evaluate: async (_fn: unknown, html: string) => void calls.push(`first ${html}`),
     pdf: async (options: object) => void calls.push(`pdf ${JSON.stringify(options)}`),
     close: async () => void calls.push('page closed'),
   };
@@ -24,14 +28,15 @@ function fakeBrowser() {
 }
 
 describe('printPdf (GR-006)', () => {
-  it('prints the page at US Letter, backgrounds on, after the print style, and leaves a browser it was given open', async () => {
+  it('prints the page at US Letter, backgrounds on, after the print style and the cover, the footer on, and leaves a browser it was given open', async () => {
     const { calls, browser } = fakeBrowser();
-    await printPdf('/data/x/AUDIT.html', '/data/x/x site review.pdf', browser);
+    await printPdf('/data/x/AUDIT.html', '/data/x/x site review.pdf', COVER, browser);
     expect(PAGE_SIZE).toBe('Letter');
     expect(calls).toEqual([
       'goto file:///data/x/AUDIT.html',
-      `style ${PRINT_CSS}`,
-      `pdf ${JSON.stringify({ path: '/data/x/x site review.pdf', format: 'Letter', printBackground: true })}`,
+      `style ${PRINT_CSS}\n${COVER_CSS}`,
+      `first ${coverHtml(COVER)}`,
+      `pdf ${JSON.stringify({ path: '/data/x/x site review.pdf', format: 'Letter', printBackground: true, margin: MARGIN, displayHeaderFooter: true, headerTemplate: HEADER_TEMPLATE, footerTemplate: FOOTER_TEMPLATE })}`,
       'page closed',
     ]);
   });
@@ -41,7 +46,7 @@ describe('printPdf (GR-006)', () => {
   it('closes the page when printing fails', async () => {
     const { calls, browser } = fakeBrowser();
     const failing = { ...(await browser.newPage()), pdf: async () => Promise.reject(new Error('no room')) };
-    await expect(printPdf('/a/AUDIT.html', '/a/b.pdf', { newPage: async () => failing } as unknown as Browser)).rejects.toThrow('no room');
+    await expect(printPdf('/a/AUDIT.html', '/a/b.pdf', COVER, { newPage: async () => failing } as unknown as Browser)).rejects.toThrow('no room');
     expect(calls.at(-1)).toBe('page closed');
   });
   it('names the PDF for the prospect: the site and what it is, nothing of ours', () => {

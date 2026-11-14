@@ -1,10 +1,16 @@
 import * as fs from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { chromium, type Browser } from 'playwright';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { auditHtml } from '../../src/audit/audit.js';
 import { siteFindings } from '../../src/findings/findings.js';
 import { auditedCrawl } from '../../src/project/crawl.js';
 import type { CrawlReport } from '../../src/leaf/report.js';
-import { BANNED_PHRASES, REVIEW_WORDS, bannedIn } from '../../src/leaf/words.js';
+import { ADDRESS, BANNED_PHRASES, BYLINE, REVIEW_WORDS, bannedIn } from '../../src/leaf/words.js';
+import { FOOTER_TEMPLATE, coverHtml } from '../../src/pdf/brand.js';
+import { printPdf } from '../../src/pdf/pdf.js';
+import { pdfPages, squeezed } from '../support/pdf-text.js';
 
 /** A crawl of one page that answered, nothing else asked: enough for the audit page to be written. */
 const BARE_REPORT = {
@@ -92,5 +98,56 @@ describe('"problem" banned only as a count of them (the ruling grade, 2026-11-14
   it('bans "3 problems found" and "a problem found"', () => {
     expect(bannedIn('3 problems found')).toEqual(['problems found']);
     expect(bannedIn('a problem found on the home page')).toEqual(['problem found']);
+  });
+});
+
+// TODO 2.4: the brand. Ghost's address (GR-012) on the cover and in the footer of every page of the PDF, the byline on the cover,
+// no banned phrase on any page, and this program's name on none: the prospect reads Suite Builder's (ROADMAP §1).
+describe('the PDF\'s brand: the address on every page (GR-012), no banned word (P-18)', () => {
+  const ours = /ghostreach/i;
+  const cover = coverHtml({ site: 'www.example.com', date: '2026-11-14' });
+  it('the cover names the wordmark, the site, the day, the byline and the address; the footer the address', () => {
+    expect(ADDRESS).toBe('github.com/ghost-in-the-kernel');
+    for (const part of ['Suite Builder</div>', 'www.example.com', '2026-11-14', BYLINE, ADDRESS]) expect(cover).toContain(part);
+    expect(FOOTER_TEMPLATE).toContain(`>${ADDRESS}<`);
+    for (const text of [cover, FOOTER_TEMPLATE]) {
+      expect(bannedIn(text)).toEqual([]);
+      expect(text).not.toMatch(ours);
+    }
+  });
+
+  // The real Chromium prints each fixture crawl's page (the integration project; the fast loop starts no browser). The crawl spec
+  // holds the PDF the command writes in the same way (test/crawl/ghostreach.spec.ts).
+  describe.runIf(process.env.REAL_BROWSER === '1')('printed by the real Chromium', () => {
+    const golden = new URL('../golden/', import.meta.url);
+    const crawls = fs.readdirSync(golden).filter((n) => n.endsWith('.crawl.json'));
+    let browser: Browser;
+    let dir: string;
+    beforeAll(async () => {
+      browser = await chromium.launch();
+      dir = fs.mkdtempSync(join(tmpdir(), 'review-pdf-'));
+    });
+    afterAll(async () => {
+      await browser?.close();
+      if (dir) fs.rmSync(dir, { recursive: true, force: true });
+    });
+    const printed = async (name: string) => {
+      const report = auditedCrawl(new URL(name, golden).pathname);
+      const html = join(dir, `${name}.html`);
+      fs.writeFileSync(html, auditHtml(report, siteFindings(report), new Date('2026-11-14')));
+      const out = join(dir, `${name}.pdf`);
+      await printPdf(html, out, { site: new URL(report.origin).hostname, date: '2026-11-14' }, browser);
+      return { file: fs.readFileSync(out), pages: pdfPages(fs.readFileSync(out)), host: new URL(report.origin).hostname };
+    };
+    it.each(crawls)('%s: the cover first, the address on every page, no banned phrase, nothing of ours', async (name) => {
+      const { file, pages, host } = await printed(name);
+      expect(pages.length).toBeGreaterThan(1);
+      const first = squeezed(pages[0].text);
+      for (const part of ['Suite Builder', 'Automated site review', host, '2026-11-14', BYLINE, ADDRESS]) expect(first, part).toContain(part);
+      pages.forEach((p, i) => expect(p.text, `page ${i + 1}`).toContain(ADDRESS));
+      pages.forEach((p, i) => expect(bannedIn(p.text), `page ${i + 1}`).toEqual([]));
+      expect(pages.map((p) => p.text).join('\n')).not.toMatch(ours);
+      expect(file.toString('latin1')).not.toMatch(ours);
+    }, 60_000);
   });
 });
