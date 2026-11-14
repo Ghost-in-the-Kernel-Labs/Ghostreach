@@ -7,7 +7,7 @@ import { auditHtml } from '../../src/audit/audit.js';
 import { siteFindings } from '../../src/findings/findings.js';
 import { auditedCrawl } from '../../src/project/crawl.js';
 import type { CrawlReport } from '../../src/leaf/report.js';
-import { ADDRESS, BANNED_PHRASES, BYLINE, REVIEW_WORDS, bannedIn } from '../../src/leaf/words.js';
+import { ADDRESS, ALONGSIDE, BANNED_PHRASES, BYLINE, REVIEW_WORDS, bannedIn } from '../../src/leaf/words.js';
 import { FOOTER_TEMPLATE, coverHtml } from '../../src/pdf/brand.js';
 import { printPdf } from '../../src/pdf/pdf.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
@@ -33,6 +33,11 @@ describe('the words a prospect may read (P-08)', () => {
   });
   it('matches without regard to case', () => {
     expect(bannedIn('DEFECT on the home page')).toEqual(['defect']);
+  });
+  it('passes the sentence a review run alongside others says (TODO 3.5, GR-014): no banned phrase, the review\'s own nouns', () => {
+    expect(bannedIn(ALONGSIDE)).toEqual([]);
+    expect(ALONGSIDE).toMatch(/\breview\b/);
+    expect(ALONGSIDE).toMatch(/\bfinding\b/);
   });
   it('keeps the review vocabulary and the banned list disjoint', () => {
     for (const word of REVIEW_WORDS) expect(bannedIn(word)).toEqual([]);

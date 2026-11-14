@@ -535,7 +535,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `test/unit/queue.test.ts`, `test/crawl/concurrent.spec.ts` (TODO 3.4, 3.5), `docs/CONTRACT.md` REV-03.
 - **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard drafted by the agent, confirmed by Ghost in chat 2026-11-14; which guard is still Ghost's choice (TODO 3.1).
 - **Status:** in force
-- **See also:** GR-003, GR-007
+- **See also:** GR-003, GR-007, GR-014
 - **subject:** concurrency
 
 ### GR-009: the dev dependencies, and why each
@@ -583,3 +583,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **See also:** Core C-018, Core C-001, Core C-035, GR-009, GR-010
 - **subject:** mutation
 - **Supersedes:** Core C-018 for this project (refused; its never-weaken rule kept), and GR-009 and GR-010, in part: GR-009's `@stryker-mutator/core` (mutation with the command runner) among the dev dependencies; GR-010's "then mutation (warm cache)" in the full gate (3), now the medium checks then the metrics, and its sweep's "every cache off" (4), with no mutation cache left to turn off. The rest of each stands, so its Status stays `in force` and its See also names GR-013.
+
+### GR-014: SITE-22 withheld from a review that ran alongside another
+- **Decision:** SITE-22 (slow pages) is withheld from a review when any other review was running at any moment of its crawl: the actual overlap, which the queue's runner knows, not merely a setting above one review at once. `ghostreach <site>`, and a queued review that ran alone, report SITE-22 exactly as before, its thresholds untouched. The overlap is passed into the findings as a flag, never read from a clock, so it is deterministic. A withheld review's page and PDF say, before the findings it qualifies (REV-03), in the review's words (REV-04): "This review ran alongside others, so it did not time the pages: it has no finding on slow pages." Its "What this review checked" row for SITE-22 says not timed rather than checked.
+- **Why:** The other guard GR-008 named, a reference timing, needs a known-fast page fetched beside every review (a third host asked each time, or the prospect's own site, which is the thing measured) and thresholds relative to it in place of the parent's absolute ones (`H.SLOW_PAGE_MS`, `H.SLOW_FIRST_BYTE_MS`), which still do not scale linearly under contention for the processor: more code, a departure from the parent, and a major finding that can still be wrong. Withholding cannot manufacture a finding, and is a few lines. A loaded machine can make a slow-page finding (RF-10), and a wrong finding in a prospect's hands loses the sale (GR-008).
+- **Held by:** `test/unit/queue.test.ts` (the runner's overlap), `test/unit/audit-alongside.test.ts` (the page withheld and said), `test/unit/words.test.ts` (the sentence in the review's words), `test/crawl/concurrent.spec.ts` (TODO 3.5: serial reports SITE-22 on a slow page, the queue's concurrent run withholds it and its PDF carries the sentence); `src/leaf/words.ts` (`ALONGSIDE`).
+- **Source:** the ruling grade (Fable) under Ghost's delegation (J-008), 2026-11-14, after the coordinator's question went unanswered; for Ghost to confirm (TODO 3.1, J-032).
+- **Status:** in force
+- **See also:** GR-008
+- **subject:** concurrency

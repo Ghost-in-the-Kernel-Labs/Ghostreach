@@ -23,7 +23,8 @@ import { twinAskable } from '../leaf/pages/twin-name.js';
 import { visitorPages } from './markup-findings.js';
 
 export type CheckClass = 'reading' | 'security-observation';
-export type Ran = 'ran' | 'not-run' | 'unknown';
+/** `not-timed`: Ghostreach's own (GR-014), a timing check whose crawl ran beside another review, so not taken; never the parent's catalogue's. */
+export type Ran = 'ran' | 'not-run' | 'unknown' | 'not-timed';
 
 /** How the checks are grouped in the audit's list, by what they look at. */
 export const CHECK_GROUPS = {

@@ -71,6 +71,13 @@ export function startUrl(site: string): string | null {
   return /^https?:\/\/[^/?#\s]/i.test(url) && URL.canParse(url) ? url : null;
 }
 
+/**
+ * Whether another review ran beside this one's crawl (GR-014): called as the crawl starts, it gives the function to call as the
+ * crawl ends, which says whether any other review was running at any moment between the two. Known from the runner's own count,
+ * never read from a clock, so one queue's run gives one answer. The queue's runner gives it (`queueRunner`).
+ */
+export type Alongside = () => () => boolean;
+
 export interface ReviewRequest {
   /** The site as typed. */
   site: string;
@@ -79,6 +86,8 @@ export interface ReviewRequest {
   say: (line: string) => void;
   /** The queue's one Chromium, each review's crawl a context of it (RF-09); none: the review launches its own. */
   browser?: Browser;
+  /** The queue's: whether another review ran beside this one's crawl (GR-014); none (the command's own review): it ran alone. */
+  alongside?: Alongside;
 }
 
 /**
@@ -99,7 +108,15 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   const folder = reviewFolder(request.data, host, day);
   mkdirSync(folder, { recursive: true });
   const out = join(folder, `${host}.crawl.json`);
-  const crawled = await crawlToFile({ typed: request.site, url, out, log: request.say, say: request.say, browser: request.browser });
+  // GR-014: watched from the crawl's start to its end; a crawl another review ran beside is not timed.
+  const ended = request.alongside?.();
+  let beside = false;
+  let crawled: Awaited<ReturnType<typeof crawlToFile>>;
+  try {
+    crawled = await crawlToFile({ typed: request.site, url, out, log: request.say, say: request.say, browser: request.browser });
+  } finally {
+    beside = ended?.() ?? false;
+  }
   if (!crawled) {
     request.say('The browser the crawler uses could not be downloaded: see the messages above.');
     return { code: 1, folder };
@@ -112,7 +129,7 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
     request.say(`No review was written: ${no.why}.`);
     return { code: no.code, folder };
   }
-  const { file, findings } = writeAudit(report, folder, started);
+  const { file, findings } = writeAudit(report, folder, started, beside);
   writeFileSync(join(folder, 'findings.json'), `${JSON.stringify(findings, null, 2)}\n`);
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);

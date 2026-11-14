@@ -349,6 +349,11 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
   (RF-09, `sharedBrowser` in `src/project/crawl.ts`) is launched as the crawl launches its own, so it says so and the read stays on,
   else a review run from the queue could not find SITE-37 where the command's own would. A new optional field; the parent's
   callers, which never set it, behave as before.
+- SITE-22 withheld under load (GR-014, 3.5, J-032): `writeAudit` and `auditHtml` (`src/audit/audit.ts`) take an optional
+  `alongside`; true (the queue's runner says the review's crawl ran beside another), SITE-22 is left out of the findings, its
+  catalogue row says `not-timed` (a fourth value of `Ran`, `src/findings/check-catalogue.ts`, counted in `auditChecked`'s summary,
+  `src/audit/audit-checked.ts`), and the page says `ALONGSIDE` (`src/leaf/words.ts`) under its heading. False, the default and
+  every carried caller's, the page is the parent's (1.6's golden). The resync keeps it.
 
 ## The flags stripped
 

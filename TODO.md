@@ -22,10 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 3: the queue and the ranking
 
-### 3.5 SITE-22 under load, as 3.1 chose
-
-Check: the concurrent spec's SITE-22 result equals the serial run's.
-
 ### 3.6 The ranking
 
 Check: a fixture set of three summaries ranks in the known order by `major × 3 + minor × 1` (GR-007), pages read beside; a tie breaks by findings per page; each row links its PDF.
@@ -124,12 +120,6 @@ Check: `docs/when/tune-up.md` followed in full; the metrics table written; the n
 Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
 Moved: from Phase 1
 Check: `docs/when/tune-up.md` followed in full.
-
-### 3.1 SITE-22 under load (GR-008)
-
-Waits on: Ghost's choice: a reference timing, or SITE-22 withheld above concurrency 1 with one sentence in the PDF.
-Moved: from Phase 3
-Check: `theGhost.md` GR-008 in force naming one; 3.5 builds it.
 
 ### 4.1 Lead-finder keys
 

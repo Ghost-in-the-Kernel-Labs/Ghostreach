@@ -54,10 +54,10 @@ export interface Checked {
 export function auditChecked(report: CrawlReport, catalogue: readonly Check[] = CHECKS): Checked {
   const all = verdicts(report, catalogue);
   const count = (ran: Ran) => all.filter((v) => v.ran === ran).length;
-  const [ran, notRun, unknown] = [count('ran'), count('not-run'), count('unknown')];
-  const rest = [notRun ? `${notRun} did not run` : '', unknown ? `${unknown} could not be confirmed` : ''].filter(Boolean).join(' and ');
+  const [ran, notRun, unknown, notTimed] = [count('ran'), count('not-run'), count('unknown'), count('not-timed')];
+  const rest = [notRun ? `${notRun} did not run` : '', unknown ? `${unknown} could not be confirmed` : '', notTimed ? `${notTimed} ${notTimed === 1 ? 'was' : 'were'} not timed` : ''].filter(Boolean).join(' and ');
   const summary = rest ? `Of ${plural(all.length, 'check')}, ${ran} ran on this crawl; ${rest}.` : `All ${plural(all.length, 'check')} ran on this crawl.`;
-  const said: Record<Ran, string> = { ran: '', 'not-run': ': not run', unknown: ': not confirmed' };
+  const said: Record<Ran, string> = { ran: '', 'not-run': ': not run', unknown: ': not confirmed', 'not-timed': ': not timed' };
   const groups = Object.entries(CHECK_GROUPS).flatMap(([key, name]) => {
     const own = all.filter((v) => v.check.group === key);
     const title = `${name} (${own.filter((v) => v.ran === 'ran').length} of ${own.length} ran)`;

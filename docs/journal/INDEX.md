@@ -35,3 +35,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-029 | `ghostreach serve`: the local page (TODO 3.2) | feature | `J-000-099.md` |
 | J-030 | The queue on the local page (TODO 3.3) | feature | `J-000-099.md` |
 | J-031 | Concurrency: up to N reviews at once, one Chromium (TODO 3.4) | feature | `J-000-099.md` |
+| J-032 | SITE-22 withheld under load (TODO 3.1 recorded, 3.5 built) | decision | `J-000-099.md` |

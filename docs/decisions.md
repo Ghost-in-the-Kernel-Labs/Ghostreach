@@ -57,3 +57,4 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-011 | Node's type declarations, @types/node, a dev dependency | proposed | dependencies |
 | GR-012 | the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel | in force | pdf |
 | GR-013 | no mutation testing: Core C-018 refused, Stryker removed | in force | mutation |
+| GR-014 | SITE-22 withheld from a review that ran alongside another | in force | concurrency |

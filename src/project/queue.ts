@@ -9,7 +9,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Browser } from 'playwright';
-import { review, startUrl } from './review.js';
+import { review, startUrl, type Alongside } from './review.js';
 
 type QueueState = 'waiting' | 'running' | 'done' | 'failed';
 
@@ -32,8 +32,11 @@ export interface Added {
   refused: { line: string; why: string }[];
 }
 
-/** Reviews one site: null when the review was written, else one line saying why it was not. The page runs `reviewLine`; a test its own. */
-export type ReviewRun = (site: string) => Promise<string | null>;
+/**
+ * Reviews one site: null when the review was written, else one line saying why it was not. The page runs `reviewLine`; a test its
+ * own. `alongside` is the runner's: what the review asks to know whether its crawl ran beside another review.
+ */
+export type ReviewRun = (site: string, alongside: Alongside) => Promise<string | null>;
 
 export const queueFile = (data: string): string => join(data, 'queue.json');
 
@@ -150,16 +153,31 @@ export interface QueueRunner {
  * same queue; a loop that finds nothing it may take stops, and each finished review kicks the runner again, so a site held back
  * because its host was being reviewed is taken once that review ends.
  */
-// Decision: GR-008
+// Decision: GR-008, GR-014
 export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunner {
   const working = new Set<Promise<void>>();
+  // GR-014: the reviews running now, and the crawls being watched, each marked once another review runs at any moment of it.
+  let running = 0;
+  const crawling = new Set<{ beside: boolean }>();
+  const alongside: Alongside = () => {
+    const crawl = { beside: running > 1 };
+    crawling.add(crawl);
+    return () => {
+      crawling.delete(crawl);
+      return crawl.beside;
+    };
+  };
   const work = async (): Promise<void> => {
     for (let entry = take(data); entry; entry = take(data)) {
+      running += 1;
+      for (const crawl of crawling) crawl.beside = true;
       let error: string | null;
       try {
-        error = await run(entry.site);
+        error = await run(entry.site, alongside);
       } catch (e) {
         error = e instanceof Error ? e.message : String(e);
+      } finally {
+        running -= 1;
       }
       finish(data, entry.id, error);
       kick();
@@ -181,16 +199,17 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
 
 /**
  * The page's review of a site: the command's own review, its lines printed at the terminal, each after the site it is of (the
- * reviews run together); a failure's last line is its error. `browser` hands each review the queue's one Chromium (RF-09).
+ * reviews run together); a failure's last line is its error. `browser` hands each review the queue's one Chromium (RF-09); the
+ * runner's `alongside` goes to the review, which withholds SITE-22 when its crawl ran beside another review (GR-014).
  */
 export function reviewLine(data: string, browser?: () => Promise<Browser | undefined>): ReviewRun {
-  return async (site) => {
+  return async (site, alongside) => {
     let last = '';
     const say = (line: string) => {
       last = line;
       console.log(`${site}: ${line}`);
     };
-    const { code } = await review({ site, data, say, browser: await browser?.() });
+    const { code } = await review({ site, data, say, browser: await browser?.(), alongside });
     return code === 0 ? null : last || `the review stopped (${code})`;
   };
 }

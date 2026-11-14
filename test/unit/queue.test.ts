@@ -43,10 +43,10 @@ describe('the queue (TODO 3.3)', () => {
     let running = 0;
     let most = 0;
     const { run, ran } = fake();
-    const runner = queueRunner(data, async (site) => {
+    const runner = queueRunner(data, async (site, alongside) => {
       most = Math.max(most, ++running);
       expect(readQueue(data).find((e) => e.site === site)?.state).toBe('running');
-      const r = await run(site);
+      const r = await run(site, alongside);
       running--;
       return r;
     });
@@ -225,6 +225,53 @@ describe('concurrency (TODO 3.4, GR-008)', () => {
     }
     await runner.idle();
     expect(fake.overlaps).toEqual([]);
+  });
+
+  it('tells each review whether another ran at any moment of its crawl (GR-014), from its own count, never from the setting', async () => {
+    const gates = new Map<string, () => void>();
+    const beside: Record<string, boolean> = {};
+    // A review whose crawl and then the rest of it each wait for the test to let them go.
+    const run: ReviewRun = async (site, alongside) => {
+      const ended = alongside();
+      await new Promise<void>((done) => gates.set(`${site} crawl`, done));
+      beside[site] = ended();
+      await new Promise<void>((done) => gates.set(`${site} rest`, done));
+      return null;
+    };
+    const go = async (key: string) => {
+      await until(() => gates.has(key));
+      gates.get(key)?.();
+      gates.delete(key);
+    };
+    const runner = queueRunner(data, run, 3);
+    // Alone though three may run: not beside another.
+    addSites(data, 'a.example');
+    runner.kick();
+    await go('a.example crawl');
+    // b starts after a's crawl ended, while the rest of a's review runs: b's crawl ran beside a; a's did not run beside b.
+    addSites(data, 'b.example');
+    runner.kick();
+    await go('b.example crawl');
+    await go('a.example rest');
+    // c starts during d's crawl (d first, c pasted after d started): both crawls ran beside the other.
+    await go('b.example rest');
+    await runner.idle();
+    addSites(data, 'd.example');
+    runner.kick();
+    await until(() => gates.has('d.example crawl'));
+    addSites(data, 'c.example');
+    runner.kick();
+    await until(() => gates.has('c.example crawl'));
+    for (const key of ['d.example crawl', 'd.example rest', 'c.example crawl', 'c.example rest']) await go(key);
+    await runner.idle();
+    expect(beside).toEqual({ 'a.example': false, 'b.example': true, 'd.example': true, 'c.example': true });
+    // One at a time: never beside another.
+    addSites(data, 'e.example\nf.example');
+    const serial = queueRunner(data, run, 1);
+    serial.kick();
+    for (const key of ['e.example crawl', 'e.example rest', 'f.example crawl', 'f.example rest']) await go(key);
+    await serial.idle();
+    expect([beside['e.example'], beside['f.example']]).toEqual([false, false]);
   });
 
   it('N comes from the settings file: default 3, ceiling 5, a value it cannot run made one it can, with a line saying so', () => {

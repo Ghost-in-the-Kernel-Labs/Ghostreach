@@ -13,10 +13,10 @@ import type { SiteFinding } from '../findings/types.js';
 import { ranked } from '../findings/finding-order.js';
 import { shownPath } from '../leaf/pages/url.js';
 import { findingAddress } from '../leaf/pages/finding-address.js';
-import { BYLINE } from '../leaf/words.js';
+import { ALONGSIDE, BYLINE } from '../leaf/words.js';
 import { errorsApart, pageCounts } from './page-counts.js';
 import { auditChecked, auditScope, checksRan, onlyReadings } from './audit-checked.js';
-import { CHECKS } from '../findings/check-catalogue.js';
+import { CHECKS, type Check } from '../findings/check-catalogue.js';
 
 /**
  * What the audit says in its own words (G-633): a machine's review, never a claim of security (test/unit/audit.test.ts bans the
@@ -31,8 +31,8 @@ const factsOf = (report: CrawlReport): Partial<CrawlReport> => report;
 
 /** What follows "N pages of <origin>" under the heading: who read it, when, and that nothing was sent (the read never signs in, GR-003). */
 // Decision: G-633
-function auditReadBy(report: CrawlReport, day: string): string {
-  return `read on ${day} by Suite Builder's crawler in a real browser, logged out, as a first-time visitor sees them. Nothing was sent, bought or signed in to. ${auditScope(report, CHECKS)}`;
+function auditReadBy(report: CrawlReport, day: string, catalogue: readonly Check[]): string {
+  return `read on ${day} by Suite Builder's crawler in a real browser, logged out, as a first-time visitor sees them. Nothing was sent, bought or signed in to. ${auditScope(report, catalogue)}`;
 }
 
 const SEVERITY_WORDS = 'Major: lets a visitor or a search engine down now. Minor: worth fixing. Info: said for the record; counts against nothing.';
@@ -71,17 +71,17 @@ function readLimits(report: CrawlReport): string[] {
 
 /** What a review that found nothing says first: how many checks ran, over how many pages (G-637); never a claim about a check that did not run. */
 // Decision: G-637
-function noneFound(report: CrawlReport, read: number): string {
-  const ran = checksRan(report, CHECKS);
+function noneFound(report: CrawlReport, read: number, catalogue: readonly Check[]): string {
+  const ran = checksRan(report, catalogue);
   return ran ? `None of the ${n(ran, 'check')} that ran found anything on the ${n(read, 'page')} it read.` : `No check ran on the ${n(read, 'page')} it read.`;
 }
 
 /** A review that found nothing says what it checked and what it could not do, never that every page was fine. */
 // Decision: G-633
-function auditNothing(report: CrawlReport): { title: string; body: string } {
+function auditNothing(report: CrawlReport, catalogue: readonly Check[]): { title: string; body: string } {
   const { read } = auditCounts(report, []);
-  const said = noneFound(report, read);
-  return { title: 'Nothing to report', body: [said, ...readLimits(report), `That is what an automated read of the public site can say${onlyReadings(report, CHECKS) ? '; it is not a security test.' : '.'}`].join(' ') };
+  const said = noneFound(report, read, catalogue);
+  return { title: 'Nothing to report', body: [said, ...readLimits(report), `That is what an automated read of the public site can say${onlyReadings(report, catalogue) ? '; it is not a security test.' : '.'}`].join(' ') };
 }
 
 /**
@@ -117,8 +117,8 @@ function linksToLookHtml(links: LinkToLook[]): string {
 
 /** What the review checked, as the HTML page has it: the count said at once, the checks by group in a closed list a keyboard opens. */
 // Decision: G-637
-function checkedHtml(report: CrawlReport): string {
-  const { summary, groups, note } = auditChecked(report, CHECKS);
+function checkedHtml(report: CrawlReport, catalogue: readonly Check[]): string {
+  const { summary, groups, note } = auditChecked(report, catalogue);
   const list = groups.map((g) => `<h3>${esc(g.title)}</h3><ul>${g.lines.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>`).join('');
   return `<section class="checked"><h2>What this review checked</h2><p>${esc(summary)}</p><details><summary>The checks, by kind</summary>${list}${note ? `<p class="says">${esc(note)}</p>` : ''}</details></section>`;
 }
@@ -136,11 +136,15 @@ export function auditCounts(report: CrawlReport, findings: SiteFinding[]): { hos
   };
 }
 
-/** The page: the site, when and how it was read, the links that need a look, the counts, then each finding, the most serious first. */
-// Decision: G-134
-export function auditHtml(report: CrawlReport, findings: SiteFinding[], when = new Date()): string {
+/**
+ * The page: the site, when and how it was read, the links that need a look, the counts, then each finding, the most serious first.
+ * `alongside` (GR-014): the crawl ran beside another review; the page says so before its findings and lists SITE-22 as not timed.
+ */
+// Decision: G-134, GR-014
+export function auditHtml(report: CrawlReport, findings: SiteFinding[], when = new Date(), alongside = false): string {
   const { host, major, minor, read, apart } = auditCounts(report, findings);
-  const nothing = auditNothing(report);
+  const catalogue = alongside ? untimedChecks(CHECKS) : CHECKS;
+  const nothing = auditNothing(report, catalogue);
   const body = findings.length
     ? ranked(findings).map(findingHtml).join('\n')
     : `<section class="finding none"><h2>${nothing.title}</h2><p>${esc(nothing.body)}</p></section>`;
@@ -162,10 +166,10 @@ ul{padding-left:20px;margin:8px 0 0}li{margin:2px 0;overflow-wrap:anywhere}.says
 summary{cursor:pointer;color:var(--dim)}.checked{margin:0 0 24px}.checked h2{font-size:1.1rem;margin:0 0 6px}.checked h3{font-size:.95rem;margin:12px 0 0}footer{color:var(--dim);font-size:.85rem;margin-top:32px;border-top:1px solid var(--line);padding-top:12px}
 </style></head><body><main>
 <h1>${esc(auditHeading(host))}</h1>
-<p class="sub">${read} page${read === 1 ? '' : 's'} of ${esc(report.origin)}${apart}, ${auditReadBy(report, when.toISOString().slice(0, 10))}</p>
-${linksToLookHtml(linksToLookAt(ranked(findings)))}<div class="counts"><div class="count major"><b>${major}</b>major</div><div class="count minor"><b>${minor}</b>minor</div></div>
+<p class="sub">${read} page${read === 1 ? '' : 's'} of ${esc(report.origin)}${apart}, ${auditReadBy(report, when.toISOString().slice(0, 10), catalogue)}</p>
+${alongside ? `<p class="sub alongside">${esc(ALONGSIDE)}</p>\n` : ''}${linksToLookHtml(linksToLookAt(ranked(findings)))}<div class="counts"><div class="count major"><b>${major}</b>major</div><div class="count minor"><b>${minor}</b>minor</div></div>
 <p class="sub">${auditSeverities(report)}</p>
-${checkedHtml(report)}
+${checkedHtml(report, catalogue)}
 
 ${body}
 <footer>${AUDIT_FOOTER}</footer>
@@ -175,16 +179,30 @@ ${body}
 
 const n = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
 
-/** The site's findings. */
-function auditFindings(report: CrawlReport): SiteFinding[] {
-  return siteFindings(report);
+/** The finding that is a timing (SITE-22, slow pages): what a crawl run beside another review cannot take (GR-014). */
+const TIMED = 'SITE-22';
+
+/** The catalogue as a review whose crawl ran beside another says it: the timing check not timed, every other as it is. */
+// Decision: GR-014
+function untimedChecks(catalogue: readonly Check[]): Check[] {
+  return catalogue.map((c) => (c.code === TIMED ? { ...c, ran: () => 'not-timed' as const } : c));
 }
 
-/** Audits a crawl: its findings, and AUDIT.html written into dir. */
-export function writeAudit(report: CrawlReport, dir: string, crawled: Date): { file: string; findings: SiteFinding[] } {
-  const findings = auditFindings(report);
+/** The site's findings; without SITE-22 when the crawl ran beside another review (GR-014), the rest as they are. */
+// Decision: GR-014
+function auditFindings(report: CrawlReport, alongside: boolean): SiteFinding[] {
+  const findings = siteFindings(report);
+  return alongside ? findings.filter((f) => f.code !== TIMED) : findings;
+}
+
+/**
+ * Audits a crawl: its findings, and AUDIT.html written into dir. `alongside` (GR-014): the crawl ran beside another review, so
+ * SITE-22 is withheld, its check said as not timed, and the page says so before its findings (ALONGSIDE); false, the parent's page.
+ */
+export function writeAudit(report: CrawlReport, dir: string, crawled: Date, alongside = false): { file: string; findings: SiteFinding[] } {
+  const findings = auditFindings(report, alongside);
   mkdirSync(dir, { recursive: true });
   const file = join(dir, 'AUDIT.html');
-  writeFileSync(file, auditHtml(report, findings, crawled));
+  writeFileSync(file, auditHtml(report, findings, crawled, alongside));
   return { file, findings };
 }
