@@ -30,3 +30,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-024 | Ghost cuts mutation testing (GR-013) | decision | `J-000-099.md` |
 | J-025 | The brand: the PDF's cover page and running footer (TODO 2.4) | feature | `J-000-099.md` |
 | J-026 | The PDF is the one artefact (TODO 2.5) | feature | `J-000-099.md` |
+| J-027 | "What this review checked" closes the PDF (TODO 2.6) | feature | `J-000-099.md` |

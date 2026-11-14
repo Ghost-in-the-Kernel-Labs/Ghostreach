@@ -40,8 +40,8 @@ describe('printPdf (GR-006)', () => {
       'page closed',
     ]);
   });
-  it('turns contextual alternates off, so a hyphen beside capitals is a hyphen in the PDF\'s text', () => {
-    expect(PRINT_CSS).toBe('*{font-variant-ligatures:no-contextual}');
+  it('turns contextual alternates off, so a hyphen beside capitals is a hyphen in the PDF\'s text, and keeps a heading with what follows it', () => {
+    expect(PRINT_CSS).toBe('*{font-variant-ligatures:no-contextual}h2,h3,summary{break-after:avoid}');
   });
   it('closes the page when printing fails', async () => {
     const { calls, browser } = fakeBrowser();

@@ -1,7 +1,7 @@
 /**
  * The review as a PDF (TODO 2.3, REV-06): the audit page printed by the Playwright Chromium the crawl reads with (RF-03: no new
  * dependency), at the one page size (GR-006), its colours kept, with 2.4's brand: a cover page first and the address in a footer
- * on every page (src/pdf/brand.ts).
+ * on every page (src/pdf/brand.ts); 2.6: "What this review checked", the catalogue's list, open and last (`printLayout`).
  */
 import { pathToFileURL } from 'node:url';
 import { chromium, type Browser } from 'playwright';
@@ -16,7 +16,24 @@ export const PAGE_SIZE = 'Letter';
  * Inter draws the hyphen and the parentheses beside capitals and figures as alternate glyphs the PDF can only name by private-use
  * code points, so "SITE-02" searched for or copied out of the PDF does not read "SITE-02". The page looks the same.
  */
-export const PRINT_CSS = '*{font-variant-ligatures:no-contextual}';
+export const PRINT_CSS = '*{font-variant-ligatures:no-contextual}h2,h3,summary{break-after:avoid}';
+
+/**
+ * The page laid out for print, run in the page before it is printed (TODO 2.4, 2.6): the cover `first` put first; "What this
+ * review checked" moved after the last finding, so it closes the PDF, its list of checks open, since a closed `<details>` prints
+ * only its summary. The page on screen keeps it after the counts, closed (AUDIT.html stays 1.6's). Self-contained: Playwright
+ * sends its source to the page.
+ */
+// Decision: G-637
+function printLayout(first: string): void {
+  document.body.insertAdjacentHTML('afterbegin', first);
+  const checked = document.querySelector('section.checked');
+  if (!checked) return;
+  checked.querySelector('details')?.setAttribute('open', '');
+  const footer = document.querySelector('main > footer');
+  if (footer) footer.before(checked);
+  else checked.parentElement?.append(checked);
+}
 
 /**
  * Prints the audit page at `html` to the PDF at `out`, the cover naming `cover`'s site and day first; with `browser` (tests), in a
@@ -29,7 +46,7 @@ export async function printPdf(html: string, out: string, cover: Cover, browser?
     try {
       await page.goto(pathToFileURL(html).href);
       await page.addStyleTag({ content: `${PRINT_CSS}\n${COVER_CSS}` });
-      await page.evaluate((first) => document.body.insertAdjacentHTML('afterbegin', first), coverHtml(cover));
+      await page.evaluate(printLayout, coverHtml(cover));
       await page.pdf({
         path: out, format: PAGE_SIZE, printBackground: true, margin: MARGIN,
         displayHeaderFooter: true, headerTemplate: HEADER_TEMPLATE, footerTemplate: FOOTER_TEMPLATE,

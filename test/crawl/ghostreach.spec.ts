@@ -20,6 +20,11 @@ import { auditedCrawl } from '../../src/project/crawl.js';
 import { pdfName } from '../../src/project/review.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
 import { ADDRESS, BYLINE } from '../../src/leaf/words.js';
+import { auditChecked } from '../../src/audit/audit-checked.js';
+import { CHECKS } from '../../src/findings/check-catalogue.js';
+
+/** The length of the parent's catalogue of checks at the pin (its src/group/check-catalogue.ts at a4c8045), SITE-36 among them. */
+const PARENT_CHECKS = 41;
 
 const PARENT = readFileSync(join(process.cwd(), 'test/golden/fixture-site.findings.json'), 'utf8');
 /** The text with the fixture's random port replaced, as the parent's golden crawl names its origin. */
@@ -122,6 +127,24 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
     expect(at, heading).toBeGreaterThanOrEqual(0);
     from = at + heading.length;
   }
+  // TODO 2.6: "What this review checked" closes the PDF, after the last finding, its list open: every check of the catalogue
+  // (G-637) listed, in the page's order and words, and so the parent's catalogue less its SITE-36, which was not copied (1.3).
+  const checkedAt = text.indexOf('What this review checked', from);
+  expect(checkedAt, 'after the last finding').toBeGreaterThanOrEqual(0);
+  const { summary: said, groups } = auditChecked(written);
+  const checkLines = groups.flatMap((g) => [g.title, ...g.lines]).map(squeezed);
+  let at = text.indexOf(squeezed(said), checkedAt);
+  expect(at, said).toBeGreaterThanOrEqual(0);
+  let listed = 0;
+  for (const line of checkLines) {
+    const found = text.indexOf(line, at);
+    expect(found, line).toBeGreaterThanOrEqual(0);
+    at = found + line.length;
+    if (!groups.some((g) => squeezed(g.title) === line)) listed += 1;
+  }
+  expect(listed).toBe(CHECKS.length);
+  expect(listed).toBe(PARENT_CHECKS - 1);
+  expect(CHECKS.map((c) => c.code)).not.toContain('SITE-36');
   // TODO 2.4: the brand. The cover first, naming the wordmark, the site, the day, the byline and Ghost's address (GR-012); the
   // address in the footer of every page; this program's name on none (the data folder's name is ours, and never printed).
   const cover = squeezed(pages[0].text);

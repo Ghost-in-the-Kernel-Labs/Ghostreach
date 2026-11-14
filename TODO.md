@@ -16,10 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 2: the PDF
 
-### 2.6 "What this review checked" closes the PDF
-
-Check: the count of checks listed equals the catalogue's length minus the absent SITE-36.
-
 ### 2.7 Tune-up pass 2
 
 Check: `docs/when/tune-up.md` followed in full.

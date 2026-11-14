@@ -57,3 +57,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `src/cli/main.ts`, `src/project/review.ts`, `src/pdf/pdf.ts`, `src/pdf/brand.ts`, `src/project/crawl.ts`, `test/unit/main.test.ts`, `test/crawl/ghostreach.spec.ts`, `docs/paths/process.md`, `docs/DONE.md`, `scripts/checks/todo.py`, `docs/CUT.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: `TODO.md` says an open question a later item depends on is copied into its text, but not what to do with a check whose parts name files later items create; the precedent (0.5, 1.1) had to be found in `docs/DONE.md`.
 - **Suggestions**: one sentence in `TODO.md`'s header: a check naming a later item's file is met vacuously and its condition copied into that item's text and check.
+
+### 2026-11-14 · TODO 2.6, "What this review checked" closes the PDF · Opus
+
+- **Task**: the catalogue's list of checks last in the PDF, every check printed, `AUDIT.html` kept to 1.6's golden.
+- **Opened**: `src/audit/audit.ts`, `src/audit/audit-checked.ts`, `test/unit/check-catalogue.test.ts`, `test/unit/audit-checked.test.ts`, `test/unit/pdf.test.ts`, `test/unit/words.test.ts`, `src/pdf/pdf.ts`, `test/crawl/ghostreach.spec.ts`, `test/support/pdf-text.ts`, `docs/CUT.md`, `docs/DONE.md`.
+- **Complaints**: the check's "the catalogue's length minus the absent SITE-36" reads as if the catalogue still held SITE-36; it is the parent's catalogue that does, and finding its length meant reading the parent at the pin.
+- **Suggestions**: none.
