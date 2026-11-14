@@ -43,3 +43,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/when/handoff.md`, `docs/paths/process.md`, `docs/JOURNAL.md`, `docs/journal/J-000-099.md`, `theGhost.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: `TODO.md`'s header has no shape for an item Ghost withdraws; the waiting shape fits only by reading "not planned" as a choice Ghost may still make.
 - **Suggestions**: none.
+
+### 2026-11-14 · TODO 5.1, packaging · Opus
+
+- **Task**: TODO 5.1: a `bin`, the smallest build that makes `npm pack` installable, `files` limited, `doctor`'s Node.js and Chromium lines, a version and how a release is tagged, a repeating check that installs the tarball and reviews the fixture.
+- **Opened**: `package.json`, `tsconfig.json`, `docs/paths/code.md`, `src/cli/main.ts`, `src/project/crawl.ts`, `src/project/settings.ts`, `test/unit/main.test.ts`, `playwright.config.ts`, `vitest.config.ts`, `test/crawl/ghostreach.spec.ts`, `src/project/review.ts`, `test/fixture-site/server.ts`, `stacks/typescript/gate.sh`, `knip.json`, `docs/modules.json`, `docs/CUT.md`, `test/support/pdf-text.ts`, `scripts/checks/secrets.py`, `stacks/typescript/README.md`, `test/test_stacks.py`, `README.md`, `docs/DONE.md`.
+- **Complaints**: no routing row named packaging or a release (acted on: a row in `docs/paths/code.md`); the stack README's "npm 11 with `engine-strict=true`" is the repository's `.npmrc`, which a tarball does not carry, so it took a read to see a salesperson's npm 10 only warns.
+- **Suggestions**: none.

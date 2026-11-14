@@ -28,10 +28,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 5: in the salesperson's hands
 
-### 5.1 Packaging
-
-Check: a fresh container installs from the `npm pack` tarball plus `npx playwright install chromium` and audits the fixture; `ghostreach doctor` says what is missing in plain words.
-
 ### 5.2 Windows, by hand on GitHub Actions
 
 Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read`) green once per release: install, audit the fixture, read the PDF's text; its minutes in the journal's Cost line.

@@ -1,14 +1,24 @@
 {
   "name": "ghostreach",
+  "version": "0.1.0",
   "private": true,
+  "description": "Reviews a website and writes its review as a PDF.",
   "type": "module",
+  "bin": {
+    "ghostreach": "dist/cli/bin.js"
+  },
+  "files": [
+    "dist/"
+  ],
   "imports": {
     "#gr/*": "./src/*"
   },
   "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0",
     "npm": ">=11"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest run --project unit",
     "check": "bash scripts/gate.sh"
   },

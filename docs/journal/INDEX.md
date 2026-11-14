@@ -50,3 +50,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-044 | Tune-up pass 4 (TODO 4.12), saved for the reviewer; Core still at the stamp; a read of `src/project/` and of the local server | measurement | `J-000-099.md` |
 | J-045 | Four faults of the local server, left by tune-up pass 4's security read, fixed | failure-caught | `J-000-099.md` |
 | J-046 | Ghost: the audit at a4c8045 is the product; deployment first, no resync planned | direction | `J-000-099.md` |
+| J-047 | Packaging (TODO 5.1): the tarball installs with one command and reviews the fixture | feature | `J-000-099.md` |

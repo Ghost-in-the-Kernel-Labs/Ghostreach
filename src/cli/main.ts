@@ -1,12 +1,14 @@
 // ghostreach <site>: the one command (GR-003: no flag). It reads the site and writes its review (src/project/review.ts).
 // `ghostreach serve` opens the reviews' local page (TODO 3.2, src/project/serve.ts): a word, not an option.
-// `ghostreach doctor` says the machine's memory and the reviews at once it recommends (TODO 3.4, src/project/settings.ts): a word too.
+// `ghostreach doctor` says whether Node.js and Chromium are ready (TODO 5.1, src/project/ready.ts), then the machine's memory and the
+// reviews at once it recommends (TODO 3.4, src/project/settings.ts): a word too.
 // Decision: GR-003
 import { dataDir, review } from '../project/review.js';
 import { openInBrowser, servePage, type ServedPage } from '../project/serve.js';
+import { readyLines, thisInstall } from '../project/ready.js';
 import { doctorLines, thisMachine } from '../project/settings.js';
 
-const USAGE = 'ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says how many sites this computer can review at once. Nothing else is typed.';
+const USAGE = 'ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says whether this computer is ready and how many sites it can review at once. Nothing else is typed.';
 
 /** What the command line holds: the site, and nothing else. The parent's options collapse to this (P-15, GR-003). */
 export interface Values {
@@ -41,7 +43,7 @@ export async function main(argv: readonly string[], data = dataDir(), open = ope
     return values === 'help' ? 0 : 1;
   }
   if (values === 'doctor') {
-    for (const line of doctorLines(data, thisMachine())) console.log(line);
+    for (const line of [...readyLines(thisInstall()), ...doctorLines(data, thisMachine())]) console.log(line);
     return 0;
   }
   if (values === 'serve') {

@@ -36,9 +36,12 @@ describe('ghostreach doctor (TODO 3.4, GR-008)', () => {
       ]);
       vi.spyOn(console, 'log').mockImplementation(() => {});
       expect(await main(['doctor'], data)).toBe(0);
-      expect(said()).toHaveLength(4);
-      expect(said()[0]).toMatch(/^This computer has \d+\.\d GB of memory, \d+\.\d GB of it free now, and \d+ processor cores?\.$/);
-      expect(said()[1]).toMatch(/^Recommended: [1-5] reviews? at once/);
+      expect(said()).toHaveLength(6);
+      // TODO 5.1: Node.js and Chromium first, each ready or missing with the command that fixes it.
+      expect(said()[0]).toMatch(/^Node\.js \d+\.\d+\.\d+: /);
+      expect(said()[1]).toMatch(/^Chromium, the browser the review drives: (installed\.|not installed\. Run: npx playwright@\d+\.\d+\.\d+ install chromium)$/);
+      expect(said()[2]).toMatch(/^This computer has \d+\.\d GB of memory, \d+\.\d GB of it free now, and \d+ processor cores?\.$/);
+      expect(said()[3]).toMatch(/^Recommended: [1-5] reviews? at once/);
       // The doctor only reads: nothing is written into the data folder.
       expect(readdirSync(data)).toEqual([]);
     } finally {
@@ -53,7 +56,7 @@ describe('ghostreach <site> (GR-003: no flag)', () => {
   it('with no site, prints what it takes and exits 1', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(await main([])).toBe(1);
-    expect(said()).toEqual(['ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says how many sites this computer can review at once. Nothing else is typed.']);
+    expect(said()).toEqual(['ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says whether this computer is ready and how many sites it can review at once. Nothing else is typed.']);
   });
   it('--help is the one option, and exits 0 with the same sentence', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
