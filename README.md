@@ -6,8 +6,10 @@ Ghostreach is the tool for the people who reach out to find Suite Builder's clie
 
 You need Node.js 24 LTS (or 22.18 or later) and the file `ghostreach-<version>.tgz` you were sent.
 
-1. Node.js. Windows: in a terminal, `winget install OpenJS.NodeJS.LTS`. Mac: the LTS installer from
-   https://nodejs.org/en/download. Open a new terminal afterwards.
+Ghostreach runs on Windows and Linux; a Mac is not supported (it may work).
+
+1. Node.js. Windows: in a terminal, `winget install OpenJS.NodeJS.LTS`. Linux: Node.js 24 LTS from your distribution
+   or https://nodejs.org/en/download. Open a new terminal afterwards.
 2. Ghostreach, one command, from the folder holding the file:
 
        npm install -g ghostreach-0.1.0.tgz
@@ -15,6 +17,8 @@ You need Node.js 24 LTS (or 22.18 or later) and the file `ghostreach-<version>.t
 3. The browser the review drives:
 
        npx playwright@1.63.0 install chromium
+
+   (On Linux, `npx playwright@1.63.0 install --with-deps chromium`, which adds the system libraries Chromium needs.)
 
    (Playwright's own version, the one Ghostreach carries; `ghostreach doctor` prints the exact command if the browser
    is still missing, and a first review downloads it too.)

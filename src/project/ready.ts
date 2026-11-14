@@ -14,6 +14,8 @@ export interface Install {
   node: string;
   playwright: string;
   chromium: boolean;
+  /** `process.platform`: Linux also needs Chromium's system libraries (`--with-deps`). */
+  platform: string;
 }
 
 /** Whether a Node.js version (`24.22.1`) is in `NODE_RANGE`: 22.18 or a later 22, 24.11 or a later 24, or 26 and after. */
@@ -28,16 +30,16 @@ export function nodeEnough(version: string): boolean {
  */
 export function thisInstall(): Install {
   const playwright = (createRequire(import.meta.url)('playwright/package.json') as { version: string }).version;
-  return { node: process.versions.node, playwright, chromium: existsSync(chromium.executablePath()) };
+  return { node: process.versions.node, playwright, chromium: existsSync(chromium.executablePath()), platform: process.platform };
 }
 
 /** The doctor's first two lines: Node.js and Chromium, each enough or missing, and the command that fixes a missing one. */
 export function readyLines(install: Install): string[] {
   const node = nodeEnough(install.node)
     ? `Node.js ${install.node}: new enough.`
-    : `Node.js ${install.node}: too old, or a version this program does not run on (it needs 22.18 or later 22, 24.11 or later 24, or 26 and after). Install the LTS version: on Windows run winget install OpenJS.NodeJS.LTS, on a Mac download it from https://nodejs.org/en/download; then install this program again.`;
+    : `Node.js ${install.node}: too old, or a version this program does not run on (it needs 22.18 or later 22, 24.11 or later 24, or 26 and after). Install the LTS version: on Windows run winget install OpenJS.NodeJS.LTS, on Linux install it from your distribution or https://nodejs.org/en/download; then install this program again.`;
   const browser = install.chromium
     ? 'Chromium, the browser the review drives: installed.'
-    : `Chromium, the browser the review drives: not installed. Run: npx playwright@${install.playwright} install chromium`;
+    : `Chromium, the browser the review drives: not installed. Run: npx playwright@${install.playwright} install ${install.platform === 'linux' ? '--with-deps ' : ''}chromium`;
   return [node, browser];
 }

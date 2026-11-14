@@ -8,15 +8,18 @@ your emails call it a Suite Builder site review.
 
 You need the file Ghost sent you, `ghostreach-0.1.0.tgz` (the number may differ), saved in your Downloads folder.
 
-1. Open a terminal. **Windows:** press the Windows key, type `cmd` and open Command Prompt. **Mac:** open Terminal
-   (Applications, then Utilities).
+Ghostreach runs on Windows and Linux. (It may run on a Mac, but nobody looks after that.)
+
+1. Open a terminal. **Windows:** press the Windows key, type `cmd` and open Command Prompt. **Linux:** open your
+   terminal app.
 2. Install Node.js, the program Ghostreach runs on. **Windows:** type `winget install OpenJS.NodeJS.LTS` and press
-   Enter. **Mac:** download the LTS installer from https://nodejs.org/en/download and run it. Then close the terminal
-   and open a new one.
+   Enter. **Linux:** install Node.js 24 LTS from your distribution or from https://nodejs.org/en/download. Then close the
+   terminal and open a new one.
 3. Go to the folder with the file: `cd Downloads`
 4. Install Ghostreach: `npm install -g ghostreach-0.1.0.tgz` (type the file's name as it is).
 5. Install the browser the review drives: `npx playwright@1.63.0 install chromium` (answer `y` if it asks to install a
-   package).
+   package). **Linux:** use `npx playwright@1.63.0 install --with-deps chromium` instead; it asks for your password to
+   add the libraries Chromium needs.
 6. Check: `ghostreach doctor`. Its first two lines should say Node.js is "new enough" and Chromium is "installed". If a
    line says something is missing or too old, it says how to fix it: do that, then run `ghostreach doctor` again. Its last lines say how many sites this computer can review at once.
 
@@ -85,7 +88,7 @@ else is in the queue: a review that runs alone is timed.
 ## 6. Send the PDF
 
 The PDF is the one file you send. It is kept in the **Ghostreach** folder in your home folder (on Windows,
-`C:\Users\<your name>\Ghostreach`; on a Mac, `Ghostreach` in your user folder), in a folder named after the site and
+`C:\Users\<your name>\Ghostreach`; on Linux, `~/Ghostreach`), in a folder named after the site and
 the day, for example `Ghostreach/www.example.com-2026-11-14/www.example.com site review.pdf`.
 Attach that file to your email. Do not send anything else from that folder.
 

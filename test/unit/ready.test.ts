@@ -15,16 +15,20 @@ describe('ghostreach doctor: is this computer ready (TODO 5.1)', () => {
     expect(['18.20.0', '20.19.0', '22.17.9', '23.11.0', '24.10.0', '25.2.0'].filter(nodeEnough)).toEqual([]);
   });
   it('says each in plain words, a missing one with the command that fixes it', () => {
-    expect(readyLines({ node: '24.22.1', playwright: '1.63.0', chromium: true })).toEqual([
+    expect(readyLines({ node: '24.22.1', playwright: '1.63.0', chromium: true, platform: 'win32' })).toEqual([
       'Node.js 24.22.1: new enough.',
       'Chromium, the browser the review drives: installed.',
     ]);
-    const [node, browser] = readyLines({ node: '20.19.0', playwright: '1.63.0', chromium: false });
+    const [node, browser] = readyLines({ node: '20.19.0', playwright: '1.63.0', chromium: false, platform: 'win32' });
     expect(node).toMatch(/^Node\.js 20\.19\.0: too old, /);
     expect(node).toContain('winget install OpenJS.NodeJS.LTS');
     expect(node).toContain('https://nodejs.org/en/download');
     // The Playwright the program carries, so the browser downloaded is the one it drives.
     expect(browser).toBe('Chromium, the browser the review drives: not installed. Run: npx playwright@1.63.0 install chromium');
+  });
+  it('on Linux, names the command that also adds Chromium\'s system libraries', () => {
+    const [, browser] = readyLines({ node: '24.22.1', playwright: '1.63.0', chromium: false, platform: 'linux' });
+    expect(browser).toBe('Chromium, the browser the review drives: not installed. Run: npx playwright@1.63.0 install --with-deps chromium');
   });
   it("reads this install: Node's own version and the Playwright in the lockfile", () => {
     const install = thisInstall();
