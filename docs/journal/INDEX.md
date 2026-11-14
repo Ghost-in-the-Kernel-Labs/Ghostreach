@@ -26,3 +26,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-020 | The resync recipe, and its dry run against the parent's HEAD (TODO 1.7) | feature | `J-000-099.md` |
 | J-021 | Tune-up pass 1 (TODO 1.8), saved for the reviewer; it waits on Ghost-Core in Phase W | measurement | `J-000-099.md` |
 | J-022 | Ghost settles the PDF's page size and address | decision | `J-000-099.md` |
+| J-023 | The audit page as a PDF, US Letter (TODO 2.3) | feature | `J-000-099.md` |

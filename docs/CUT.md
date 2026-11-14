@@ -256,11 +256,12 @@ at their defaults). A dash: nothing.
 
 Files under `src/` that are not copies; every other file there is a row above. A new file of Ghostreach's own (the PDF,
 the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5, REV-06) is one review, from the site to
-`<data>/<host>-<date>/`.
+`<data>/<host>-<date>/`. `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
 - `src/project/review.ts`
+- `src/pdf/pdf.ts`
 
 ## Traced, not copied: left unused by the cut
 
@@ -525,8 +526,8 @@ banned-words,made-up-keys,review-reports,secret-shapes-before-gate}.ts`; `test/g
 (the parent's `portable` crawls, origin rewritten: compare a crawl, never a page, 1.6); `test/data/address-reach.json`;
 `test/fixture-site/server.ts` and `test/fixture-site/pages/*.html`; `playwright.config.ts`. Written by the parent's code, not
 copied: `test/golden/fixture-site.findings.json` and `test/golden/fixture-site.AUDIT.html` (`scripts/parent-findings.mjs`).
-Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
-resync block's `own`), `test/support/{audit-golden,pin}.ts` and `test/crawl/ghostreach.spec.ts`.
+Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden,pdf}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
+resync block's `own`), `test/support/{audit-golden,pin,pdf-text}.ts` and `test/crawl/ghostreach.spec.ts`.
 
 ## The resync recipe
 

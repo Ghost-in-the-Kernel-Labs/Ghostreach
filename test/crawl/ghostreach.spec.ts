@@ -4,7 +4,8 @@
  * order, are the parent's for the same fixture (test/golden/fixture-site.findings.json), and its AUDIT.html the parent's
  * (test/golden/fixture-site.AUDIT.html) but for the differences test/support/audit-golden.ts names, both recorded by the parent's
  * own code (scripts/parent-findings.mjs). The live crawl against the parent's page is the behaviour proof of the copy's cuts and
- * of src/crawl/state.ts's split (J-014).
+ * of src/crawl/state.ts's split (J-014). Its PDF (TODO 2.3) is US Letter (GR-006) on every page, and the tests' PDF reader
+ * (test/support/pdf-text.ts) recovers every finding heading of the page from it.
  */
 import { test, expect } from 'playwright/test';
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -16,10 +17,16 @@ import { GOLDEN_WHEN, asParent, parentAudit } from '../support/audit-golden.js';
 import { auditHtml } from '../../src/audit/audit.js';
 import { siteFindings } from '../../src/findings/findings.js';
 import { auditedCrawl } from '../../src/project/crawl.js';
+import { pdfName } from '../../src/project/review.js';
+import { pdfPages, squeezed } from '../support/pdf-text.js';
 
 const PARENT = readFileSync(join(process.cwd(), 'test/golden/fixture-site.findings.json'), 'utf8');
 /** The text with the fixture's random port replaced, as the parent's golden crawl names its origin. */
 const portable = (text: string, site: FixtureSite) => text.split(site.origin).join('http://fixture.test');
+
+/** An HTML fragment's text: its tags dropped and the audit's escapes (`esc`) read back. */
+const textOf = (fragment: string) =>
+  fragment.replace(/<[^>]*>/g, '').replace(/&(lt|gt|quot|amp);/g, (_, e: string) => ({ lt: '<', gt: '>', quot: '"', amp: '&' })[e] ?? '');
 
 let site: FixtureSite | undefined;
 let data: string | undefined;
@@ -41,7 +48,7 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   const folder = join(data, `127.0.0.1-${day}`);
   expect(readdirSync(data)).toEqual([`127.0.0.1-${day}`]);
   // REV-06: the crawl kept beside the audit, and nothing else written.
-  expect(readdirSync(folder).sort()).toEqual(['127.0.0.1.crawl.json', 'AUDIT.html', 'findings.json', 'summary.json']);
+  expect(readdirSync(folder).sort()).toEqual(['127.0.0.1 site review.pdf', '127.0.0.1.crawl.json', 'AUDIT.html', 'findings.json', 'summary.json']);
 
   // REV-07: the findings, in order and word for word, are the parent's for the fixture.
   const findings = portable(readFileSync(join(folder, 'findings.json'), 'utf8'), site);
@@ -75,6 +82,21 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   writeFileSync(golden, portable(crawlText, site));
   const normalised = auditedCrawl(golden);
   expect(asParent(auditHtml(normalised, siteFindings(normalised), GOLDEN_WHEN))).toBe(parentAudit());
+  // TODO 2.3: the PDF, at US Letter on every page (GR-006: 612 by 792 points), its text holding every finding's heading as the
+  // page writes it (the links that need a look among them), in order; the severity badge apart, which CSS upper-cases in print.
+  expect(pdfName('127.0.0.1')).toBe('127.0.0.1 site review.pdf');
+  const pages = pdfPages(readFileSync(join(folder, pdfName('127.0.0.1'))));
+  expect(pages.length).toBeGreaterThan(1);
+  expect(pages.map(({ width, height }) => [width, height])).toEqual(pages.map(() => [612, 792]));
+  const headings = [...html.matchAll(/<section class="finding [^"]*"><h2>(.*?)<\/h2>/g)].map(([, h]) => squeezed(textOf(h.replace(/<span class="badge">[^<]*<\/span>/, ''))));
+  expect(headings.length).toBe(7);
+  const text = squeezed(pages.map((p) => p.text).join('\n'));
+  let from = 0;
+  for (const heading of headings) {
+    const at = text.indexOf(heading, from);
+    expect(at, heading).toBeGreaterThanOrEqual(0);
+    from = at + heading.length;
+  }
   // The crawler kept to robots.txt and never asked for the PDF, as the parent's does.
   expect(site.pagePaths().filter((p) => p.startsWith('/private/') || p.endsWith('.pdf'))).toEqual([]);
 });

@@ -1,7 +1,7 @@
 /**
  * One review, from a site to its folder (REV-06): the crawl written as the parent's crawler wrote it, read back as the parent's
- * audit reads a crawl file, then AUDIT.html, the findings as data (`findings.json`) and the summary the ranking reads
- * (`summary.json`), all in `<data>/<host>-<date>/` and nowhere else. The parent's `suite audit <site>` without its dock, its
+ * audit reads a crawl file, then AUDIT.html, the findings as data (`findings.json`), the summary the ranking reads
+ * (`summary.json`) and the PDF the salesperson hands over (`pdfName`), all in `<data>/<host>-<date>/` and nowhere else. The parent's `suite audit <site>` without its dock, its
  * suite, its terminal summary or a flag (GR-003): one command, one review.
  */
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -11,6 +11,7 @@ import type { CrawlReport } from '../leaf/report.js';
 import { startUrlFromArg } from '../leaf/pages/url.js';
 import { auditCounts, writeAudit } from '../audit/audit.js';
 import type { SiteFinding } from '../findings/types.js';
+import { printPdf } from '../pdf/pdf.js';
 import { auditedCrawl, crawlToFile } from './crawl.js';
 
 /** Where the reviews are kept on the salesperson's machine when nothing else is named: a folder in the home folder, never the program's own. */
@@ -38,6 +39,9 @@ export function reviewSummary(report: CrawlReport, findings: SiteFinding[], date
   }
   return { host, date, pagesRead: read, bySeverity, byCode };
 }
+
+/** The PDF's file name: the site it reviews, as the page's heading names it, and what it is; the prospect reads it, so no word of ours but the page's own. */
+export const pdfName = (host: string): string => `${host} site review.pdf`;
 
 /** The review's folder: `<data>/<host>-<date>`; a second review of the host that day gets `-2`, `-3`, ..., so no review's crawl is overwritten (REV-06). */
 // Invariant: REV-06
@@ -98,10 +102,11 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
     request.say(`No review was written: ${no.why}. The crawl is kept: ${out}`);
     return { code: no.code, folder };
   }
-  const { findings } = writeAudit(report, folder, started);
+  const { file, findings } = writeAudit(report, folder, started);
   writeFileSync(join(folder, 'findings.json'), `${JSON.stringify(findings, null, 2)}\n`);
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
+  await printPdf(file, join(folder, pdfName(summary.host)));
   const { major, minor } = summary.bySeverity;
   request.say(`The review of ${summary.host}: ${findings.length} finding${findings.length === 1 ? '' : 's'} (${major} major, ${minor} minor), ${summary.pagesRead} page${summary.pagesRead === 1 ? '' : 's'} read. ${folder}`);
   return { code: 0, folder };

@@ -16,15 +16,10 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 2: the PDF
 
-### 2.3 src/pdf: the audit HTML as a PDF
-
-Builds `src/pdf/pdf.ts` at US Letter (GR-006, Ghost's, J-022).
-
-Check: a PDF exists after `ghostreach <fixture>`, at the size 2.1 chose; the test's PDF reader recovers every finding heading.
-
 ### 2.4 The brand: cover page and footer
 
-The address is `github.com/ghost-in-the-kernel` (GR-012, Ghost's, J-022), one constant under `src/leaf/`.
+`src/pdf/pdf.ts` prints `AUDIT.html` as it is (2.3); the test's PDF reader is `test/support/pdf-text.ts` (`pdfPages`: each page's
+text). The address is `github.com/ghost-in-the-kernel` (GR-012, Ghost's, J-022), one constant under `src/leaf/`.
 
 Check: `test/unit/words.test.ts` finds the address 2.2 chose on every page's text and no banned word (P-18).
 
