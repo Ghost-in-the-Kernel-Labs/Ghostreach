@@ -64,11 +64,15 @@ function pdfIn(data: string, folder: string, file: string): string | null {
   }
 }
 
-/** The headers every answer carries: nothing runs in the page, nothing is sniffed, no other origin may read it (no CORS header, ever). */
+/**
+ * The headers every answer carries: nothing runs in the page, nothing is sniffed, no other origin may read it (no CORS header, ever).
+ * No referrer leaves for another origin; `same-origin`, not `no-referrer`, since under `no-referrer` the browser posts the page's
+ * own forms with `Origin: null` and `post` refuses them.
+ */
 const HEADERS = {
   'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'",
   'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'no-referrer',
+  'Referrer-Policy': 'same-origin',
   'Cache-Control': 'no-store',
 };
 

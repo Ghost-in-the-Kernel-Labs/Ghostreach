@@ -7,6 +7,7 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node
 import { request } from 'node:http';
 import { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { chromium } from 'playwright';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
 import { readQueue, type ReviewRun } from '../../src/project/queue.js';
@@ -231,6 +232,24 @@ describe('the queue on the page (TODO 3.3)', () => {
     expect(retried.status).toBe(303);
     expect(retried.headers.location).toBe('/');
     await vi.waitFor(() => expect(ran).toEqual(['a.example', 'b.example', 'b.example']));
+  });
+
+  // The guard above (`Origin` equals the page's own) holds only if the browser sends that origin: under `Referrer-Policy:
+  // no-referrer` Chromium sends `Origin: null` on a form's POST (the Fetch standard), so every form of the page was refused.
+  it.runIf(process.env.REAL_BROWSER === '1')("its own form, submitted in the real Chromium, is taken: the browser sends the page's origin", async () => {
+    page = await servePage(data, fakeRun());
+    const browser = await chromium.launch();
+    try {
+      const tab = await browser.newPage();
+      await tab.goto(page.url);
+      await tab.fill('#sites', 'a.example');
+      const [res] = await Promise.all([tab.waitForResponse((r) => r.url().endsWith('/queue')), tab.click('form[action="/queue"] button')]);
+      expect(res.status()).toBe(200);
+      expect(await res.text()).toContain('1 site queued.');
+      await vi.waitFor(() => expect(states()).toEqual(['a.example done']));
+    } finally {
+      await browser.close();
+    }
   });
 
   it('reloads itself while a site waits or runs: a meta refresh, no script', async () => {
