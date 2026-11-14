@@ -6,7 +6,7 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 Stamped from Ghost-Core today; 0.1 (the ghost) and 0.2 (the stack) landed through the gate (J-002). The leaf
 holds the prospect-visible vocabulary (`src/leaf/words.ts`) and the CLI its one command; nothing crawls yet.
-0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. 0.4 landed (J-004): the review contract REV-01 to REV-09 and seven modules. GR-010 (J-005): three kinds of gate, fast, medium and the sweep, as Suite Builder's; the sweep is to run nightly by a Claude scheduled task that the code session owning this project sets up (`docs/MUTATION.md`, "The sweep"); none exists yet. 0.5 done (J-008, J-009): GR-002 to GR-005, GR-008 and GR-009 in force on Ghost's words; GR-006 (page size) and GR-007 (ranking weights) stand `proposed`, settled at 2.1 and 5.4. Ghost is away (J-008): agents build the roadmap one item after another and send what the documents do not settle to the ruling grade (`docs/when/grades.md`). Next: 0.6, tune-up pass 0, then Phase 1, the cut.
+0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. 0.4 landed (J-004): the review contract REV-01 to REV-09 and seven modules. GR-010 (J-005): three kinds of gate, fast, medium and the sweep, as Suite Builder's; the sweep is to run nightly by a Claude scheduled task that the code session owning this project sets up (`docs/MUTATION.md`, "The sweep"); none exists yet. 0.5 done (J-008, J-009): GR-002 to GR-005, GR-008 and GR-009 in force on Ghost's words; GR-006 (page size) and GR-007 (ranking weights) stand `proposed`, settled at 2.1 and 5.4. Ghost is away (J-008): agents build the roadmap one item after another and send what the documents do not settle to the ruling grade (`docs/when/grades.md`). 0.6, tune-up pass 0, ran (J-010): both full gates green, metrics re-measured, saved on the session branch for the reviewer to land and move to `docs/DONE.md`; its core-update step is open (Ghost-Core not reachable from the session). Next: Phase 1, the cut (1.1 `docs/CUT.md`).
 
 ## For Ghost: waiting on you
 
@@ -83,10 +83,10 @@ version before it by `overrides` in `package.json`. Removed, each comes in by `d
 
 Two more overrides are not cooldown pins and stay until Core's check reads the pins (F-004): `path-key` 3.1.1 (npm-run-path asked ^4; path-key 3 is a CJS default export its import takes) and `@oxc-project/types` 0.156.0 (rolldown pins =0.156.0, another asks ^0.155.0; a types-only package). The gate of 2026-11-13 ran green on both.
 
-## Advisories under the gate's threshold (2026-11-13, `npm audit`)
+## Advisories under the gate's threshold (2026-11-14, tune-up pass 0, `npm audit`)
 
-- `@stryker-mutator/core` moderate, via `typed-rest-client` → `qs` (GHSA-q8mj-m7cp-5q26, GHSA-6pq8-jhm2-2vcw): dev-only, a DoS in qs.stringify
-- `minimatch` 7.0.0–11.0.0 moderate (GHSA-g3hv-75wg-m249): dev-only, through the toolchain
+- `@stryker-mutator/core` moderate, via `typed-rest-client` → `qs` 2.2.5–6.16.0 (https://github.com/advisories/GHSA-q8mj-m7cp-5q26, https://github.com/advisories/GHSA-x5fp-wj9c-mxmx, https://github.com/advisories/GHSA-4mjr-xmp4-gh2g, https://github.com/advisories/GHSA-6pq8-jhm2-2vcw): dev-only, DoS in qs
+- `minimatch` 7.0.0–11.0.0 moderate (https://github.com/advisories/GHSA-g3hv-75wg-m249): dev-only, through `@stryker-mutator/core`
 
 ## For Ghost-Core: findings to report upstream
 
@@ -94,4 +94,4 @@ F-001 to F-006 in `docs/FINDINGS.md` are faults of the template met on a clean s
 
 ## What to distrust
 
-- `docs/AGENT.md`'s Fast loop and Gate cells are Ghost-Core's numbers until Tune-up pass 0 re-measures them here (the gate of 2026-11-13 measured 22.2 s and 0.65 min).
+(nothing at present: tune-up pass 0 re-measured `docs/AGENT.md`'s Fast loop and Gate cells on this project, 2026-11-14)

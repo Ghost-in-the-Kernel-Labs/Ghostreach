@@ -63,8 +63,9 @@ same `tune-up:` commit or the next one. The navigation half (steps 1 to 6) stays
    read-only; its answer goes in the journal entry.
 6. **Stop and hand back.** Debrief as the log's header says. The hand-back: the gate's verdict
    line, the metrics before and after, your notes, step 4's verdicts, the open questions, each with
-   what it needs (a decision for Ghost, a roadmap line, a target that cannot be met). Commit
-   nothing yourself: the reviewer commits, the message starting `tune-up:`.
+   what it needs (a decision for Ghost, a roadmap line, a target that cannot be met). Land
+   nothing yourself: on a session branch, save (`scripts/save.sh`, not a landing, C-040); the reviewer
+   lands it on `main` through `scripts/commit.sh`, the message starting `tune-up:`.
 
 ## Edge cases
 

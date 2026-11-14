@@ -13,3 +13,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-007 | The stamp's loose ends fixed, on Ghost's word | contradiction | `J-000-099.md` |
 | J-008 | Ghost's rulings on the cut, and autonomous development | direction | `J-000-099.md` |
 | J-009 | The founding decisions closed (TODO 0.5) | feature | `J-000-099.md` |
+| J-010 | Tune-up pass 0 (TODO 0.6), saved for the reviewer | measurement | `J-000-099.md` |

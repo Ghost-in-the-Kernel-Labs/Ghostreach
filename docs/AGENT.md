@@ -28,8 +28,11 @@ target is "—" is informational, counted and never armed;
 The session's container, on which AGT-01 and AGT-07 stand: measured facts, not contract items. A
 stamped project inherits these lines and its tune-up pass re-measures the first.
 
-- 2 cores, 7 GB of memory, measured 2026-11-07 (`nproc`, `free -g`); sessions differ, so a gate's
-  minutes are compared on the machine that measured them.
+- 4 cores, 15 GB of memory, measured 2026-11-14 at tune-up pass 0 (`nproc`, `free -g`); sessions differ, so a
+  gate's minutes are compared on the machine that measured them.
+- The container's default `node` and `npm` (`/usr/local/bin`, Node 22 with npm 10) are below the stack's npm 11
+  floor and the TypeScript gate refuses them; Node 24 with npm 11 is at `/opt/node24/bin`, so the gate runs as
+  `PATH=/opt/node24/bin:$PATH scripts/gate.sh` (measured 2026-11-14).
 - A background task lives at most two hours, an idle container is reclaimed within minutes, and a
   restart kills every process; what a long run does about each is `docs/when/long-run.md` ("The
   machine").
@@ -41,13 +44,13 @@ stamped project inherits these lines and its tune-up pass re-measures the first.
 | Metric | Target | Measured | Why it matters to the agent |
 | --- | --- | --- | --- |
 | Mandatory context (words) | < 1,200 | 1194 | every task pays it |
-| Fast loop (s) | < 30 | 25.9 | run after every edit |
-| Gate (min) | < 10 | 5.2 | paid before every push |
+| Fast loop (s) | < 30 | 21.6 | run after every edit |
+| Gate (min) | < 10 | 0.4 | paid before every push |
 | Largest source file (lines) | < 400 | 378 | fits a read without paging |
 | Files a routing row opens | ≤ 5 | 2 | the first five reads decide the task |
 | Decisions without `See also` | 0 | 0 | links find what grep misses |
 | Stale generated files | 0 | 0 | AGT-05 |
-| Docs lines per source line | < 0.35 | 74.9 | Suite Builder reached 0.37 and it hurt; unarmed until there is source |
+| Docs lines per source line | < 0.35 | 75.4 | Suite Builder reached 0.37 and it hurt; unarmed until there is source |
 | Cost rows since the thresholds were set | — | 0 | informational, never armed: `docs/when/grades.md`'s provisional numbers move only by a decision from these rows (C-036) |
 
 ## Re-measuring (a tune-up pass, C-024)
