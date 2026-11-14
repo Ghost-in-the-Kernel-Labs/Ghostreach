@@ -1,17 +1,9 @@
+import * as fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // docs/CUT.md held to src/ (GR-002, docs/ROADMAP.md §5): every copied file is listed, nothing of the suite side is, and no
-// file names a flag the document says was stripped. Red by design until 1.2 copies the files: that one check is `it.fails`,
-// which passes while the files are missing and fails the day they all exist, so 1.2 must turn it into `it` (J-012).
-
-// The stack has no @types/node until 1.2 (docs/CUT.md, "What 1.2 needs"): node:fs is reached through an untyped import and
-// given the three functions this file calls.
-interface Fs {
-  readFileSync(path: URL, encoding: 'utf8'): string;
-  existsSync(path: URL): boolean;
-  readdirSync(path: URL, options: { recursive: true }): string[];
-}
-const fs = (await import(`node:${'fs'}`)) as Fs;
+// file names a flag the document says was stripped; and every listed file is copied (1.2 turned that check from `it.fails`
+// into `it`, J-012, J-013).
 const ROOT = new URL('../../', import.meta.url);
 const read = (relative: string): string => fs.readFileSync(new URL(relative, ROOT), 'utf8');
 
@@ -74,7 +66,7 @@ function flagsNamed(stripped: string[], texts: Record<string, string>): string[]
 
 const cut = parseCut(read('docs/CUT.md'));
 const modules = Object.values((JSON.parse(read('docs/modules.json')) as { modules: Record<string, { folder: string }> }).modules).map((m) => `${m.folder}/`);
-const sources = fs.readdirSync(new URL('src/', ROOT), { recursive: true }).map((f) => `src/${f.replace(/\\/g, '/')}`).filter((f) => /\.(ts|mts|js|mjs)$/.test(f));
+const sources = fs.readdirSync(new URL('src/', ROOT), { recursive: true, encoding: 'utf8' }).map((f) => `src/${f.replace(/\\/g, '/')}`).filter((f) => /\.(ts|mts|js|mjs)$/.test(f));
 
 describe('docs/CUT.md (GR-002)', () => {
   it('names the parent commit, a4c8045', () => {
@@ -94,8 +86,7 @@ describe('docs/CUT.md (GR-002)', () => {
   it('no file under src/ names a flag it says was stripped (GR-003)', () => {
     expect(flagsNamed(cut.stripped, Object.fromEntries(sources.map((f) => [f, read(f)])))).toEqual([]);
   });
-  // Red by design (TODO 1.1): the files arrive at 1.2, which turns `it.fails` into `it`.
-  it.fails('every listed file is copied', () => {
+  it('every listed file is copied', () => {
     expect(cut.files.filter((f) => !fs.existsSync(new URL(f.here, ROOT))).map((f) => f.here)).toEqual([]);
   });
 });

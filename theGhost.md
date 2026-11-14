@@ -555,3 +555,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Status:** in force
 - **See also:** Core C-037, Core C-040, GR-009
 - **subject:** gate
+
+### GR-011: Node's type declarations, @types/node, a dev dependency
+- **Decision:** `@types/node` 22.20.5, pinned exactly, a dev dependency beside GR-009's four (it brings `undici-types`); `tsconfig.json` names it in `types`. Reason: the copied crawl imports `node:fs`, `node:path`, `node:crypto`, `node:dns/promises` and more, and `tsc --noEmit` cannot check them without Node's types; Node 22's, the parent's major (it pins `^22.20.5`).
+- **Why:** TODO 1.2's check is `tsc --noEmit` green over the parent's copy (`docs/CUT.md`, "What 1.2 needs"); no dependency brings Node's types and GR-009 names none. The ruling grade recommended adding it on the session branch, its approval left to Ghost (J-013).
+- **Held by:** `package.json`, `package-lock.json`, `tsconfig.json`, `docs/REVIEWED-VERSIONS.md`.
+- **Source:** an agent, on the ruling grade's recommendation; awaiting Ghost's approval.
+- **Status:** proposed
+- **See also:** GR-009, Core C-035
+- **subject:** dependencies

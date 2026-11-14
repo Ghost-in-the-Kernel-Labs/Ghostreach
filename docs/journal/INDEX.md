@@ -16,3 +16,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-010 | Tune-up pass 0 (TODO 0.6), saved for the reviewer | measurement | `J-000-099.md` |
 | J-011 | Tune-up pass 0 waits on Ghost-Core; Fable's answers | decision | `J-000-099.md` |
 | J-012 | docs/CUT.md written before the copy (TODO 1.1) | feature | `J-000-099.md` |
+| J-013 | The parent's crawl, findings and audit copied (TODO 1.2); the rulings on 1.1's questions | feature | `J-000-099.md` |

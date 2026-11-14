@@ -16,12 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.2 The parent's crawl, findings and audit copied at a4c8045
-
-Check: `tsc --noEmit` green; `knip` reports no unused export; Playwright `~1.63.0` the one runtime dependency, its reason in `theGhost.md`; `test/unit/cut.test.ts` green with its `it.fails` turned into `it` (1.1's check, its second half).
-
-The copy is `docs/CUT.md`'s list, cut as its rows say (J-012). Open from 1.1: `tsc` needs `@types/node`, which GR-009 does not name (`docs/CUT.md`, Questions 3); every relative import takes `.js` under the stack's `NodeNext`.
-
 ### 1.3 The flags stripped
 
 Check: `test/unit/no-flags.test.ts` holds that the parser accepts no option beginning `--` but `--help`; `test/unit/words.test.ts` finds no `FREE_SCAN_LIMIT` sentence.
@@ -30,9 +24,13 @@ Check: `test/unit/no-flags.test.ts` holds that the parser accepts no option begi
 
 Check: `npx vitest run --project unit` green, under 30 s; each dropped test has a line in `docs/CUT.md`.
 
+From 1.2 (J-013): 54 exports only the parent's tests imported lost their `export` (`docs/CUT.md`, "Exports dropped at 1.2"); a carried test that imports one puts it back. A test of a function 1.2 cut (its row's "Loses at 1.2") or of a file not copied ("Traced, not copied") is dropped with its line.
+
 ### 1.5 One command: ghostreach <site>
 
 Check: `test/crawl/ghostreach.spec.ts` against the fixture server: the findings list, in order, equals the parent's for the same fixture; `AUDIT.html`, `findings.json` and `summary.json` written under `<data>/<host>-<date>/`.
+
+From 1.2 (J-013): `knip.json` names CUT.md's five entries as roots until `src/cli/main.ts` reaches them; drop each as it does. `startUrlFromArg` (the site as typed into a start address) was cut from `src/leaf/pages/url.ts` as unused; bring it back from `a4c8045` when the command calls it. `crawlToFile` now takes a required `out`.
 
 ### 1.6 The audit golden against the parent
 
