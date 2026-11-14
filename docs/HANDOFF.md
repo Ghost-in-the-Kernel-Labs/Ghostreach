@@ -46,7 +46,7 @@ E. The audit page's title line and footer, the agent's choice at 1.6 (J-019), mi
 
 0. The code session that takes this project over sets up the nightly sweep as a Claude scheduled task (`docs/MUTATION.md`, "The sweep"; a night slot between the other projects' sweeps, e.g. 03:23 Central).
 
-1. GR-007, the ranking's weights (`major × 3 + minor × 1`, `proposed`): confirm, amend or refuse; TODO 5.4 asks for the ruling after ten real audits. GR-006 (Letter) and GR-012 (github.com/ghost-in-the-kernel) are in force on Ghost's word (J-022).
+1. GR-007 now holds 3.6 to 3.9 in Phase W (J-033); one word, confirm, amend or refuse, returns them to the chain. GR-007, the ranking's weights (`major × 3 + minor × 1`, `proposed`): confirm, amend or refuse; TODO 5.4 asks for the ruling after ten real audits. GR-006 (Letter) and GR-012 (github.com/ghost-in-the-kernel) are in force on Ghost's word (J-022).
 
 F. Resolved by Ghost's word (2026-11-14, J-024): mutation cut from Ghostreach (GR-013); the full gate no longer runs it, so it is no longer red there.
 

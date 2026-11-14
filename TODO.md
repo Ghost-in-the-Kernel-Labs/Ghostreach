@@ -20,24 +20,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 Check: `docs/when/tune-up.md` followed in full.
 
-## Phase 3: the queue and the ranking
-
-### 3.6 The ranking
-
-Check: a fixture set of three summaries ranks in the known order by `major × 3 + minor × 1` (GR-007), pages read beside; a tie breaks by findings per page; each row links its PDF.
-
-### 3.7 The ranking as CSV
-
-Check: the CSV reparses to the same rows.
-
-### 3.8 Re-audit keeps history
-
-Check: two audits of the fixture; the ranking shows one row with a history of two.
-
-### 3.9 Tune-up pass 3
-
-Check: `docs/when/tune-up.md` followed in full.
-
 ## Phase 4: the lead finder
 
 ### 4.3 docs/SOURCES.md before any code
@@ -92,11 +74,13 @@ Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read
 
 ### 5.3 docs/SALES-GUIDE.md
 
+The guide's "read the ranking" needs 3.6, which waits on GR-007 in Phase W (J-033).
 Carried from 2.5 (J-026): the guide links to and names the PDF only, never `AUDIT.html` or a review's JSON files.
 Check: `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty; a reader who is not Ghost follows it on a clean machine and reaches a PDF, recorded as a finding (P-03).
 
 ### 5.4 Ten real audits read
 
+Reads 3.6's ranking, which waits on GR-007 in Phase W (J-033).
 Check: `theGhost.md` carries Ghost's ruling on the weights (GR-007 settled) and the ranking's columns.
 
 ### 5.5 Resync once to the parent's then-HEAD
@@ -119,6 +103,30 @@ Check: `docs/when/tune-up.md` followed in full; the metrics table written; the n
 
 Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
 Moved: from Phase 1
+Check: `docs/when/tune-up.md` followed in full.
+
+### 3.6 The ranking
+
+Waits on: Ghost's ruling on GR-007 (the ranking's weights, `proposed`; nothing is built on a proposed entry, C-008)
+Moved: from Phase 3
+Check: a fixture set of three summaries ranks in the known order by `major × 3 + minor × 1` (GR-007), pages read beside; a tie breaks by findings per page; each row links its PDF.
+
+### 3.7 The ranking as CSV
+
+Waits on: Ghost's ruling on GR-007 (its rows and score column are 3.6's)
+Moved: from Phase 3
+Check: the CSV reparses to the same rows.
+
+### 3.8 Re-audit keeps history
+
+Waits on: Ghost's ruling on GR-007 (its check reads 3.6's ranking)
+Moved: from Phase 3
+Check: two audits of the fixture; the ranking shows one row with a history of two.
+
+### 3.9 Tune-up pass 3
+
+Waits on: items 3.6, 3.7 and 3.8
+Moved: from Phase 3
 Check: `docs/when/tune-up.md` followed in full.
 
 ### 4.1 Lead-finder keys
