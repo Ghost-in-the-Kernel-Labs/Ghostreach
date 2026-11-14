@@ -22,13 +22,9 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.6 The company lane
-
-From 4.3 (J-034): `src/leads/sources.ts` exports `SOURCES`, `{ name, host }` each, the name a row's Source in `docs/SOURCES.md`; turn `test/unit/sources.test.ts`'s `it.fails` ("has a row ... for every source in code") into `it`. Only an `in` row is read: Workable, Rippling, Teamtailor and Breezy are `unverified` there and stay out until a page of the provider's own confirms the endpoint. The company lane's terms are unverified for all six `in` boards (SOURCES.md, "Questions"). From 4.4 and 4.5 (J-035, J-036): there is no `leads` module until Ghost rules (HANDOFF "For Ghost" I), so the lead finder's code is in `src/project/` (`keys.ts`, `fetch.ts`); the sources the code reads are already `FETCHED_SOURCES` of `src/project/fetch.ts` (`{ source, hosts, caps }`, held to SOURCES.md by `test/unit/hosts.test.ts`): point the `it.fails` at it, or at wherever the module is ruled, rather than write a second list. Every fetch goes through `fetchSource`; Jooble's key comes from `withKey` (`src/project/keys.ts`).
-Check: recorded fixtures per ATS (no network in the unit loop); a company on Greenhouse under one slug is found and its QA/test/SDET roles listed; a company on none says "no public board found" and offers the paste lane.
-
 ### 4.7 The discovery lane
 
+From 4.6 (J-037): the company lane is `src/project/company.ts` (no `leads` module yet); its lookups are kept in `<data>/companies.json`, one per company typed, each board found with its QA roles; a refused fetch now carries the answer's status (`Fetched`, `src/project/fetch.ts`), which a lane reads instead of the line's words. Its title rule (`isQaTitle`) and the address rule (`keptUrl`) are there to reuse.
 Check: recorded fixtures; one row per company; a source over its cap is skipped and named, never waited on.
 
 ### 4.8 Website resolution by the salesperson

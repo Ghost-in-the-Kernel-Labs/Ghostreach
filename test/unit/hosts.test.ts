@@ -41,6 +41,9 @@ const EXEMPT: Record<string, string> = {
 /** The lead finder's one fetch function (TODO 4.5): the one network use outside the crawl that reads a source, to its own hosts alone. */
 const FETCH_FUNCTION = 'src/project/fetch.ts fetch';
 
+/** The lead finder's files in src/project/ (no `leads` module until Ghost rules, HANDOFF "For Ghost" I). */
+const LEAD_FINDER = ['src/project/keys.ts', 'src/project/fetch.ts', 'src/project/company.ts'];
+
 /** Each network use found in src/ outside the crawl, as `<file> <name>`. */
 function uses(): string[] {
   return files.filter((f) => !f.startsWith('src/crawl/')).flatMap((file) => {
@@ -87,8 +90,9 @@ describe('no fetch in src/ leaves the allow-list (GR-005, REV-09)', () => {
     const text = sourcesText();
     expect([...new Set(Object.keys(EXEMPT).map((e) => e.split(' ')[0]))].filter((f) => !text.includes(`\`${f}\``))).toEqual([]);
   });
-  it('finds every web address written in src/leads/ on the allow-list (none until 4.5)', () => {
-    const leads = files.filter((f) => f.startsWith('src/leads/'));
+  it("finds every web address written in the lead finder's code on the allow-list (src/project/ until a leads module, 4.6)", () => {
+    const leads = files.filter((f) => f.startsWith('src/leads/') || LEAD_FINDER.includes(f));
+    expect(LEAD_FINDER.filter((f) => !files.includes(f))).toEqual([]);
     const hosts = leads.flatMap((f) => [...read(f).matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].map((m) => `${f} ${m[1]}`));
     expect(hosts.filter((h) => !allowed(list, h.split(' ')[1]))).toEqual([]);
   });

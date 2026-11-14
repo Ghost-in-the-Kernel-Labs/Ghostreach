@@ -81,7 +81,7 @@ afterEach(() => {
 describe('the one fetch function (TODO 4.5)', () => {
   it('does not follow a redirect: the 3xx is refused and its target never asked', async () => {
     const got = await fetchSource('Greenhouse', 'https://boards-api.greenhouse.io/moved', {}, { data, transport: toLocal });
-    expect(got).toEqual({ ok: false, why: 'Greenhouse: answered with a redirect (302); not followed.' });
+    expect(got).toEqual({ ok: false, why: 'Greenhouse: answered with a redirect (302); not followed.', status: 302 });
     expect(hits).toEqual({ '/moved': 1 });
   });
   it('gives HTML back as text: no tag, no script or style, the references read', async () => {
@@ -94,7 +94,7 @@ describe('the one fetch function (TODO 4.5)', () => {
       .toEqual({ ok: true, kind: 'json', json: { method: 'POST' } });
   });
   it('refuses an error status, a body that is not text, and JSON that does not parse', async () => {
-    expect(await fetchSource('Ashby', 'https://api.ashbyhq.com/missing', {}, { data, transport: toLocal })).toEqual({ ok: false, why: 'Ashby: answered 404.' });
+    expect(await fetchSource('Ashby', 'https://api.ashbyhq.com/missing', {}, { data, transport: toLocal })).toEqual({ ok: false, why: 'Ashby: answered 404.', status: 404 });
     expect(await fetchSource('Ashby', 'https://api.ashbyhq.com/binary', {}, { data, transport: toLocal })).toEqual({ ok: false, why: 'Ashby: the answer is not text (image/png).' });
     const broken: Transport = async () => new Response('{nope', { headers: { 'Content-Type': 'application/json' } });
     expect(await fetchSource('Ashby', 'https://api.ashbyhq.com/x', {}, { data, transport: broken })).toEqual({ ok: false, why: 'Ashby: the answer is not JSON.' });

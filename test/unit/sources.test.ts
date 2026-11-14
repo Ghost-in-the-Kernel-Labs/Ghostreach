@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { FETCHED_SOURCES } from '../../src/project/fetch.js';
 import { COLUMNS, header, hostsOf, keysOf, parseSources, section, sourcesText, type Row } from '../support/sources.js';
 
 // docs/SOURCES.md held (TODO 4.3, docs/ROADMAP.md §5, RF-06 to RF-08): one row per source the roadmap names, each cell
 // filled, the closed sites paste only, an excluded source with its reason, each `unverified` cell's source a question,
-// the keyed sources' variables named for 4.4. "Every source in code has a row" is red by design until 4.6 writes the first
-// source: it is `it.fails`, which passes while `src/leads/sources.ts` is missing and fails the day it exports its first
-// source, so 4.6 must turn it into `it` (as 1.1 held cut.test.ts until 1.2).
+// the keyed sources' variables named for 4.4. "Every source in code has a row" was `it.fails` until 4.6, red by design while no
+// source was in code; it reads the code's one list, `FETCHED_SOURCES` of `src/project/fetch.ts` (4.5), not a second one: the
+// lead finder's code is in `src/project/` until Ghost rules on a `leads` module (HANDOFF "For Ghost" I).
 
 const text = sourcesText();
 const rows = parseSources(text);
@@ -21,15 +22,8 @@ const NAMED: Record<string, string[]> = {
 const KEYED = ['Adzuna', 'Jooble', 'The Muse', 'USAJOBS'];
 const STATUSES = ['in', 'excluded', 'unverified', 'paste only'];
 
-/**
- * The sources the code reads, from `SOURCES` of `src/leads/sources.ts` (4.6 writes it: `{ name, host }` each, the name
- * a row's Source); none while the file is missing.
- */
-async function sourcesInCode(): Promise<{ name: string; host: string }[]> {
-  const url = new URL('../../src/leads/sources.ts', import.meta.url).href;
-  const module = (await import(/* @vite-ignore */ url).catch(() => ({}))) as { SOURCES?: { name: string; host: string }[] };
-  return module.SOURCES ?? [];
-}
+/** The sources the code reads, one `{ name, host }` per host of each source in `FETCHED_SOURCES`, the name a row's Source. */
+const sourcesInCode = (): { name: string; host: string }[] => FETCHED_SOURCES.flatMap((s) => s.hosts.map((host) => ({ name: s.source, host })));
 
 describe('docs/SOURCES.md (TODO 4.3)', () => {
   it('has the columns 4.3 asks, in order', () => {
@@ -68,8 +62,8 @@ describe('docs/SOURCES.md (TODO 4.3)', () => {
     const questions = section(text, 'Questions').join('\n');
     expect(rows.filter((r) => r.cells.some((c) => c.includes('unverified')) && !questions.includes(r.source)).map((r) => r.source)).toEqual([]);
   });
-  it.fails('has a row, its status in and its host, for every source in code (passes at 4.6)', async () => {
-    const code = await sourcesInCode();
+  it('has a row, its status in and its host, for every source in code (TODO 4.6)', () => {
+    const code = sourcesInCode();
     expect(code.length).toBeGreaterThan(0);
     expect(code.filter((s) => byName.get(s.name)?.status !== 'in' || !hostsOf(byName.get(s.name)?.host ?? '').includes(s.host)).map((s) => s.name)).toEqual([]);
   });

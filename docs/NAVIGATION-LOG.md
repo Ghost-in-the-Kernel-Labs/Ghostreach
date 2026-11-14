@@ -78,3 +78,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/ROADMAP.md`, `TODO.md`, `docs/SOURCES.md`, `test/unit/hosts.test.ts`, `test/support/sources.ts`, `src/project/queue.ts`, `src/project/text-file.ts`, `tsconfig.json`, `docs/CUT.md`, `docs/DONE.md`, `docs/HANDOFF.md`.
 - **Complaints**: the item's check named a source 4.3 had excluded, so the check could not be met as written until restated; the allow-list exists twice (the document and the code), joined only by a test.
 - **Suggestions**: when an item excludes a source, restate every later check that names it in the same commit, not as a note in the item's text.
+
+### 2026-11-14 · TODO 4.6, the company lane · Opus
+
+- **Task**: the company lane: a company typed on the local page, its board names derived, each `in` ATS probed through the fetch function, bounded, its QA roles listed; "no public board found" offering the paste lane; `sources.test.ts`'s `it.fails` flipped onto `FETCHED_SOURCES`.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/SOURCES.md`, `src/project/fetch.ts`, `src/project/keys.ts`, `src/project/serve.ts`, `src/project/queue.ts`, `src/project/text-file.ts`, `src/project/review.ts`, `test/unit/sources.test.ts`, `test/unit/hosts.test.ts`, `test/unit/serve.test.ts`, `test/unit/keys.test.ts`, `test/unit/fetch.test.ts`, `test/support/sources.ts`, `docs/when/handoff.md`, `docs/journal/J-000-099.md`, `docs/CUT.md`, `docs/modules.json`, `knip.json`, `tsconfig.json`, `vitest.config.ts`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the roadmap and the item's text still name `src/leads/company.ts` while every earlier item put the lead finder in `src/project/`; where a fixture of a test lives is not said (`test/fixtures/` is the Python checks' planted breaks, outside the TypeScript project).
+- **Suggestions**: one line in `stacks/typescript/README.md` naming `test/support/` as the TypeScript fixtures' place; the `leads` module ruled before 4.7 adds a fourth file.

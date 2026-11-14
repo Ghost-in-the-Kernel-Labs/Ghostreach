@@ -6,7 +6,9 @@
  * markup (P-16). The queue (3.3, `queue.ts`): a form posts the sites to `/queue`, a failed one's retry to `/queue/retry`; the
  * only two routes that take a POST, each from this page's own origin alone. No script runs in the page: while a site waits or
  * runs, the page reloads itself every few seconds (a meta refresh) and carries a reload link. The lead sources' keys (4.4, `keys.ts`):
- * each keyed source "key present" or "key absent", never a key. The ranking (3.6) comes later.
+ * each keyed source "key present" or "key absent", never a key. The company lane (4.6, `company.ts`): a form posts a company's name
+ * or site to `/company`, guarded as the queue's are; the lookups kept are shown, each board's QA roles as text, a kept address
+ * as a link; no board found offers the paste lane (4.9). The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
@@ -18,6 +20,8 @@ import { pdfName } from './review.js';
 import { sharedBrowser } from './crawl.js';
 import { readSettings, type Settings } from './settings.js';
 import { keyStates } from './keys.js';
+import { keepLookup, lookUpCompany, readLookups, type CompanyLookup } from './company.js';
+import type { Transport } from './fetch.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -104,8 +108,32 @@ function keysList(): string {
   return `<ul>\n${rows.join('\n')}\n</ul>`;
 }
 
-/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
-function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, added?: Added): string {
+/** What the page says when no board is found: the paste lane is the way left (4.9 builds it). */
+export const NO_BOARD = 'No public board found.';
+export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter? Keep that posting with the paste lane, which comes in a later version.';
+
+/** One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept. */
+function boardItem(board: CompanyLookup['boards'][number]): string {
+  const head = `${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${board.roles.length} QA, test or SDET`;
+  if (!board.roles.length) return `<li>${head}.</li>`;
+  const roles = board.roles.map((r) => `<li>${r.url ? `<a href="${esc(r.url)}" rel="noreferrer">${esc(r.title)}</a>` : esc(r.title)}</li>`).join('\n');
+  return `<li>${head}:\n<ul class="roles">\n${roles}\n</ul></li>`;
+}
+
+/** The lookups kept, newest first: each company's boards, or no board and the paste lane; each source that could not be asked. */
+function lookupsList(lookups: readonly CompanyLookup[]): string {
+  if (!lookups.length) return '<p>No company looked up yet.</p>';
+  const rows = lookups.map((l) => {
+    const found = l.boards.length ? `<ul>\n${l.boards.map(boardItem).join('\n')}\n</ul>` : `<p>${NO_BOARD} ${PASTE_LANE}</p>`;
+    const unanswered = l.unanswered.map((why) => `<p class="error">Not asked: ${esc(why)}</p>`).join('\n');
+    return `<li><strong>${esc(l.asked)}</strong> <span class="day">${esc(l.at.slice(0, 10))}</span>\n${found}${unanswered ? `\n${unanswered}` : ''}</li>`;
+  });
+  return `<ul>\n${rows.join('\n')}\n</ul>`;
+}
+
+/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company lane, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
+function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, lookups: readonly CompanyLookup[], said?: Said): string {
+  const added = said?.added;
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
   // No script (the policy allows none): the page asks for itself again while anything is still to come.
@@ -124,6 +152,8 @@ li { padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
 .error, .refused { color: #a12; }
 textarea { width: 100%; font: inherit; }
 li form { display: inline; }
+ul.roles { padding-left: 1.5rem; list-style: disc; }
+ul.roles li { border: none; padding: 0.1rem 0; }
 </style>
 </head>
 <body>
@@ -141,6 +171,12 @@ ${queueList(sites)}
 <h2>Done</h2>
 <p>Each site reviewed, newest first. Open a review to read or send its PDF.</p>
 ${body}
+<h2>Is this company hiring QA?</h2>
+<form method="post" action="/company">
+<p><label for="company">A company's name or its site:</label></p>
+<p><input id="company" name="company" type="text" maxlength="200" placeholder="Acme Robotics, or acme.com"> <button>Look up</button></p>
+</form>
+${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookupsList(lookups)}
 <h2>Lead sources</h2>
 <p>Each source that needs a key, and whether its key is set.</p>
 ${keysList()}
@@ -162,23 +198,37 @@ function answer(res: ServerResponse, status: number, text: string): void {
   res.end(`${text}\n`);
 }
 
+/** What a post did, said back on the page: the paste's queued and refused lines, or a company lookup refused. */
+interface Said {
+  added?: Added;
+  refused?: string;
+}
+
 /** The page as HTML. */
-function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, added?: Added): void {
+function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, said?: Said): void {
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, added));
+  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, readLookups(data), said));
 }
 
 /** The most a form's body may hold: thousands of sites, and no more read into memory. */
 const MAX_BODY = 64 * 1024;
 
-/** The two POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry']);
+/** The three POST routes. */
+const POSTS = new Set(['/queue', '/queue/retry', '/company']);
+
+/** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the company lane's network (a test's). */
+interface Served {
+  settings: Settings;
+  runner: QueueRunner;
+  transport?: Transport;
+}
 
 /**
  * A form posted to the queue: from this page alone. A browser sends `Origin` with every POST, so one that does not equal this
  * server's own origin, or is missing, is another site's page (or no browser) posting into the salesperson's queue: refused.
  */
-function post(data: string, settings: Settings, origin: string, runner: QueueRunner, path: string, req: IncomingMessage, res: ServerResponse): void {
+function post(data: string, served: Served, origin: string, path: string, req: IncomingMessage, res: ServerResponse): void {
+  const { settings, runner } = served;
   if (req.headers.origin !== origin) return answer(res, 403, 'Only from this page.');
   if ((req.headers['content-type'] ?? '').split(';')[0].trim() !== 'application/x-www-form-urlencoded') return answer(res, 415, 'Only a form.');
   const chunks: Buffer[] = [];
@@ -194,7 +244,18 @@ function post(data: string, settings: Settings, origin: string, runner: QueueRun
     if (path === '/queue') {
       const added = addSites(data, form.get('sites') ?? '');
       runner.kick();
-      return sendPage(data, settings, req, res, added);
+      return sendPage(data, settings, req, res, { added });
+    }
+    if (path === '/company') {
+      // Every source is asked before the page answers: the salesperson waits on it, at most a probe's timeout per name and instance.
+      void lookUpCompany(form.get('company') ?? '', { data, transport: served.transport }).then(
+        (lookup) => {
+          if (lookup.refused) return sendPage(data, settings, req, res, { refused: lookup.refused });
+          keepLookup(data, lookup);
+          sendPage(data, settings, req, res);
+        },
+      ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
+      return;
     }
     if (retry(data, Number(form.get('id')))) runner.kick();
     res.writeHead(303, { ...HEADERS, Location: '/' });
@@ -203,12 +264,13 @@ function post(data: string, settings: Settings, origin: string, runner: QueueRun
 }
 
 /** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the queue's two forms, and nothing else. */
-function handle(data: string, settings: Settings, port: () => number, runner: QueueRunner, req: IncomingMessage, res: ServerResponse): void {
+function handle(data: string, served: Served, port: () => number, req: IncomingMessage, res: ServerResponse): void {
+  const { settings } = served;
   // A page another site's script reaches through a name it points at 127.0.0.1 (DNS rebinding) carries that name: refused.
   const host = req.headers.host ?? '';
   if (host !== `${LOOPBACK}:${port()}` && host !== `localhost:${port()}`) return answer(res, 421, 'Not this address.');
   const path = (req.url ?? '/').split('?')[0];
-  if (req.method === 'POST' && POSTS.has(path)) return post(data, settings, `http://${host}`, runner, path, req, res);
+  if (req.method === 'POST' && POSTS.has(path)) return post(data, served, `http://${host}`, path, req, res);
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.setHeader('Allow', POSTS.has(path) ? 'POST' : 'GET, HEAD');
     return answer(res, 405, POSTS.has(path) ? 'Only POST.' : 'Only GET.');
@@ -247,16 +309,16 @@ export interface ServedPage {
  * Serves the data folder's reviews and queue on 127.0.0.1 alone, on a free port the system picks. `run` reviews a queued site
  * (a test hands its own; else the command's own review, each in a context of the queue's one Chromium, closed when the page
  * stops); up to the settings file's number at once (GR-008). At start, an entry left `running` by a stop mid-review goes back to
- * `waiting` (`recover`) and the runner takes up what waits.
+ * `waiting` (`recover`) and the runner takes up what waits. `transport` is the company lane's network: a test's, else the platform's.
  */
-export async function servePage(data: string, run?: ReviewRun): Promise<ServedPage> {
+export async function servePage(data: string, run?: ReviewRun, transport?: Transport): Promise<ServedPage> {
   recover(data);
   // The settings file, read once at start (GR-008): how many reviews run at once, all of them in one Chromium (RF-09).
   const settings = readSettings(data);
   const shared = run ? null : sharedBrowser();
   const runner = queueRunner(data, run ?? reviewLine(data, shared?.get), settings.reviewsAtOnce);
   let bound = 0;
-  const server = createServer((req, res) => handle(data, settings, () => bound, runner, req, res));
+  const server = createServer((req, res) => handle(data, { settings, runner, transport }, () => bound, req, res));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
   await new Promise<void>((done, fail) => {
     server.once('error', fail);

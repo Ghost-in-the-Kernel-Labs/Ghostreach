@@ -43,8 +43,11 @@ export const MAX_BYTES = 8 * 1024 * 1024;
 /** How long a call may take, its body included. */
 export const TIMEOUT_MS = 30_000;
 
-/** What a fetch gave back: JSON parsed, or text; or why not, in one line that never holds the address. */
-export type Fetched = { ok: true; kind: 'json'; json: unknown } | { ok: true; kind: 'text'; text: string } | { ok: false; why: string };
+/**
+ * What a fetch gave back: JSON parsed, or text; or why not, in one line that never holds the address, with the answer's status
+ * when the source answered with one outside 2xx (a redirect, a 404: the company lane reads a 404 as "no board here").
+ */
+export type Fetched = { ok: true; kind: 'json'; json: unknown } | { ok: true; kind: 'text'; text: string } | { ok: false; why: string; status?: number };
 
 /** The network: the platform's `fetch`, or a test's. */
 export type Transport = (url: string, init: RequestInit) => Promise<Response>;
@@ -165,11 +168,11 @@ export async function fetchSource(sourceName: string, url: string, request: Sour
     });
     if (res.status >= 300 && res.status < 400) {
       await res.body?.cancel();
-      return { ok: false, why: `${source.source}: answered with a redirect (${res.status}); not followed.` };
+      return { ok: false, why: `${source.source}: answered with a redirect (${res.status}); not followed.`, status: res.status };
     }
     if (res.status < 200 || res.status >= 300) {
       await res.body?.cancel();
-      return { ok: false, why: `${source.source}: answered ${res.status}.` };
+      return { ok: false, why: `${source.source}: answered ${res.status}.`, status: res.status };
     }
     body = await readCapped(res, options.maxBytes ?? MAX_BYTES);
   } catch (error) {

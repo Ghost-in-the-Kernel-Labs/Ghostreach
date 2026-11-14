@@ -55,6 +55,12 @@ The allow-list is the hosts of the `in` rows above. It binds the lead finder: ev
 the discovery lane, and anything they call) leaves through 4.5's one function, and only to these hosts; a host
 matching `{company}` matches one DNS label in its place, never two. A pasted posting's address (4.9) is never fetched.
 
+The company lane (4.6, `src/project/company.ts`) asks each company-lane `in` source at the per-company endpoint of its Path cell,
+the optional parameters that only add text it does not read left off (Greenhouse's `content`, Ashby's `includeCompensation`;
+SmartRecruiters' `limit=100` added), Lever on `api.lever.co` and then `api.eu.lever.co`; at most three board names a company, so at
+most 21 calls, and a source stops at its first board. A posting's address from a board is shown as a link only when it is https on
+the source's own domain or the company's typed one, and is never fetched.
+
 Three kinds of network use are outside it, each by design and each named in `test/unit/hosts.test.ts`:
 
 1. **The crawl** (everything under `src/crawl/`): it reads the site the salesperson typed, which is the product (REV-06),
