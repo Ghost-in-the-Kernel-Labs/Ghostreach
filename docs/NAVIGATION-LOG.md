@@ -50,3 +50,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `package.json`, `tsconfig.json`, `docs/paths/code.md`, `src/cli/main.ts`, `src/project/crawl.ts`, `src/project/settings.ts`, `test/unit/main.test.ts`, `playwright.config.ts`, `vitest.config.ts`, `test/crawl/ghostreach.spec.ts`, `src/project/review.ts`, `test/fixture-site/server.ts`, `stacks/typescript/gate.sh`, `knip.json`, `docs/modules.json`, `docs/CUT.md`, `test/support/pdf-text.ts`, `scripts/checks/secrets.py`, `stacks/typescript/README.md`, `test/test_stacks.py`, `README.md`, `docs/DONE.md`.
 - **Complaints**: no routing row named packaging or a release (acted on: a row in `docs/paths/code.md`); the stack README's "npm 11 with `engine-strict=true`" is the repository's `.npmrc`, which a tarball does not carry, so it took a read to see a salesperson's npm 10 only warns.
 - **Suggestions**: none.
+
+### 2026-11-14 · TODO 5.2, Windows on GitHub Actions · Opus
+
+- **Task**: TODO 5.2: a dispatch-only Windows workflow, actions pinned to verified SHAs, that installs the tarball, installs Chromium, reviews the fixture and reads the PDF; then 5.2 to Phase W for Ghost's run.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/when/handoff.md`, `.github/workflows/ci.yml`, `scripts/checks/supply_chain.py`, `test/crawl/package.spec.ts`, `package.json`, `playwright.config.ts`, `stacks/typescript/gate.sh`, `src/project/review.ts`, `docs/journal/J-000-099.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the session's GitHub tools and API reach only this organization's repositories, so an action's release could be read only from its git tags (`git ls-remote`, then a shallow fetch of the tag); nothing says where a pin's evidence is recorded (here, the journal).
+- **Suggestions**: `docs/SUPPLY-CHAIN.md` names how an action's SHA is verified and where it is written down.

@@ -7,6 +7,10 @@
  * says in `doctor` whether Node.js and Chromium are ready (and the command that fixes a missing Chromium), and reviews the parent's
  * fixture site into `~/Ghostreach/<host>-<date>/` with its PDF. Chromium is the machine's (PLAYWRIGHT_BROWSERS_PATH, as the crawl
  * specs use it); the salesperson runs `npx playwright@<version> install chromium` instead, which `doctor` names.
+ *
+ * On Windows (TODO 5.2, `.github/workflows/windows.yml`) the same steps run as npm lays them out there: `npm.cmd` and the installed
+ * `ghostreach.cmd` (each through the shell, as Node runs a `.cmd`), the command in the prefix itself and the package under
+ * `<prefix>/node_modules`, the home folder `USERPROFILE`, and the system folders the system's own variables name.
  */
 import { test, expect } from 'playwright/test';
 import { spawn, spawnSync } from 'node:child_process';
@@ -19,11 +23,18 @@ import { ADDRESS } from '../../src/leaf/words.js';
 
 const REPO = process.cwd();
 const NODE_BIN = dirname(process.execPath);
-const NPM = existsSync(join(NODE_BIN, 'npm')) ? join(NODE_BIN, 'npm') : 'npm';
+const WINDOWS = process.platform === 'win32';
+const NPM = WINDOWS ? join(NODE_BIN, 'npm.cmd') : existsSync(join(NODE_BIN, 'npm')) ? join(NODE_BIN, 'npm') : 'npm';
+
+/** Windows runs a `.cmd` only through the shell, so there each word is quoted: `C:\a b\npm.cmd` gives `"C:\a b\npm.cmd"`. */
+function launch(command: string, args: string[]): [string, string[], { shell: boolean }] {
+  return WINDOWS ? [`"${command}"`, args.map((a) => (/[\s"]/.test(a) ? `"${a}"` : a)), { shell: true }] : [command, args, { shell: false }];
+}
 
 /** A command run to its end, its output kept; the test fails on a non-zero exit with the command's own output. */
 function ran(command: string, args: string[], cwd: string, env: NodeJS.ProcessEnv = process.env): string {
-  const done = spawnSync(command, args, { cwd, env, encoding: 'utf8' });
+  const [file, words, shell] = launch(command, args);
+  const done = spawnSync(file, words, { cwd, env, encoding: 'utf8', ...shell });
   expect(done.status, `${command} ${args.join(' ')}\n${done.stdout}\n${done.stderr}`).toBe(0);
   return done.stdout;
 }
@@ -31,7 +42,8 @@ function ran(command: string, args: string[], cwd: string, env: NodeJS.ProcessEn
 /** The installed command, run without blocking this process (the fixture site answers from it): its exit code and its lines. */
 function installed(bin: string, args: string[], env: NodeJS.ProcessEnv, cwd: string): Promise<{ code: number | null; lines: string[] }> {
   return new Promise((resolve, reject) => {
-    const child = spawn(bin, args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    const [file, words, shell] = launch(bin, args);
+    const child = spawn(file, words, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'], ...shell });
     let out = '';
     child.stdout.on('data', (chunk: Buffer) => (out += chunk.toString('utf8')));
     child.stderr.on('data', (chunk: Buffer) => (out += chunk.toString('utf8')));
@@ -74,14 +86,17 @@ test('the tarball installs with one command and the installed ghostreach reviews
   const home = join(scratch, 'home');
   mkdirSync(home);
   ran(NPM, ['install', '-g', '--prefix', prefix, tarball, '--ignore-scripts', '--prefer-offline', '--no-audit', '--no-fund'], scratch);
-  const bin = join(prefix, 'bin', 'ghostreach');
+  const bin = WINDOWS ? join(prefix, 'ghostreach.cmd') : join(prefix, 'bin', 'ghostreach');
+  const system = process.env.SystemRoot ?? 'C:\\Windows';
   const env: NodeJS.ProcessEnv = {
-    PATH: [join(prefix, 'bin'), NODE_BIN, '/usr/bin', '/bin'].join(delimiter),
+    PATH: [WINDOWS ? prefix : join(prefix, 'bin'), NODE_BIN, ...(WINDOWS ? [join(system, 'System32'), system] : ['/usr/bin', '/bin'])].join(delimiter),
     HOME: home,
+    // Windows: the home folder Node reads, and the system's own variables its programs need (cmd.exe, the network, Chromium's temporary profile).
+    ...(WINDOWS ? { USERPROFILE: home, SystemRoot: system, ComSpec: process.env.ComSpec ?? join(system, 'System32', 'cmd.exe'), PATHEXT: '.COM;.EXE;.BAT;.CMD', TEMP: tmpdir(), TMP: tmpdir() } : {}),
     ...(process.env.PLAYWRIGHT_BROWSERS_PATH ? { PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH } : {}),
   };
   // The installed copy holds nothing of this repository's but what was packed.
-  const copy = join(prefix, 'lib', 'node_modules', 'ghostreach');
+  const copy = WINDOWS ? join(prefix, 'node_modules', 'ghostreach') : join(prefix, 'lib', 'node_modules', 'ghostreach');
   expect(filesUnder(copy).filter((p) => !p.startsWith('node_modules/')).sort()).toEqual(shipped);
 
   const help = await installed(bin, ['--help'], env, scratch);

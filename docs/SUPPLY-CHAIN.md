@@ -81,6 +81,7 @@ that is gone). The stamp rewrites the table for the stamped tree.
 | `.claude/agents/patch-reviewer.md` | an agent file |
 | `.claude/agents/reputation-checker.md` | an agent file |
 | `.github/workflows/ci.yml` | a workflow |
+| `.github/workflows/windows.yml` | a workflow |
 | `scripts/commit.sh` | a script the gate or the commit runs |
 | `scripts/fast.sh` | a script the gate or the commit runs |
 | `scripts/gate.sh` | a script the gate or the commit runs |

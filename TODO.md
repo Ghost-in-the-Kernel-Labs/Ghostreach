@@ -28,10 +28,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 5: in the salesperson's hands
 
-### 5.2 Windows, by hand on GitHub Actions
-
-Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read`) green once per release: install, audit the fixture, read the PDF's text; its minutes in the journal's Cost line.
-
 ### 5.3 docs/SALES-GUIDE.md
 
 The guide's "read the ranking" needs 3.6, which waits on GR-007 in Phase W (J-033).
@@ -98,6 +94,13 @@ Check: the four keys' environment variable names in `docs/SOURCES.md`.
 Waits on: Ghost's choice whether a paid aggregator that reads LinkedIn/Indeed/Glassdoor pages on the program's behalf is acceptable given the terms posture; the free published sources ship first either way.
 Moved: from Phase 4
 Check: a decision in `theGhost.md`, in force or refused.
+
+### 5.2 Windows, by hand on GitHub Actions
+
+Waits on: Ghost to run the workflow by hand (CI minutes, P-13)
+Moved: from Phase 5
+From 5.2 (J-048): the workflow is `.github/workflows/windows.yml` (Actions, "windows", "Run workflow"); it runs `test/crawl/package.spec.ts` on `windows-latest`.
+Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read`) green once per release: install, audit the fixture, read the PDF's text; its minutes in the journal's Cost line.
 
 ### 5.5 Resync once to the parent's then-HEAD
 
