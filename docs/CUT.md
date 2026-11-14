@@ -519,9 +519,74 @@ is the parent's (a structural diff, J-019).
 
 ## The resync recipe
 
-Written at 1.7. Its outline (`docs/ROADMAP.md` 1.7): build the parent's new commit's closure with `scripts/cut_closure.py`
-and diff it against the list above (files in, files out, files moved); diff each listed file between `a4c8045` and the new
-commit; apply each change to its Ghostreach path, the losses above kept; bump the parent commit here; rerun 1.5 and 1.6.
+A later parent commit comes in only by this recipe (GR-002; TODO 1.7, 5.5), mechanically. `scripts/resync_moves.py` lists
+the moves for a range and changes nothing (a dry run); `test/test_resync_moves.py` holds it:
+
+    git clone --filter=blob:none <parent's address> <scratch>/sb-head      # never the parent's own checkout
+    python3 -I scripts/resync_moves.py <scratch>/sb-head <pin> <target>    # --list names every file skipped
+
+Over the parent's diff from the pin to the target, each changed file is one move, by its parent path:
+
+1. `skip`: not copied (the suite side, a cut point, outside the closure, or outside `src/` and the carried tests).
+2. `apply`: a 1:1 copy (its row loses nothing and strips no flag), or a carried test copied whole: the parent's patch at the
+   Ghostreach path, its imports rewritten for the folder (`.js`).
+3. `trimmed`: a copy that lost something at 1.2 to 1.4: each hunk said to apply to the local file, to be imports only, or to
+   touch code the cut removed (read by hand: the row's losses and flags stay lost).
+4. `split`: a `(part)` row: the local file each hunk lands in, the one holding most of its lines.
+5. `whole`: a copy git reads as binary (the bundled `reading-script.ts`): the parent's file at the target.
+6. `new` and `gone`: the target's closure (`scripts/cut_closure.py`, the block above) reaches a file not copied, which is copied
+   with a row unless it is the suite side; or no longer reaches a listed one, which goes with its rows.
+7. `flag`: an option the parent added that a crawl or the audit reads (`shapesCrawl`, or an audit option, in its
+   `src/cli/parse.ts`), or a `--word` on a copied file's new line: fixed at its bare default, a row in the flags table (P-15).
+   `strip`: a new line naming a stripped flag, applied without it.
+
+Then, for any move or none: the pin bumped in this file, `test/unit/cut.test.ts`, `PIN` in `test/unit/audit-golden.test.ts` and
+`scripts/parent-findings.mjs`'s header; GR-002's text names the pin and is Ghost's, so its change is listed as owed, never made;
+1.5 and 1.6 rerun, three runs: `scripts/parent-findings.mjs` from the new pin's archive (the findings, and `audit` for the page),
+or `UPDATE_GOLDEN=1 npx vitest run --project unit test/unit/audit-golden.test.ts` for the page (it archives the parent at `PIN`),
+each golden re-recorded only from the parent's code; then the unit project and `npx playwright test`. A sentence `ALLOWED`
+(`test/support/audit-golden.ts`) quotes, changed by the parent, is changed there by hand. `incompleteChain`'s Node 24 hint ("Where the copy differs") is kept
+unless the parent's patch fixes it its own way.
+
+```resync
+own test/unit/words.test.ts
+into test/unit/suite-words.test.ts test/unit/words.test.ts
+```
+
+The block: `own` is Ghostreach's own file under a parent file's name (skipped), `into` a parent file carried as cases of another.
+
+The dry run (1.7, J-020), the parent's HEAD `e7dd523` (2026-11-14), four commits past the pin, none touching `src/`:
+
+    resync a4c8045..e7dd523: 5 files changed in the parent
+    trimmed test/unit/audit.test.ts: trimmed at 1.4 (its line in CUT.md); each hunk to the cases kept
+        hunk 1: applies to test/unit/audit.test.ts (2 lines found)
+    skip 0 files of src/ not copied (suite side, cut, or outside the closure)
+    skip 4 files outside src/ and the carried tests
+    moves 1
+
+The one move: the banned-words case's `ruleFiles` finds a finding's source file under Stryker's instrumentation too; carried, it reads
+`src/findings/`. The rest is the parent's mutation ledger.
+
+A rehearsal (not a resync: the copy already holds its target), the 100 parent commits up to the pin from `681a783`, the last
+range to change copied files (G-778 to G-780, in-page anchors):
+
+    resync 681a783..a4c8045: 410 files changed in the parent
+    trimmed src/crawl/readers/index.ts -> src/crawl/readers/index.ts: each hunk to what the copy kept; its row's losses and flags kept
+        hunk 1: imports: the parent's change, its paths rewritten for src/crawl/readers/index.ts (.js)
+        hunk 2: imports: the parent's change, its paths rewritten for src/crawl/readers/index.ts (.js)
+        hunk 3: applies to src/crawl/readers/index.ts (7 lines found)
+    apply src/crawl/readers/links.ts -> src/crawl/readers/links.ts: the parent's patch, 1:1
+    whole src/crawl/reading-script.ts: the parent's file at a4c8045 to src/crawl/reading-script.ts
+    split src/crawl/report.ts -> src/leaf/report.ts, src/leaf/report-page.ts
+        hunk 1: lands in src/leaf/report.ts (4 lines found)
+        hunk 2: lands in src/leaf/report-page.ts (18 lines found)
+    skip 114 files of src/ not copied (suite side, cut, or outside the closure)
+    skip 292 files outside src/ and the carried tests
+    moves 4
+
+Each read against the copy by hand: the anchors reader's hunk is in `readers/index.ts`, `anchorsOf` in `readers/links.ts`, the
+bundle in `reading-script.ts` (its sources `anchors-page.ts` and `links-page.ts` are outside the closure, bundled), and
+`PageAnchor` in `report-page.ts` with the page's `anchors` field in `report.ts`'s half; no flag, no new file.
 
 ## The rulings on 1.1's questions
 

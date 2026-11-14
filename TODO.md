@@ -16,12 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.7 The resync recipe
-
-Check: `docs/CUT.md`'s recipe run once as a dry run against `a4c8045..HEAD` of the parent, its moves listed.
-
-From 1.6 (J-019): "rerun 1.5 and 1.6" is three runs: `scripts/parent-findings.mjs` (findings, and `audit` for the page) from the new commit's archive, or `UPDATE_GOLDEN=1 npx vitest run --project unit test/unit/audit-golden.test.ts` for the page (it archives the parent at the pin the test names, `PIN`, which the bump changes); then the unit project and `npx playwright test`. The allowed differences between the parent's page and this program's are named in `test/support/audit-golden.ts` (`ALLOWED`); a resync that changes a parent sentence they quote changes them there, read by hand.
-
 ### 1.8 Tune-up pass 1
 
 Check: `docs/when/tune-up.md` followed in full.

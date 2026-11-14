@@ -23,3 +23,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-017 | The parent's unit tests carried (TODO 1.4) | feature | `J-000-099.md` |
 | J-018 | One command: ghostreach <site> (TODO 1.5) | feature | `J-000-099.md` |
 | J-019 | The audit golden against the parent (TODO 1.6); "problem" banned only as a count | feature | `J-000-099.md` |
+| J-020 | The resync recipe, and its dry run against the parent's HEAD (TODO 1.7) | feature | `J-000-099.md` |
