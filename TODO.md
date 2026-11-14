@@ -22,14 +22,9 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.5 One fetch function
-
-From 4.3 (J-034): Adzuna is `excluded` in `docs/SOURCES.md` (its terms), so its 250 a day may never be read; the bucket's check stands as written (a cap of 250 a day), or takes Jooble's 100 a day, the cap its documentation states: the ruling grade's, or Ghost's, choice. Jooble's key rides in the URL's path (`POST /api/{key}`), so the function never logs or shows a URL.
-Check: `test/unit/fetch.test.ts`: a redirect is not followed, HTML comes back as text, the per-source bucket (persisted in the data folder) refuses the 251st Adzuna call of a day.
-
 ### 4.6 The company lane
 
-From 4.3 (J-034): `src/leads/sources.ts` exports `SOURCES`, `{ name, host }` each, the name a row's Source in `docs/SOURCES.md`; turn `test/unit/sources.test.ts`'s `it.fails` ("has a row ... for every source in code") into `it`. Only an `in` row is read: Workable, Rippling, Teamtailor and Breezy are `unverified` there and stay out until a page of the provider's own confirms the endpoint. The company lane's terms are unverified for all six `in` boards (SOURCES.md, "Questions").
+From 4.3 (J-034): `src/leads/sources.ts` exports `SOURCES`, `{ name, host }` each, the name a row's Source in `docs/SOURCES.md`; turn `test/unit/sources.test.ts`'s `it.fails` ("has a row ... for every source in code") into `it`. Only an `in` row is read: Workable, Rippling, Teamtailor and Breezy are `unverified` there and stay out until a page of the provider's own confirms the endpoint. The company lane's terms are unverified for all six `in` boards (SOURCES.md, "Questions"). From 4.4 and 4.5 (J-035, J-036): there is no `leads` module until Ghost rules (HANDOFF "For Ghost" I), so the lead finder's code is in `src/project/` (`keys.ts`, `fetch.ts`); the sources the code reads are already `FETCHED_SOURCES` of `src/project/fetch.ts` (`{ source, hosts, caps }`, held to SOURCES.md by `test/unit/hosts.test.ts`): point the `it.fails` at it, or at wherever the module is ruled, rather than write a second list. Every fetch goes through `fetchSource`; Jooble's key comes from `withKey` (`src/project/keys.ts`).
 Check: recorded fixtures per ATS (no network in the unit loop); a company on Greenhouse under one slug is found and its QA/test/SDET roles listed; a company on none says "no public board found" and offers the paste lane.
 
 ### 4.7 The discovery lane

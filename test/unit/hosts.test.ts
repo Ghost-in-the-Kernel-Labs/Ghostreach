@@ -1,13 +1,15 @@
 import * as fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { allowList, allowed, parseSources, sourcesText } from '../support/sources.js';
+import { FETCHED_SOURCES, fetchSource } from '../../src/project/fetch.js';
+import { allowList, allowed, hostsOf, parseSources, sourcesText } from '../support/sources.js';
 
 // No fetch leaves docs/SOURCES.md's hosts (GR-005, REV-09, TODO 4.3; 4.8 adds to it): the allow-list is read from the
 // document's `in` rows, and every network use in src/ outside the crawl is either an exemption named below, with its
 // reason, or (from 4.5) the lead finder's one fetch function reading an allow-listed host. The boundary, as
 // docs/SOURCES.md ("What is fetched, and what is exempt") states it: src/crawl/ is exempt by design, since it reads the
 // site the salesperson typed, which is the product, and what that site's own pages load or link to; never a host a search
-// or a source chose. Until 4.5, src/ fetches nothing of Phase 4's, so the list is held only to parse.
+// or a source chose. From 4.5 the one fetch function (`src/project/fetch.ts`, `FETCHED_SOURCES`) holds the list in code: it is
+// held here to the document's `in` rows, host for host, and refuses every host off them before any call.
 
 const ROOT = new URL('../../', import.meta.url);
 const rows = parseSources(sourcesText());
@@ -35,6 +37,9 @@ const EXEMPT: Record<string, string> = {
   'src/pdf/pdf.ts goto': "the review's own AUDIT.html, by a file: address",
   'src/project/crawl.ts node:child_process': "Playwright's own installer, the first-run Chromium download: a dependency's install, not a source",
 };
+
+/** The lead finder's one fetch function (TODO 4.5): the one network use outside the crawl that reads a source, to its own hosts alone. */
+const FETCH_FUNCTION = 'src/project/fetch.ts fetch';
 
 /** Each network use found in src/ outside the crawl, as `<file> <name>`. */
 function uses(): string[] {
@@ -69,7 +74,10 @@ describe('the allow-list of hosts, read from docs/SOURCES.md (GR-005)', () => {
 
 describe('no fetch in src/ leaves the allow-list (GR-005, REV-09)', () => {
   it('finds no network use outside src/crawl/ but the exemptions docs/SOURCES.md names', () => {
-    expect(uses().filter((u) => !(u in EXEMPT))).toEqual([]);
+    expect(uses().filter((u) => !(u in EXEMPT) && u !== FETCH_FUNCTION)).toEqual([]);
+  });
+  it('finds the fetch function the one use that reads a source', () => {
+    expect(uses()).toContain(FETCH_FUNCTION);
   });
   it('finds each exemption still in use, so the list does not outlive its code', () => {
     const found = new Set(uses());
@@ -83,5 +91,26 @@ describe('no fetch in src/ leaves the allow-list (GR-005, REV-09)', () => {
     const leads = files.filter((f) => f.startsWith('src/leads/'));
     const hosts = leads.flatMap((f) => [...read(f).matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].map((m) => `${f} ${m[1]}`));
     expect(hosts.filter((h) => !allowed(list, h.split(' ')[1]))).toEqual([]);
+  });
+});
+
+describe('the fetch function holds the allow-list in code (TODO 4.5)', () => {
+  it("has the document's in rows, source for source and host for host, in order", () => {
+    const rows = parseSources(sourcesText()).filter((r) => r.status === 'in');
+    expect(FETCHED_SOURCES.map((s) => `${s.source}: ${s.hosts.join(', ')}`)).toEqual(rows.map((r) => `${r.source}: ${hostsOf(r.host).join(', ')}`));
+    expect(FETCHED_SOURCES.flatMap((s) => s.hosts).sort()).toEqual([...list].sort());
+  });
+  it('refuses, before any call, every host the document does not allow', async () => {
+    const off = ['api.adzuna.com', 'www.linkedin.com', 'www.themuse.com', 'a.b.recruitee.com', 'boards-api.greenhouse.io.evil.example', 'evil.example', '127.0.0.1'];
+    let calls = 0;
+    const transport = async (): Promise<Response> => {
+      calls++;
+      return new Response('{}', { headers: { 'Content-Type': 'application/json' } });
+    };
+    for (const host of off) {
+      expect(allowed(list, host)).toBe(false);
+      for (const { source } of FETCHED_SOURCES) expect((await fetchSource(source, `https://${host}/x`, {}, { data: '/nonexistent', transport })).ok).toBe(false);
+    }
+    expect(calls).toBe(0);
   });
 });

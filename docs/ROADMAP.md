@@ -221,8 +221,9 @@ third-party text chosen by a search, so every source is read through one fetch f
   "key present / absent", never the key; a source without its key is skipped and said so. Check:
   `scripts/checks/secrets.py` on the tree; a test that the UI's HTML contains no key-shaped string.
 - 4.5 One fetch function (P-16): returns text or JSON, strips markup, follows no link, honours each source's cap with a
-  per-source token bucket persisted in the data folder so a restart does not reset Adzuna's 250/day. Check:
-  `test/unit/fetch.test.ts`: a redirect is not followed, HTML comes back as text, the bucket refuses the 251st call.
+  per-source token bucket persisted in the data folder so a restart does not reset Jooble's 100/day (Adzuna, first named
+  here, is excluded by its terms: J-034, J-036). Check: `test/unit/fetch.test.ts`: a redirect is not followed, HTML comes
+  back as text, the bucket refuses the 101st Jooble call of a UTC day.
 - 4.6 The company lane, `src/leads/company.ts`: the salesperson types a company name or its site; the program derives
   candidate board slugs and probes each ATS endpoint; a hit lists the open roles filtered to QA/test/SDET titles.
   Check: recorded fixtures per ATS (no network in the unit loop); a company on Greenhouse under one slug is found; a

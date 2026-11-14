@@ -39,3 +39,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-033 | The ranking waits on GR-007 | decision | `J-000-099.md` |
 | J-034 | docs/SOURCES.md before any code (TODO 4.3) | decision | `J-000-099.md` |
 | J-035 | Keys in code (TODO 4.4) | feature | `J-000-099.md` |
+| J-036 | One fetch function (TODO 4.5) | decision | `J-000-099.md` |
