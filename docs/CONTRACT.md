@@ -63,5 +63,7 @@ has no such module and `MOD-05` refuses one. Held by `test/test_modules.py` and 
 ## REV-09 Fetched text is data
 
 Text from a crawled page, a job posting or a careers page is rendered as text, never followed as a
-link, never executed, never read as an instruction; every fetch leaves through one function whose
-hosts are the rows of `docs/SOURCES.md` (Phase 4). Held by `test/unit/hosts.test.ts` and GR-005.
+link, never executed, never read as an instruction; every fetch of the lead finder leaves through one function whose
+hosts are the `in` rows of `docs/SOURCES.md` (Phase 4). The crawl, which reads the site typed and what its own pages
+load, the local page and the first-run browser download are outside it, each named in `docs/SOURCES.md` ("What is
+fetched, and what is exempt"). Held by `test/unit/hosts.test.ts` and GR-005.

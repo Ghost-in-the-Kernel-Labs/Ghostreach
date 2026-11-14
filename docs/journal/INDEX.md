@@ -37,3 +37,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-031 | Concurrency: up to N reviews at once, one Chromium (TODO 3.4) | feature | `J-000-099.md` |
 | J-032 | SITE-22 withheld under load (TODO 3.1 recorded, 3.5 built) | decision | `J-000-099.md` |
 | J-033 | The ranking waits on GR-007 | decision | `J-000-099.md` |
+| J-034 | docs/SOURCES.md before any code (TODO 4.3) | decision | `J-000-099.md` |
