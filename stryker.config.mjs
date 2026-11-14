@@ -10,6 +10,10 @@ export default {
   testRunner: 'command',
   commandRunner: { command: `mkdir -p .tmp && TMPDIR=$PWD/.tmp node node_modules/vitest/vitest.mjs run --project unit --bail=1 --maxWorkers=1 ${process.env.MUTATE_TESTS ?? ''}` },
   coverageAnalysis: 'off',
+  // TypeScript 7 has no JavaScript API for Stryker's tsconfig rewrite (ts.parseConfigFileTextToJson is gone); vitest reads the
+  // source itself, so no tsconfig is named (Suite Builder's fix; a Core starter finding, docs/FINDINGS.md).
+  tsconfigFile: 'no-tsconfig-for-stryker.json',
+  disableTypeChecks: false,
   mutate: ['src/**/*.ts', '!src/**/*.gen.ts'],
   ignorePatterns: ['/dist', '/reports', '/.stryker-tmp', '/.tmp'],
   reporters: ['clear-text', 'json'],

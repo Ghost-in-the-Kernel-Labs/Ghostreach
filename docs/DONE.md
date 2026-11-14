@@ -3,4 +3,5 @@
 An item moves here from `TODO.md` when its check passes, keeping its number because other documents
 cite it. Each line: the item, the date, the journal entries, and its check with a tick.
 
-(none yet)
+- 0.1 This project's ghost, named (2026-11-13; J-002). Check ✓: `docs/GHOST-IN-THE-KERNEL.md`'s "This project's ghost" section is Ghostreach's, the STAMP comment gone; committed c8f00a2 by `scripts/commit.sh --docs-only`, its move here riding in 0.2's commit.
+- 0.2 The stack wired (2026-11-13; J-002). Check ✓: `stacks/typescript/gate.sh` green, mutation included (23 mutants, 0 survivors); `stacks/typescript/PRESENT` present; its STAMP markers gone; every pin of the founding lockfile has its `unreviewed baseline` row (J-002); the first commit through the gate.
