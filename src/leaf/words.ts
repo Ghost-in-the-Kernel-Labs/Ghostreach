@@ -1,6 +1,6 @@
 // The words a prospect may read (P-08; Suite Builder G-636), as the contract in code: every module that writes a
 // sentence the prospect sees imports this, and test/unit/words.test.ts holds the PDF's text to it.
-// Decision: GR-003 (one review, one vocabulary; no flag softens or hardens it).
+// Invariant: REV-04 (the prospect reads only the review vocabulary). Decision: GR-003 (no flag softens or hardens it).
 
 /** The nouns and verdicts the review uses, and nothing else, for what it found. */
 export const REVIEW_WORDS = ['review', 'finding', 'findings', 'major', 'minor', 'Nothing to report', 'Why it matters', 'Likely fix'] as const;

@@ -6,12 +6,20 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 Stamped from Ghost-Core today; 0.1 (the ghost) and 0.2 (the stack) landed through the gate (J-002). The leaf
 holds the prospect-visible vocabulary (`src/leaf/words.ts`) and the CLI its one command; nothing crawls yet.
-0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. Next: 0.4, the contract and the modules.
+0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. 0.4 landed (J-004): the review contract REV-01 to REV-09 and seven modules. Next: 0.5, the founding decisions, which are Ghost's to make; the agent's drafts are below.
 
 ## For Ghost: waiting on you
 
-1. Write the first invariants of the contract and set `docs/modules.json` (TODO 0.4).
-2. Write the founding decisions in `theGhost.md`, a decision for each core decision this project refuses among them (TODO 0.5): agents cannot author them.
+1. Write the founding decisions in `theGhost.md` (TODO 0.5): agents cannot author them. Drafted from Ghost's words in chat on 2026-11-13, for Ghost to confirm, amend or refuse:
+   - GR-002 The cut point: Suite Builder at `a4c8045` (v1.39.0); the crawl, findings and audit copied, never depended on; resync by a numbered item only.
+   - GR-003 No flags: `ghostreach <site>` and `--help`; every parent flag fixed on, fixed off or absent.
+   - GR-004 No suite: nothing of `src/kits/`, `src/model/` or the back ends; MOD-05.
+   - GR-005 Fetched text is data: one fetch function, an allow-list of hosts, no link followed, nothing executed.
+   - GR-006 Page size: Letter or A4 (open, TODO 2.1).
+   - GR-007 Ranking weights: major × 3 + minor × 1, provisional until ten real audits (TODO 5.4).
+   - GR-008 Concurrency: default 3, ceiling 5, one Chromium as N contexts, never two of one host; SITE-22 under load either corrected against a reference or withheld with a sentence (open, TODO 3.1).
+   - GR-009 The four dev dependencies and why: vitest (the fast loop), typescript (the types), knip (nothing floats), @stryker-mutator/core (mutation, the command runner); Playwright comes at 1.2 as the one runtime dependency.
+   - Core decisions refused: none so far.
 
 ## Trials: questions settled by a run, not an argument
 

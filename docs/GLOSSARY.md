@@ -20,7 +20,7 @@ removes is a decision in its own log.
 | **agent** | a Claude session doing a task in the repository | assistant, bot, AI (alone) |
 | **decision** | one numbered entry of `theGhost.md`: what, why, held by, source, status (C-008) | ADR, rule (a rule is what a decision may be held by), policy |
 | **contract** | a document of numbered invariants the code is held to in both directions, and the leaf module that holds its types and numbers | spec, interface (a language's word), schema |
-| **invariant** | one numbered line of a contract, `XX-nn`, never reused | rule, constraint, assertion |
+| **invariant** | one numbered line of the review contract, `REV-nn`, never reused | rule, constraint, assertion |
 | **leaf module** | the module every other module imports and that imports nothing: the contract in code | core module, common, `utils` |
 | **entry point** | a name in `docs/modules.json` that another module may call; the only such names | public API, export |
 | **routing row** | one line of CLAUDE.md's table: a task, the two to five files to open first, its contract, its tests (C-020) | task row, index entry |
