@@ -28,3 +28,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/when/tune-up.md`, `docs/HANDOFF.md`, `TODO.md`, `scripts/gate.sh`, `docs/when/long-run.md`, `docs/NAVIGATION-LOG.md`, `docs/journal/J-000-099.md`, `docs/when/core-update.md`, `docs/LINEAGE.md`, `README.md`, `stacks/typescript/README.md`, `vitest.config.ts`, `docs/when/grades.md`, `docs/when/handoff.md`, `docs/AGENT.md`.
 - **Complaints**: `docs/HANDOFF.md`'s "Where the project stands" was one paragraph of about 2,000 words (split now, one line per item). Two documents (the brief's precedent and `docs/when/core-update.md`) said Ghost-Core is unreachable; asking for it attached it at once, so the precedent, not the environment, had kept two passes waiting. `.stryker-tmp/` doubles every `grep -r`.
 - **Suggestions**: `docs/when/core-update.md` step 2 says to ask for Core to be attached before calling it unreachable; `.stryker-tmp/` removed by whoever owns that clone.
+
+### 2026-11-14 · TODO 3.2, ghostreach serve · Opus
+
+- **Task**: `ghostreach serve`, the local page on 127.0.0.1 listing the reviews, each linking its PDF; nothing of 3.3 to 3.6.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/modules.json`, `src/cli/main.ts`, `test/unit/no-flags.test.ts`, `theGhost.md`, `docs/journal/J-000-099.md`, `src/project/review.ts`, `vitest.config.ts`, `knip.json`, `test/unit/main.test.ts`, `docs/CONTRACT.md`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`, `test/crawl/ghostreach.spec.ts`, `docs/CUT.md`, `docs/DONE.md`.
+- **Complaints**: three texts (GR-003's title, REV-05, the cli module's purpose) say "a site and nothing else" while the roadmap plans two command words; no row says whether a word is an option. The roadmap lists a `serve` module and `docs/modules.json` gives no way to add one without stopping, so the item's own plan and the module rule disagree until Ghost answers. No row routes "a new file of Ghostreach's own" to `docs/CUT.md`'s list; `test/unit/cut.test.ts` would have found it.
+- **Suggestions**: GR-003's text names command words explicitly; the cut's own-files list named in the process row.

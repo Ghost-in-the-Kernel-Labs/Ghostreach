@@ -22,11 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 3: the queue and the ranking
 
-### 3.2 ghostreach serve: the local page
-
-Carried from 2.5 (J-026): the PDF is the one artefact; the page links to and names a review's PDF only, never `AUDIT.html`, `findings.json`, `summary.json` or the crawl file, which stay in the folder for the program's own use (REV-06).
-Check: the test fetches the page; it binds to `127.0.0.1` only; no link or text of the page names `AUDIT.html` or a review's JSON file.
-
 ### 3.3 The queue
 
 Check: `test/unit/queue.test.ts`: order kept, a failure does not stop the next, a failed site retried only by the salesperson.

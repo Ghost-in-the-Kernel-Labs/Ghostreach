@@ -15,7 +15,7 @@ describe('ghostreach <site> (GR-003: no flag)', () => {
   it('with no site, prints what it takes and exits 1', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(await main([])).toBe(1);
-    expect(said()).toEqual(['ghostreach <site>: reviews the site and writes its Suite Builder PDF. Nothing else is typed.']);
+    expect(said()).toEqual(['ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. Nothing else is typed.']);
   });
   it('--help is the one option, and exits 0 with the same sentence', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
