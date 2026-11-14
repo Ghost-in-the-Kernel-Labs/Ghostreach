@@ -8,6 +8,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { Browser } from 'playwright';
 import { review, startUrl } from './review.js';
 
 type QueueState = 'waiting' | 'running' | 'done' | 'failed';
@@ -113,10 +114,15 @@ export function recover(data: string): void {
   });
 }
 
-/** Takes the first waiting entry, in pasted order, and marks it running; null when none waits. */
+/**
+ * Takes the first waiting entry, in pasted order, whose host is not being reviewed now, and marks it running; null when none
+ * such waits. Never two reviews of one host together (GR-008): one site is not asked for twice its pages at once.
+ */
+// Decision: GR-008
 function take(data: string): QueueEntry | null {
   return update(data, (sites) => {
-    const next = sites.find((e) => e.state === 'waiting');
+    const busy = new Set(sites.filter((e) => e.state === 'running').map((e) => e.host));
+    const next = sites.find((e) => e.state === 'waiting' && !busy.has(e.host));
     if (next) next.state = 'running';
     return next ?? null;
   });
@@ -139,11 +145,14 @@ export interface QueueRunner {
 }
 
 /**
- * Reviews the waiting entries one at a time, in pasted order, until none waits; a failure is written to its entry and the next
- * goes on. One worker loop: 3.4 runs up to N of these loops, each taking from the same queue.
+ * Reviews the waiting entries, up to `atOnce` at a time (GR-008; the settings file's number, 1 by default), each started in pasted
+ * order, until none waits; a failure is written to its entry and the next goes on. Each of up to `atOnce` loops takes from the
+ * same queue; a loop that finds nothing it may take stops, and each finished review kicks the runner again, so a site held back
+ * because its host was being reviewed is taken once that review ends.
  */
-export function queueRunner(data: string, run: ReviewRun): QueueRunner {
-  let working: Promise<void> | null = null;
+// Decision: GR-008
+export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunner {
+  const working = new Set<Promise<void>>();
   const work = async (): Promise<void> => {
     for (let entry = take(data); entry; entry = take(data)) {
       let error: string | null;
@@ -153,23 +162,35 @@ export function queueRunner(data: string, run: ReviewRun): QueueRunner {
         error = e instanceof Error ? e.message : String(e);
       }
       finish(data, entry.id, error);
+      kick();
+    }
+  };
+  const kick = (): void => {
+    while (working.size < atOnce) {
+      const loop: Promise<void> = work().finally(() => working.delete(loop));
+      working.add(loop);
     }
   };
   return {
-    kick: () => {
-      working ??= work().finally(() => (working = null));
-    },
+    kick,
     idle: async () => {
-      while (working) await working;
+      while (working.size) await Promise.all(working);
     },
   };
 }
 
-/** The page's review of a site: the command's own review, its lines printed at the terminal; a failure's last line is its error. */
-export function reviewLine(data: string): ReviewRun {
+/**
+ * The page's review of a site: the command's own review, its lines printed at the terminal, each after the site it is of (the
+ * reviews run together); a failure's last line is its error. `browser` hands each review the queue's one Chromium (RF-09).
+ */
+export function reviewLine(data: string, browser?: () => Promise<Browser | undefined>): ReviewRun {
   return async (site) => {
     let last = '';
-    const { code } = await review({ site, data, say: (line) => { last = line; console.log(line); } });
+    const say = (line: string) => {
+      last = line;
+      console.log(`${site}: ${line}`);
+    };
+    const { code } = await review({ site, data, say, browser: await browser?.() });
     return code === 0 ? null : last || `the review stopped (${code})`;
   };
 }

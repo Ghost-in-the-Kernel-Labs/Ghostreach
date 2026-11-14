@@ -7,6 +7,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import type { Browser } from 'playwright';
 import type { CrawlReport } from '../leaf/report.js';
 import { startUrlFromArg } from '../leaf/pages/url.js';
 import { auditCounts, writeAudit } from '../audit/audit.js';
@@ -76,6 +77,8 @@ export interface ReviewRequest {
   /** The data folder the review's folder goes in. */
   data: string;
   say: (line: string) => void;
+  /** The queue's one Chromium, each review's crawl a context of it (RF-09); none: the review launches its own. */
+  browser?: Browser;
 }
 
 /**
@@ -96,7 +99,7 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   const folder = reviewFolder(request.data, host, day);
   mkdirSync(folder, { recursive: true });
   const out = join(folder, `${host}.crawl.json`);
-  const crawled = await crawlToFile({ typed: request.site, url, out, log: request.say, say: request.say });
+  const crawled = await crawlToFile({ typed: request.site, url, out, log: request.say, say: request.say, browser: request.browser });
   if (!crawled) {
     request.say('The browser the crawler uses could not be downloaded: see the messages above.');
     return { code: 1, folder };
@@ -114,7 +117,7 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   const pdf = join(folder, pdfName(summary.host));
-  await printPdf(file, pdf, { site: summary.host, date: day });
+  await printPdf(file, pdf, { site: summary.host, date: day }, request.browser);
   const { major, minor } = summary.bySeverity;
   // The PDF is the one artefact (TODO 2.5): the one path the salesperson is shown; AUDIT.html, the JSON files and the crawl stay
   // in the folder for the program's own use (REV-06) and are never named.

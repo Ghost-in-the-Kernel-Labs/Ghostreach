@@ -22,6 +22,11 @@ export interface CrawlOptions {
   navigationTimeoutMs?: number;
   /** Reuse a browser (tests do). If omitted, Chromium is launched and closed by crawl(). */
   browser?: Browser;
+  /**
+   * The given browser was launched as crawl() launches its own, with no proxy (Ghostreach's queue, RF-09): the relaxed read of
+   * robots.txt stays open to it, as to a crawl's own browser.
+   */
+  browserPlain?: boolean;
   /** Progress messages, one line each. */
   log?: (message: string) => void;
   lookup?: import('./addresses.js').Lookup; // how the site's name is looked up (G-139); tests give a fake one

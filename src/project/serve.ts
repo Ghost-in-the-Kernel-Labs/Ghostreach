@@ -14,6 +14,8 @@ import type { AddressInfo } from 'node:net';
 import { join, relative, isAbsolute, sep } from 'node:path';
 import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type Added, type QueueEntry, type QueueRunner, type ReviewRun } from './queue.js';
 import { pdfName } from './review.js';
+import { sharedBrowser } from './crawl.js';
+import { readSettings, type Settings } from './settings.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -90,7 +92,7 @@ function queueList(sites: readonly QueueEntry[]): string {
 }
 
 /** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF. The salesperson's own screen, not the prospect's (REV-04). */
-function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], added?: Added): string {
+function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, added?: Added): string {
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
   // No script (the policy allows none): the page asks for itself again while anything is still to come.
@@ -119,7 +121,8 @@ li form { display: inline; }
 <textarea id="sites" name="sites" rows="6" placeholder="www.example.com"></textarea>
 <p><button>Queue</button></p>
 </form>
-${addedNotice(added)}
+<p>Up to ${settings.reviewsAtOnce} site${settings.reviewsAtOnce === 1 ? ' is' : 's are'} reviewed at once.</p>
+${settings.note ? `<p class="error">${esc(settings.note)}</p>\n` : ''}${addedNotice(added)}
 ${queueList(sites)}
 <p><a href="/">Reload</a></p>
 <h2>Done</h2>
@@ -144,9 +147,9 @@ function answer(res: ServerResponse, status: number, text: string): void {
 }
 
 /** The page as HTML. */
-function sendPage(data: string, req: IncomingMessage, res: ServerResponse, added?: Added): void {
+function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, added?: Added): void {
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), added));
+  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, added));
 }
 
 /** The most a form's body may hold: thousands of sites, and no more read into memory. */
@@ -159,7 +162,7 @@ const POSTS = new Set(['/queue', '/queue/retry']);
  * A form posted to the queue: from this page alone. A browser sends `Origin` with every POST, so one that does not equal this
  * server's own origin, or is missing, is another site's page (or no browser) posting into the salesperson's queue: refused.
  */
-function post(data: string, origin: string, runner: QueueRunner, path: string, req: IncomingMessage, res: ServerResponse): void {
+function post(data: string, settings: Settings, origin: string, runner: QueueRunner, path: string, req: IncomingMessage, res: ServerResponse): void {
   if (req.headers.origin !== origin) return answer(res, 403, 'Only from this page.');
   if ((req.headers['content-type'] ?? '').split(';')[0].trim() !== 'application/x-www-form-urlencoded') return answer(res, 415, 'Only a form.');
   const chunks: Buffer[] = [];
@@ -175,7 +178,7 @@ function post(data: string, origin: string, runner: QueueRunner, path: string, r
     if (path === '/queue') {
       const added = addSites(data, form.get('sites') ?? '');
       runner.kick();
-      return sendPage(data, req, res, added);
+      return sendPage(data, settings, req, res, added);
     }
     if (retry(data, Number(form.get('id')))) runner.kick();
     res.writeHead(303, { ...HEADERS, Location: '/' });
@@ -184,17 +187,17 @@ function post(data: string, origin: string, runner: QueueRunner, path: string, r
 }
 
 /** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the queue's two forms, and nothing else. */
-function handle(data: string, port: () => number, runner: QueueRunner, req: IncomingMessage, res: ServerResponse): void {
+function handle(data: string, settings: Settings, port: () => number, runner: QueueRunner, req: IncomingMessage, res: ServerResponse): void {
   // A page another site's script reaches through a name it points at 127.0.0.1 (DNS rebinding) carries that name: refused.
   const host = req.headers.host ?? '';
   if (host !== `${LOOPBACK}:${port()}` && host !== `localhost:${port()}`) return answer(res, 421, 'Not this address.');
   const path = (req.url ?? '/').split('?')[0];
-  if (req.method === 'POST' && POSTS.has(path)) return post(data, `http://${host}`, runner, path, req, res);
+  if (req.method === 'POST' && POSTS.has(path)) return post(data, settings, `http://${host}`, runner, path, req, res);
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.setHeader('Allow', POSTS.has(path) ? 'POST' : 'GET, HEAD');
     return answer(res, 405, POSTS.has(path) ? 'Only POST.' : 'Only GET.');
   }
-  if (path === '/') return sendPage(data, req, res);
+  if (path === '/') return sendPage(data, settings, req, res);
   const parts = path.split('/');
   let names: string[] = [];
   try {
@@ -217,6 +220,8 @@ function handle(data: string, port: () => number, runner: QueueRunner, req: Inco
 /** The page being served: its address, and how to stop it. */
 export interface ServedPage {
   url: string;
+  /** The settings file as read at start: the reviews run at once, and its line when it asked for something else. */
+  settings: Settings;
   close: () => Promise<void>;
   /** Settles when the server stops. */
   closed: Promise<void>;
@@ -224,14 +229,18 @@ export interface ServedPage {
 
 /**
  * Serves the data folder's reviews and queue on 127.0.0.1 alone, on a free port the system picks. `run` reviews a queued site
- * (the command's own review; a test hands its own). At start, an entry left `running` by a stop mid-review goes back to
+ * (a test hands its own; else the command's own review, each in a context of the queue's one Chromium, closed when the page
+ * stops); up to the settings file's number at once (GR-008). At start, an entry left `running` by a stop mid-review goes back to
  * `waiting` (`recover`) and the runner takes up what waits.
  */
-export async function servePage(data: string, run: ReviewRun = reviewLine(data)): Promise<ServedPage> {
+export async function servePage(data: string, run?: ReviewRun): Promise<ServedPage> {
   recover(data);
-  const runner = queueRunner(data, run);
+  // The settings file, read once at start (GR-008): how many reviews run at once, all of them in one Chromium (RF-09).
+  const settings = readSettings(data);
+  const shared = run ? null : sharedBrowser();
+  const runner = queueRunner(data, run ?? reviewLine(data, shared?.get), settings.reviewsAtOnce);
   let bound = 0;
-  const server = createServer((req, res) => handle(data, () => bound, runner, req, res));
+  const server = createServer((req, res) => handle(data, settings, () => bound, runner, req, res));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
   await new Promise<void>((done, fail) => {
     server.once('error', fail);
@@ -241,8 +250,12 @@ export async function servePage(data: string, run: ReviewRun = reviewLine(data))
   runner.kick();
   return {
     url: `http://${LOOPBACK}:${bound}/`,
+    settings,
     close: () => new Promise<void>((done) => {
-      server.close(() => done());
+      server.close(() => {
+        if (shared) void shared.close().finally(done);
+        else done();
+      });
       server.closeAllConnections();
     }),
     closed,

@@ -43,3 +43,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: `scripts/gate.sh --fast` refused at "the typescript stack's fast checks" without the stack's output in the log: running `stacks/typescript/gate.sh --fast` by hand was needed to see which check (cut.test.ts, then knip). 3.2's debrief already asked for the own-files list of `docs/CUT.md` to be named in a routing row; met again.
 - **Suggestions**: `scripts/gate.sh` prints the failing stack check's last lines, or names where its output went.
 
+
+### 2026-11-14 · TODO 3.4, concurrency · Opus
+
+- **Task**: up to N reviews at once from the settings file (default 3, ceiling 5), one Chromium as N contexts, never two of one host together, `ghostreach doctor`; the unit and concurrent checks.
+- **Opened**: `docs/HANDOFF.md`, `docs/ROADMAP.md`, `TODO.md`, `theGhost.md`, `src/project/queue.ts`, `src/project/review.ts`, `src/project/crawl.ts`, `src/cli/main.ts`, `src/project/serve.ts`, `src/crawl/crawler.ts`, `src/pdf/pdf.ts`, `src/crawl/loop.ts`, `src/crawl/relaxed-chain.ts`, `src/crawl/options.ts`, `test/unit/queue.test.ts`, `test/unit/serve.test.ts`, `test/unit/main.test.ts`, `test/crawl/ghostreach.spec.ts`, `test/fixture-site/server.ts`, `playwright.config.ts`, `vitest.config.ts`, `docs/CUT.md`, `docs/DONE.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: `options.browser`'s comment says "tests do" and nothing of the relaxed robots.txt read it turns off two files away; RF-09 reads as if sharing a browser changed nothing.
+- **Suggestions**: RF-09's row and `options.browser`'s comment name `relaxedRefusal`.

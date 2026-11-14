@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { chromium, type Browser } from 'playwright';
 import { crawl } from '../crawl/crawler.js';
 import type { CrawlReport } from '../leaf/report.js';
 import { readCrawlReport } from '../crawl/report-read.js';
@@ -23,6 +24,8 @@ export interface CrawlRequest {
   /** Each page as the crawl goes; the steps around it (a download, a second address). */
   log: (line: string) => void;
   say: (line: string) => void;
+  /** The queue's one Chromium, launched as the crawl launches its own (`sharedBrowser`); none: the crawl launches its own. */
+  browser?: Browser;
 }
 
 /** Downloads Playwright's Chromium (what "npx playwright install chromium" does). */
@@ -37,7 +40,7 @@ function installBrowser(): boolean {
 async function crawlSite(request: CrawlRequest): Promise<CrawlReport | null> {
   // What the crawl prints as it goes names each address read: its token masked, as the report writes them (G-480).
   const log = (line: string) => request.log(withoutSecrets(line));
-  const crawlOnce = (startUrl = request.url) => crawl({ startUrl, log });
+  const crawlOnce = (startUrl = request.url) => crawl({ startUrl, log, ...(request.browser ? { browser: request.browser, browserPlain: true } : {}) });
   let report: CrawlReport;
   try {
     report = await crawlOnce();
@@ -76,4 +79,32 @@ export async function crawlToFile(request: CrawlRequest): Promise<{ report: Craw
 /** A crawl file's report. */
 export function auditedCrawl(crawlFile: string): CrawlReport {
   return readCrawlReport(() => readText(crawlFile), crawlFile);
+}
+
+/**
+ * The queue's one Chromium (RF-09, GR-008): launched as the crawl launches its own (no proxy, no option), at the first review that
+ * asks, and again when it has gone (a crash); every review running at once is a context of it, so N reviews cost one browser.
+ * `get` gives undefined when it cannot launch (a new machine, the browser not yet downloaded): that review launches its own,
+ * which downloads it first. `close` closes it; the page's stop calls it.
+ */
+// Decision: GR-008
+export function sharedBrowser(): { get: () => Promise<Browser | undefined>; close: () => Promise<void> } {
+  let launched: Promise<Browser | undefined> | null = null;
+  const get = async (): Promise<Browser | undefined> => {
+    // One launch however many reviews ask at once: each awaits the same promise.
+    const asked = (launched ??= chromium.launch().catch(() => undefined));
+    const open = await asked;
+    if (open?.isConnected()) return open;
+    // Gone, or never launched: the next ask launches again; a review whose browser had gone asks once more now.
+    if (launched === asked) launched = null;
+    return open ? get() : undefined;
+  };
+  return {
+    get,
+    close: async () => {
+      const was = launched;
+      launched = null;
+      await (await was)?.close().catch(() => undefined);
+    },
+  };
 }

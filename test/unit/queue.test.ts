@@ -2,13 +2,15 @@
  * The queue (TODO 3.3): sites pasted one per line, kept in `<data>/queue.json` with a state each, reviewed one at a time in
  * pasted order by a fake review; a failure keeps its one error line and does not stop the next; a failed site goes back only
  * by the salesperson's retry; a line that is not a site, or a host already waiting or running, refused and never queued; an
- * entry left `running` by a stop goes back to `waiting`.
+ * entry left `running` by a stop goes back to `waiting`. Concurrency (TODO 3.4, GR-008): up to N at once, N from the settings
+ * file (default 3, ceiling 5), and no more; two entries of one host never together.
  */
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { addSites, queueFile, queueRunner, readQueue, recover, retry, type ReviewRun } from '../../src/project/queue.js';
+import { readSettings, settingsFile } from '../../src/project/settings.js';
 
 let data: string;
 beforeEach(() => {
@@ -136,5 +138,110 @@ describe('the queue (TODO 3.3)', () => {
     writeFileSync(queueFile(data), '{"sites": [');
     expect(() => addSites(data, 'b.example')).toThrow();
     expect(readFileSync(queueFile(data), 'utf8')).toBe('{"sites": [');
+  });
+});
+
+/** A fake review that holds each site until the test lets it go, recording how many ran together and which hosts overlapped. */
+function held(): { run: ReviewRun; running: string[]; most: () => number; overlaps: string[]; release: (site?: string) => void } {
+  const running: string[] = [];
+  const waiting = new Map<string, () => void>();
+  const overlaps: string[] = [];
+  let most = 0;
+  const run: ReviewRun = async (site) => {
+    const host = new URL(`https://${site}`).hostname;
+    if (running.some((s) => new URL(`https://${s}`).hostname === host)) overlaps.push(host);
+    running.push(site);
+    most = Math.max(most, running.length);
+    await new Promise<void>((done) => waiting.set(site, done));
+    running.splice(running.indexOf(site), 1);
+    return null;
+  };
+  const release = (site?: string) => {
+    for (const [s, done] of [...waiting]) {
+      if (site !== undefined && s !== site) continue;
+      waiting.delete(s);
+      done();
+    }
+  };
+  return { run, running, most: () => most, overlaps, release };
+}
+
+/** Lets the runner's promises settle until `ready` holds. */
+async function until(ready: () => boolean): Promise<void> {
+  for (let i = 0; i < 200 && !ready(); i++) await new Promise((r) => setTimeout(r, 1));
+  expect(ready()).toBe(true);
+}
+
+describe('concurrency (TODO 3.4, GR-008)', () => {
+  it('runs N at once and no more, each started in pasted order', async () => {
+    addSites(data, 'a.example\nb.example\nc.example\nd.example\ne.example\nf.example\ng.example');
+    const fake = held();
+    const runner = queueRunner(data, fake.run, 3);
+    runner.kick();
+    runner.kick();
+    await until(() => fake.running.length === 3);
+    // Kicked again while full (a new paste), it starts nothing more.
+    runner.kick();
+    await new Promise((r) => setTimeout(r, 5));
+    expect(fake.running).toEqual(['a.example', 'b.example', 'c.example']);
+    expect(readQueue(data).filter((e) => e.state === 'running').map((e) => e.site)).toEqual(['a.example', 'b.example', 'c.example']);
+    // One finishes: the next waiting takes its place, and still no more than three run.
+    fake.release('b.example');
+    await until(() => fake.running.includes('d.example'));
+    expect(fake.running).toEqual(['a.example', 'c.example', 'd.example']);
+    while (readQueue(data).some((e) => e.state !== 'done')) {
+      fake.release();
+      await new Promise((r) => setTimeout(r, 1));
+    }
+    await runner.idle();
+    expect(fake.most()).toBe(3);
+    expect(states()).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((s) => `${s}.example done`));
+  });
+
+  it('never reviews two entries of one host together: the second waits for the first, the others go past it', async () => {
+    // A failed host queued again, and the failed entry retried: two entries of one host waiting at once.
+    addSites(data, 'a.example');
+    const failing = queueRunner(data, async () => 'the site did not answer', 3);
+    failing.kick();
+    await failing.idle();
+    addSites(data, 'a.example/careers\nb.example\nc.example');
+    expect(retry(data, readQueue(data)[0].id)).toBe(true);
+    expect(states()).toEqual(['a.example waiting', 'a.example/careers waiting', 'b.example waiting', 'c.example waiting']);
+    const fake = held();
+    const runner = queueRunner(data, fake.run, 3);
+    runner.kick();
+    await until(() => fake.running.length === 3);
+    expect(fake.running).toEqual(['a.example', 'b.example', 'c.example']);
+    expect(states()[1]).toBe('a.example/careers waiting');
+    fake.release('b.example');
+    await new Promise((r) => setTimeout(r, 5));
+    // A slot is free, but the only waiting entry's host is being reviewed: it waits.
+    expect(fake.running).toEqual(['a.example', 'c.example']);
+    fake.release('a.example');
+    await until(() => fake.running.includes('a.example/careers'));
+    while (readQueue(data).some((e) => e.state !== 'done')) {
+      fake.release();
+      await new Promise((r) => setTimeout(r, 1));
+    }
+    await runner.idle();
+    expect(fake.overlaps).toEqual([]);
+  });
+
+  it('N comes from the settings file: default 3, ceiling 5, a value it cannot run made one it can, with a line saying so', () => {
+    expect(readSettings(data)).toEqual({ reviewsAtOnce: 3, note: null });
+    const asks = (text: string) => {
+      mkdirSync(data, { recursive: true });
+      writeFileSync(settingsFile(data), text);
+      return readSettings(data);
+    };
+    expect(asks('{"reviewsAtOnce": 5}')).toEqual({ reviewsAtOnce: 5, note: null });
+    expect(asks('{"reviewsAtOnce": 1}')).toEqual({ reviewsAtOnce: 1, note: null });
+    expect(asks('{}')).toEqual({ reviewsAtOnce: 3, note: null });
+    expect(asks('{"reviewsAtOnce": 9}')).toEqual({ reviewsAtOnce: 5, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
+    expect(asks('{"reviewsAtOnce": 0}')).toEqual({ reviewsAtOnce: 1, note: 'settings.json asks for 0 reviews at once; 1 run at once (a whole number from 1 to 5).' });
+    expect(asks('{"reviewsAtOnce": 2.5}').reviewsAtOnce).toBe(2);
+    expect(asks('{"reviewsAtOnce": "4"}')).toEqual({ reviewsAtOnce: 3, note: "settings.json's reviewsAtOnce is not a number, so 3 reviews run at once, the default." });
+    expect(asks('{"reviewsAtOnce": 4')).toEqual({ reviewsAtOnce: 3, note: 'settings.json could not be read, so 3 reviews run at once, the default.' });
+    expect(asks('null')).toEqual({ reviewsAtOnce: 3, note: null });
   });
 });

@@ -79,7 +79,7 @@ export async function crawlLoop(page: Page, context: BrowserContext, browser: Br
  */
 async function startCrawl(page: Page, context: BrowserContext, state: CrawlState, settings: CrawlSettings): Promise<CrawlRun | null> {
   const { options, startUrl, maxPages, timeout, settleMs, maxConsecutiveErrors, log } = settings;
-  const [robots, addresses] = await Promise.all([fetchRobots(await guardedRequests(context, state.origin, options.resolve), state.origin, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, state.origin, options.resolve, options.browser !== undefined)), probeAddresses(state.origin, options.lookup)]);
+  const [robots, addresses] = await Promise.all([fetchRobots(await guardedRequests(context, state.origin, options.resolve), state.origin, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, state.origin, options.resolve, options.browser !== undefined && !options.browserPlain)), probeAddresses(state.origin, options.lookup)]);
   state.readRobots(robots);
   state.noteAddresses(addresses);
   if (state.robots.error !== undefined) return null;
@@ -92,7 +92,7 @@ async function startCrawl(page: Page, context: BrowserContext, state: CrawlState
     readDeadlineMs: options.readDeadlineMs ?? crawlH.READ_DEADLINE_MS,
     state,
     frontier,
-    robotsFor: async (site: string) => fetchRobots(await guardedRequests(context, site, options.resolve), site, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, site, options.resolve, options.browser !== undefined)),
+    robotsFor: async (site: string) => fetchRobots(await guardedRequests(context, site, options.resolve), site, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, site, options.resolve, options.browser !== undefined && !options.browserPlain)),
     log,
     timeout,
     settleMs,

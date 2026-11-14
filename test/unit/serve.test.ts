@@ -274,6 +274,27 @@ describe('the queue on the page (TODO 3.3)', () => {
     expect(html).toContain('example.com/&lt;img src=x onerror=alert(1)&gt;');
   });
 
+  it("runs the settings file's N at once (TODO 3.4), and says on the page when the file asked for what it cannot run", async () => {
+    writeFileSync(join(data, 'settings.json'), '{"reviewsAtOnce": 9}');
+    const started: string[] = [];
+    const finish: (() => void)[] = [];
+    page = await servePage(data, (site) => new Promise((done) => {
+      started.push(site);
+      finish.push(() => done(null));
+    }));
+    expect(page.settings).toEqual({ reviewsAtOnce: 5, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
+    await raw(page.url, '/queue', form({ sites: 'a.example\nb.example\nc.example\nd.example\ne.example\nf.example' }, own()));
+    await vi.waitFor(() => expect(started).toHaveLength(5));
+    const html = await (await fetch(page.url)).text();
+    expect(html).toContain('<p>Up to 5 sites are reviewed at once.</p>');
+    expect(html).toContain('<p class="error">settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).</p>');
+    expect(states().filter((s) => s.endsWith('running'))).toHaveLength(5);
+    finish.shift()?.();
+    await vi.waitFor(() => expect(started).toHaveLength(6));
+    for (const f of finish.splice(0)) f();
+    await vi.waitFor(() => expect(states().every((s) => s.endsWith('done'))).toBe(true));
+  });
+
   it('a restart finds the entry a stop left running and reviews it again', async () => {
     writeFileSync(join(data, 'queue.json'), JSON.stringify({ sites: [{ id: 1, site: 'a.example', host: 'a.example', state: 'running' }] }));
     page = await servePage(data, fakeRun());

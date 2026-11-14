@@ -34,3 +34,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-028 | Tune-up pass 2 (TODO 2.7), saved for the reviewer; the core-update step ran, Core still at the stamp | measurement | `J-000-099.md` |
 | J-029 | `ghostreach serve`: the local page (TODO 3.2) | feature | `J-000-099.md` |
 | J-030 | The queue on the local page (TODO 3.3) | feature | `J-000-099.md` |
+| J-031 | Concurrency: up to N reviews at once, one Chromium (TODO 3.4) | feature | `J-000-099.md` |

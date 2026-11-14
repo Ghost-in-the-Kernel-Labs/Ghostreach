@@ -259,7 +259,8 @@ the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5
 `<data>/<host>-<date>/`, naming only the PDF's path to the salesperson (2.5). `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter, "What this review checked" moved last and opened in print (2.6); `src/pdf/brand.ts`
 (2.4, GR-012) is the PDF's cover and running footer, added only in print, so the page stays 1.6's. `src/project/serve.ts`
 (3.2) is the salesperson's local page on 127.0.0.1, the reviews with a PDF each linking it; `src/project/queue.ts` (3.3) the
-sites pasted there, kept in `queue.json` with a state each and reviewed one at a time.
+sites pasted there, kept in `queue.json` with a state each and reviewed up to N at once (3.4), never two of one host together;
+`src/project/settings.ts` (3.4, GR-008) the program's settings file, `<data>/settings.json`, and `ghostreach doctor`'s report.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
@@ -268,6 +269,7 @@ sites pasted there, kept in `queue.json` with a state each and reviewed one at a
 - `src/pdf/brand.ts`
 - `src/project/serve.ts`
 - `src/project/queue.ts`
+- `src/project/settings.ts`
 
 ## Traced, not copied: left unused by the cut
 
@@ -342,6 +344,11 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
 - `CrawlSettings.userAgent` folded into the constant `DEFAULT_USER_AGENT` (now in `src/leaf/report.ts`) at 1.4: no carried test
   sets it (the ruling grade's condition on J-016's choice, J-017). The crawl, the second look and the relaxed client name the
   same agent as before.
+- `CrawlOptions.browserPlain` (`src/crawl/options.ts`, read in `src/crawl/loop.ts`) at 3.4 (J-031): a browser given to the crawl
+  turns the relaxed robots.txt read off (G-609: it may use a proxy the relaxed request would not); the queue's shared Chromium
+  (RF-09, `sharedBrowser` in `src/project/crawl.ts`) is launched as the crawl launches its own, so it says so and the read stays on,
+  else a review run from the queue could not find SITE-37 where the command's own would. A new optional field; the parent's
+  callers, which never set it, behave as before.
 
 ## The flags stripped
 

@@ -22,10 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 3: the queue and the ranking
 
-### 3.4 Concurrency: up to five reviews at once
-
-Check: `test/unit/queue.test.ts`: N running and no more (default 3, ceiling 5, from the settings file), two entries of one host never together; `test/crawl/concurrent.spec.ts`: three fixture sites crawled together give the same findings as one after another; `ghostreach doctor` reports memory and the N it recommends.
-
 ### 3.5 SITE-22 under load, as 3.1 chose
 
 Check: the concurrent spec's SITE-22 result equals the serial run's.
