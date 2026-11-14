@@ -479,8 +479,8 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** Ghostreach's crawl, findings and audit are Suite Builder's at commit `a4c8045` (v1.39.0), copied under `src/` with every file and what it lost recorded in `docs/CUT.md`; the parent is never a dependency, and a later parent commit comes in only by a numbered resync item (TODO 1.7, 5.5).
 - **Why:** The parent changes daily and its flags moved on 2026-11-10 alone (RF-02); a salesperson's tool has to be the same tool tomorrow. Ghost's ask (2026-11-13): clone the crawl and audit as a new program.
 - **Held by:** `docs/CUT.md`, `test/unit/cut.test.ts` (TODO 1.1), `docs/CONTRACT.md` REV-07.
-- **Source:** drafted by an agent from Ghost's words in chat, 2026-11-13; the commit is the agent's choice; awaiting Ghost (TODO 0.5).
-- **Status:** proposed
+- **Source:** drafted by an agent from Ghost's words in chat, 2026-11-13; confirmed by Ghost in chat, 2026-11-14 ("The suite builder repo crawl should be copied"; "Only copy and reuse the code").
+- **Status:** in force
 - **See also:** GR-004
 - **subject:** cut
 
@@ -497,8 +497,8 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** Nothing of the parent's `src/kits/`, `src/model/` or its back ends is copied; no module generates a test, a page object, a locator or a project (`docs/modules.json` MOD-05).
 - **Why:** The review is the door and the suite is the sale (`docs/ROADMAP.md` §1); a free tool that wrote suites would undercut the thing it sells.
 - **Held by:** `docs/modules.json`, `test/test_modules.py`, `docs/CONTRACT.md` REV-08.
-- **Source:** drafted by an agent from Ghost's ask of 2026-11-13 (the crawl and audit only); awaiting Ghost (TODO 0.5).
-- **Status:** proposed
+- **Source:** drafted by an agent from Ghost's ask of 2026-11-13 (the crawl and audit only); confirmed by Ghost in chat, 2026-11-14 ("make the code here as lean as possible, and not give away suite builder functionality as far as we can").
+- **Status:** in force
 - **See also:** GR-002
 - **subject:** scope
 
