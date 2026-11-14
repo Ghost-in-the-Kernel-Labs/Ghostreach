@@ -22,13 +22,9 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.7 The discovery lane
-
-From 4.6 (J-037): the company lane is `src/project/company.ts` (no `leads` module yet); its lookups are kept in `<data>/companies.json`, one per company typed, each board found with its QA roles; a refused fetch now carries the answer's status (`Fetched`, `src/project/fetch.ts`), which a lane reads instead of the line's words. Its title rule (`isQaTitle`) and the address rule (`keptUrl`) are there to reuse.
-Check: recorded fixtures; one row per company; a source over its cap is skipped and named, never waited on.
-
 ### 4.8 Website resolution by the salesperson
 
+From 4.7 (J-038): the discovery lane is `src/project/discover.ts`; its saved search and last run are kept in `<data>/discovery.json`, one row per company (`DiscoveryRow`: company, title, a kept address, source, day, others counted). None of its four sources gives a website, and the company lane's lookups none either, so every company row is a row without a site; the company key is `companyWords` of `src/project/company.ts`.
 Check: `test/unit/hosts.test.ts` holds that no fetch leaves the allow-list; a company without a site shows a text box.
 
 ### 4.9 The paste lane

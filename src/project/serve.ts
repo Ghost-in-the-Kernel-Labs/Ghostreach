@@ -3,12 +3,12 @@
  * by Node's `http` (P-04, no framework) on 127.0.0.1 alone and opened in the browser. The PDF is the one artefact (TODO 2.5): the
  * page names and links a review's PDF only, never AUDIT.html, a JSON file or the crawl, and the server answers for nothing else
  * of the folder. Every name it shows comes from the data folder or the salesperson's paste and is written as text, never as
- * markup (P-16). The queue (3.3, `queue.ts`): a form posts the sites to `/queue`, a failed one's retry to `/queue/retry`; the
- * only two routes that take a POST, each from this page's own origin alone. No script runs in the page: while a site waits or
- * runs, the page reloads itself every few seconds (a meta refresh) and carries a reload link. The lead sources' keys (4.4, `keys.ts`):
- * each keyed source "key present" or "key absent", never a key. The company lane (4.6, `company.ts`): a form posts a company's name
- * or site to `/company`, guarded as the queue's are; the lookups kept are shown, each board's QA roles as text, a kept address
- * as a link; no board found offers the paste lane (4.9). The ranking (3.6) comes later.
+ * markup (P-16). Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
+ * failed one's retry to `/queue/retry`; while a site waits or runs, the page reloads itself (a meta refresh; no script runs in it).
+ * The keys (4.4, `keys.ts`): "key present" or "key absent", never a key. The company lane (4.6, `company.ts`): a company to `/company`,
+ * each board's QA roles as text, a kept address as a link, no board offering the paste lane (4.9). The discovery lane (4.7,
+ * `discover.ts`): the saved search edited at `/discover/search`, run at `/discover/run`, the last run's rows one per company and
+ * each skipped source named. The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
@@ -22,6 +22,7 @@ import { readSettings, type Settings } from './settings.js';
 import { keyStates } from './keys.js';
 import { keepLookup, lookUpCompany, readLookups, type CompanyLookup } from './company.js';
 import type { Transport } from './fetch.js';
+import { discover, keepRun, parseSearch, readDiscovery, saveSearch, type DiscoveryRow, type DiscoveryRun, type SavedSearch } from './discover.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -131,8 +132,29 @@ function lookupsList(lookups: readonly CompanyLookup[]): string {
   return `<ul>\n${rows.join('\n')}\n</ul>`;
 }
 
-/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company lane, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
-function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, lookups: readonly CompanyLookup[], said?: Said): string {
+/** One company found: its newest QA posting (a link when its address was kept), the source and day, and how many more. */
+function discoveryItem(row: DiscoveryRow): string {
+  const title = row.url ? `<a href="${esc(row.url)}" rel="noreferrer">${esc(row.title)}</a>` : esc(row.title);
+  const more = row.others ? `, and ${row.others} more posting${row.others === 1 ? '' : 's'}` : '';
+  return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${esc(row.source)}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span> <span class="state">no website given</span></li>`;
+}
+
+/** The discovery lane: the saved search's form, the run button, and the last run's rows and skipped sources. */
+function discoverySection(search: SavedSearch, run: DiscoveryRun | undefined, refused: string | undefined): string {
+  const form = `<form method="post" action="/discover/search">
+<p><label for="titles">Titles, one per line:</label></p><textarea id="titles" name="titles" rows="5">${esc(search.titles.join('\n'))}</textarea>
+<p><label for="location">A location, or remote:</label> <input id="location" name="location" type="text" maxlength="100" value="${esc(search.location)}"> <button>Save the search</button></p>
+</form>
+<form method="post" action="/discover/run"><p><button>Run the search</button></p></form>
+${refused ? `<p class="refused">${esc(refused)}</p>\n` : ''}`;
+  if (!run) return `${form}<p>The search has not run yet.</p>`;
+  const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${run.rows.length} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
+  const rows = run.rows.length ? `\n<ul>\n${run.rows.map(discoveryItem).join('\n')}\n</ul>` : '';
+  return `${form}${head}${rows}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(why)}</p>`).join('')}`;
+}
+
+/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company and discovery lanes, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
+function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, lookups: readonly CompanyLookup[], discovery: ReturnType<typeof readDiscovery>, said?: Said): string {
   const added = said?.added;
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
@@ -177,6 +199,9 @@ ${body}
 <p><input id="company" name="company" type="text" maxlength="200" placeholder="Acme Robotics, or acme.com"> <button>Look up</button></p>
 </form>
 ${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookupsList(lookups)}
+<h2>Who is hiring QA?</h2>
+<p>A saved search, run on request across every job board below whose key is set, within each board's own limits. One row per company.</p>
+${discoverySection(discovery.search, discovery.run, said?.searchRefused)}
 <h2>Lead sources</h2>
 <p>Each source that needs a key, and whether its key is set.</p>
 ${keysList()}
@@ -198,29 +223,31 @@ function answer(res: ServerResponse, status: number, text: string): void {
   res.end(`${text}\n`);
 }
 
-/** What a post did, said back on the page: the paste's queued and refused lines, or a company lookup refused. */
+/** What a post did, said back on the page: the paste's queued and refused lines, a company lookup refused, or a search refused. */
 interface Said {
   added?: Added;
   refused?: string;
+  searchRefused?: string;
 }
 
 /** The page as HTML. */
 function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, said?: Said): void {
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, readLookups(data), said));
+  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, readLookups(data), readDiscovery(data), said));
 }
 
 /** The most a form's body may hold: thousands of sites, and no more read into memory. */
 const MAX_BODY = 64 * 1024;
 
-/** The three POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry', '/company']);
+/** The five POST routes. */
+const POSTS = new Set(['/queue', '/queue/retry', '/company', '/discover/search', '/discover/run']);
 
-/** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the company lane's network (a test's). */
+/** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the lead finder's network and keys (a test's). */
 interface Served {
   settings: Settings;
   runner: QueueRunner;
   transport?: Transport;
+  env?: Readonly<Record<string, string | undefined>>;
 }
 
 /**
@@ -257,13 +284,27 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
       return;
     }
+    if (path === '/discover/search') {
+      const parsed = parseSearch(form.get('titles') ?? '', form.get('location') ?? '');
+      if ('refused' in parsed) return sendPage(data, settings, req, res, { searchRefused: parsed.refused });
+      saveSearch(data, parsed.search);
+      return sendPage(data, settings, req, res);
+    }
+    if (path === '/discover/run') {
+      // Every source is asked before the page answers; a source over its cap, without its key or failing is named, never waited on.
+      void discover(readDiscovery(data).search, { data, transport: served.transport, env: served.env }).then((run) => {
+        keepRun(data, run);
+        sendPage(data, settings, req, res);
+      }).catch(() => answer(res, 500, 'The search could not be run.'));
+      return;
+    }
     if (retry(data, Number(form.get('id')))) runner.kick();
     res.writeHead(303, { ...HEADERS, Location: '/' });
     res.end();
   });
 }
 
-/** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the queue's two forms, and nothing else. */
+/** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the five forms' posts, and nothing else. */
 function handle(data: string, served: Served, port: () => number, req: IncomingMessage, res: ServerResponse): void {
   const { settings } = served;
   // A page another site's script reaches through a name it points at 127.0.0.1 (DNS rebinding) carries that name: refused.
@@ -309,16 +350,17 @@ export interface ServedPage {
  * Serves the data folder's reviews and queue on 127.0.0.1 alone, on a free port the system picks. `run` reviews a queued site
  * (a test hands its own; else the command's own review, each in a context of the queue's one Chromium, closed when the page
  * stops); up to the settings file's number at once (GR-008). At start, an entry left `running` by a stop mid-review goes back to
- * `waiting` (`recover`) and the runner takes up what waits. `transport` is the company lane's network: a test's, else the platform's.
+ * `waiting` (`recover`) and the runner takes up what waits. `transport` is the lead finder's network and `env` where its keys are
+ * read: a test's, else the platform's and the process's.
  */
-export async function servePage(data: string, run?: ReviewRun, transport?: Transport): Promise<ServedPage> {
+export async function servePage(data: string, run?: ReviewRun, transport?: Transport, env?: Readonly<Record<string, string | undefined>>): Promise<ServedPage> {
   recover(data);
   // The settings file, read once at start (GR-008): how many reviews run at once, all of them in one Chromium (RF-09).
   const settings = readSettings(data);
   const shared = run ? null : sharedBrowser();
   const runner = queueRunner(data, run ?? reviewLine(data, shared?.get), settings.reviewsAtOnce);
   let bound = 0;
-  const server = createServer((req, res) => handle(data, { settings, runner, transport }, () => bound, req, res));
+  const server = createServer((req, res) => handle(data, { settings, runner, transport, env }, () => bound, req, res));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
   await new Promise<void>((done, fail) => {
     server.once('error', fail);

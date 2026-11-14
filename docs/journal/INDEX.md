@@ -41,3 +41,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-035 | Keys in code (TODO 4.4) | feature | `J-000-099.md` |
 | J-036 | One fetch function (TODO 4.5) | decision | `J-000-099.md` |
 | J-037 | The company lane (TODO 4.6) | decision | `J-000-099.md` |
+| J-038 | The discovery lane (TODO 4.7) | decision | `J-000-099.md` |

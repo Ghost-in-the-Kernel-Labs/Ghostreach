@@ -150,8 +150,11 @@ export interface Candidates {
   companyDomain: string | null;
 }
 
-/** A name's words: accents folded, lowercase, split on anything not a letter or digit, its legal form dropped from the end. */
-function words(name: string): string[] {
+/**
+ * A name's words: accents folded, lowercase, split on anything not a letter or digit, its legal form dropped from the end. The
+ * discovery lane's company key is these words joined by a space (`discover.ts`).
+ */
+export function companyWords(name: string): string[] {
   const all = name.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
   while (all.length > 1 && LEGAL.has(all[all.length - 1])) all.pop();
   return all;
@@ -187,7 +190,7 @@ export function candidateSlugs(typed: string): Candidates {
     companyDomain = own.join('.');
     slugs = [own[0], own[0].replace(/-/g, '')];
   } else {
-    const named = words(text);
+    const named = companyWords(text);
     slugs = [named.join(''), named.join('-')];
   }
   return { slugs: [...new Set(slugs)].filter((s) => SLUG.test(s)).slice(0, MAX_SLUGS), companyDomain };
@@ -224,7 +227,7 @@ const under = (host: string, domain: string): boolean => host === domain || host
  * the source's own posting domain or the company's typed domain; anything else is not kept (undefined), and the title is shown
  * without a link. Never fetched: the salesperson may open it.
  */
-export function keptUrl(url: unknown, board: Board, companyDomain: string | null): string | undefined {
+export function keptUrl(url: unknown, board: Pick<Board, 'postingDomain'>, companyDomain: string | null): string | undefined {
   if (typeof url !== 'string' || !URL.canParse(url)) return undefined;
   const address = new URL(url);
   if (address.protocol !== 'https:' || address.port !== '' || address.username !== '' || address.password !== '') return undefined;
@@ -234,7 +237,7 @@ export function keptUrl(url: unknown, board: Board, companyDomain: string | null
 }
 
 /** A title as kept: plain text on one line, control characters gone, at most `MAX_TITLE` characters. */
-function cleanTitle(title: string): string {
+export function cleanTitle(title: string): string {
   const line = title.replace(/[\u0000-\u001f\u007f-\u009f]+/g, ' ').replace(/\s+/g, ' ').trim();
   return line.length > MAX_TITLE ? `${line.slice(0, MAX_TITLE - 1)}…` : line;
 }

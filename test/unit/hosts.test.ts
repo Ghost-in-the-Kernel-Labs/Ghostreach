@@ -42,7 +42,7 @@ const EXEMPT: Record<string, string> = {
 const FETCH_FUNCTION = 'src/project/fetch.ts fetch';
 
 /** The lead finder's files in src/project/ (no `leads` module until Ghost rules, HANDOFF "For Ghost" I). */
-const LEAD_FINDER = ['src/project/keys.ts', 'src/project/fetch.ts', 'src/project/company.ts'];
+const LEAD_FINDER = ['src/project/keys.ts', 'src/project/fetch.ts', 'src/project/company.ts', 'src/project/discover.ts'];
 
 /** Each network use found in src/ outside the crawl, as `<file> <name>`. */
 function uses(): string[] {
