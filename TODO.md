@@ -18,9 +18,13 @@ question a later item depends on is copied into that item's text, so the item re
 
 ### 2.3 src/pdf: the audit HTML as a PDF
 
+Builds `src/pdf/pdf.ts` at US Letter (GR-006, Ghost's, J-022).
+
 Check: a PDF exists after `ghostreach <fixture>`, at the size 2.1 chose; the test's PDF reader recovers every finding heading.
 
 ### 2.4 The brand: cover page and footer
+
+The address is `github.com/ghost-in-the-kernel` (GR-012, Ghost's, J-022), one constant under `src/leaf/`.
 
 Check: `test/unit/words.test.ts` finds the address 2.2 chose on every page's text and no banned word (P-18).
 
@@ -151,18 +155,6 @@ Check: `docs/when/tune-up.md` followed in full; the metrics table written; the n
 Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
 Moved: from Phase 1
 Check: `docs/when/tune-up.md` followed in full.
-
-### 2.1 Page size: Letter or A4 (GR-006)
-
-Waits on: Ghost's choice.
-Moved: from Phase 2
-Check: `theGhost.md` GR-006 in force naming one size; 2.3 builds it.
-
-### 2.2 The GitHub address the PDF carries
-
-Waits on: Ghost's choice between `github.com/ghost-in-the-kernel` and `github.com/Ghost-in-the-Kernel-Labs`.
-Moved: from Phase 2
-Check: the address written into 2.4's cover page and footer.
 
 ### 3.1 SITE-22 under load (GR-008)
 
