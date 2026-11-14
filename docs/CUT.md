@@ -527,7 +527,7 @@ banned-words,made-up-keys,review-reports,secret-shapes-before-gate}.ts`; `test/g
 `test/fixture-site/server.ts` and `test/fixture-site/pages/*.html`; `playwright.config.ts`. Written by the parent's code, not
 copied: `test/golden/fixture-site.findings.json` and `test/golden/fixture-site.AUDIT.html` (`scripts/parent-findings.mjs`).
 Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden,pdf}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
-resync block's `own`), `test/support/{audit-golden,pin,pdf-text}.ts` and `test/crawl/ghostreach.spec.ts`.
+resync block's `own`), `test/support/{audit-golden,pin,pdf-text,pdf-syntax}.ts` and `test/crawl/ghostreach.spec.ts`.
 
 ## The resync recipe
 
