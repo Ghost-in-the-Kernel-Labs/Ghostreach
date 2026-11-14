@@ -51,3 +51,9 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: the check names a unit-folder file for a check that needs the real Chromium, and nothing said how a file under `test/unit/` runs a browser only in the integration project (`vitest.config.ts` says the unit project leaves browsers out, not how a test opts in).
 - **Suggestions**: the switch now exists (`REAL_BROWSER`, set by the integration project); a line for it in the stack README beside the `*.int.test.ts` rule.
 
+### 2026-11-14 · TODO 2.5, the PDF is the one artefact · Opus
+
+- **Task**: nothing the salesperson sees names `AUDIT.html` or the review's JSON files; the check's parts on the local page and the sales guide, both later items, handled by `TODO.md`'s rules.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `src/cli/main.ts`, `src/project/review.ts`, `src/pdf/pdf.ts`, `src/pdf/brand.ts`, `src/project/crawl.ts`, `test/unit/main.test.ts`, `test/crawl/ghostreach.spec.ts`, `docs/paths/process.md`, `docs/DONE.md`, `scripts/checks/todo.py`, `docs/CUT.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: `TODO.md` says an open question a later item depends on is copied into its text, but not what to do with a check whose parts name files later items create; the precedent (0.5, 1.1) had to be found in `docs/DONE.md`.
+- **Suggestions**: one sentence in `TODO.md`'s header: a check naming a later item's file is met vacuously and its condition copied into that item's text and check.

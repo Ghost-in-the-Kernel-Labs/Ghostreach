@@ -74,7 +74,7 @@ export interface ReviewRequest {
 
 /**
  * Reviews a site: 0 and the folder when the review was written; 1 or 2 when it was not (not an address, a failed crawl, a start
- * page that did not answer), the crawl kept in the folder for a look all the same.
+ * page that did not answer), the crawl kept in the folder all the same, for the program's own use.
  */
 // Invariant: REV-06
 export async function review(request: ReviewRequest): Promise<{ code: number; folder?: string }> {
@@ -99,15 +99,19 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   const report = auditedCrawl(out);
   const no = refused(report);
   if (no) {
-    request.say(`No review was written: ${no.why}. The crawl is kept: ${out}`);
+    // The crawl stays in the folder for the program's own use; the salesperson is shown the PDF's path alone (TODO 2.5).
+    request.say(`No review was written: ${no.why}.`);
     return { code: no.code, folder };
   }
   const { file, findings } = writeAudit(report, folder, started);
   writeFileSync(join(folder, 'findings.json'), `${JSON.stringify(findings, null, 2)}\n`);
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
-  await printPdf(file, join(folder, pdfName(summary.host)), { site: summary.host, date: day });
+  const pdf = join(folder, pdfName(summary.host));
+  await printPdf(file, pdf, { site: summary.host, date: day });
   const { major, minor } = summary.bySeverity;
-  request.say(`The review of ${summary.host}: ${findings.length} finding${findings.length === 1 ? '' : 's'} (${major} major, ${minor} minor), ${summary.pagesRead} page${summary.pagesRead === 1 ? '' : 's'} read. ${folder}`);
+  // The PDF is the one artefact (TODO 2.5): the one path the salesperson is shown; AUDIT.html, the JSON files and the crawl stay
+  // in the folder for the program's own use (REV-06) and are never named.
+  request.say(`The review of ${summary.host}: ${findings.length} finding${findings.length === 1 ? '' : 's'} (${major} major, ${minor} minor), ${summary.pagesRead} page${summary.pagesRead === 1 ? '' : 's'} read. ${pdf}`);
   return { code: 0, folder };
 }

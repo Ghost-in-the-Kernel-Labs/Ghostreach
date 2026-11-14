@@ -16,10 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 2: the PDF
 
-### 2.5 The PDF is the one artefact
-
-Check: the local UI and the guide link only to the PDF; `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty.
-
 ### 2.6 "What this review checked" closes the PDF
 
 Check: the count of checks listed equals the catalogue's length minus the absent SITE-36.
@@ -32,7 +28,8 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ### 3.2 ghostreach serve: the local page
 
-Check: the test fetches the page; it binds to `127.0.0.1` only.
+Carried from 2.5 (J-026): the PDF is the one artefact; the page links to and names a review's PDF only, never `AUDIT.html`, `findings.json`, `summary.json` or the crawl file, which stay in the folder for the program's own use (REV-06).
+Check: the test fetches the page; it binds to `127.0.0.1` only; no link or text of the page names `AUDIT.html` or a review's JSON file.
 
 ### 3.3 The queue
 
@@ -116,7 +113,8 @@ Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read
 
 ### 5.3 docs/SALES-GUIDE.md
 
-Check: a reader who is not Ghost follows it on a clean machine and reaches a PDF, recorded as a finding (P-03).
+Carried from 2.5 (J-026): the guide links to and names the PDF only, never `AUDIT.html` or a review's JSON files.
+Check: `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty; a reader who is not Ghost follows it on a clean machine and reaches a PDF, recorded as a finding (P-03).
 
 ### 5.4 Ten real audits read
 

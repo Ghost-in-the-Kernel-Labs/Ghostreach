@@ -29,6 +29,21 @@ const portable = (text: string, site: FixtureSite) => text.split(site.origin).jo
 const textOf = (fragment: string) =>
   fragment.replace(/<[^>]*>/g, '').replace(/&(lt|gt|quot|amp);/g, (_, e: string) => ({ lt: '<', gt: '>', quot: '"', amp: '&' })[e] ?? '');
 
+/** The files of a review's folder the program keeps for its own use (REV-06), never named to the salesperson (TODO 2.5). */
+const UNNAMED = /AUDIT\.html|findings\.json|summary\.json|\.crawl\.json/;
+
+/** Runs the command as the salesperson does, keeping every line it prints: its exit code and the lines. */
+async function run(argv: string[], into: string): Promise<{ code: number; lines: string[] }> {
+  const lines: string[] = [];
+  const log = console.log;
+  console.log = (...args: unknown[]) => void lines.push(args.map(String).join(' '));
+  try {
+    return { code: await main(argv, into), lines };
+  } finally {
+    console.log = log;
+  }
+}
+
 let site: FixtureSite | undefined;
 let data: string | undefined;
 test.afterEach(async () => {
@@ -42,7 +57,8 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   data = mkdtempSync(join(tmpdir(), 'ghostreach-data-'));
   const today = () => new Date().toISOString().slice(0, 10);
   const before = today();
-  expect(await main([`${site.origin}/`], data)).toBe(0);
+  const { code, lines } = await run([`${site.origin}/`], data);
+  expect(code).toBe(0);
 
   // The day the crawl started (a run across midnight UTC names the first day).
   const day = readdirSync(data).length === 1 && readdirSync(data)[0] === `127.0.0.1-${today()}` ? today() : before;
@@ -50,6 +66,14 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   expect(readdirSync(data)).toEqual([`127.0.0.1-${day}`]);
   // REV-06: the crawl kept beside the audit, and nothing else written.
   expect(readdirSync(folder).sort()).toEqual(['127.0.0.1 site review.pdf', '127.0.0.1.crawl.json', 'AUDIT.html', 'findings.json', 'summary.json']);
+  // TODO 2.5: the PDF is the one artefact. Of the folder's files, the salesperson is shown the PDF's path alone, on the last line.
+  const pdf = join(folder, '127.0.0.1 site review.pdf');
+  expect(lines.at(-1)).toMatch(/^The review of 127\.0\.0\.1: 6 findings \(2 major, 4 minor\), \d+ pages read\. /);
+  expect(lines.at(-1)?.endsWith(`read. ${pdf}`)).toBe(true);
+  for (const line of lines) {
+    expect(line).not.toMatch(UNNAMED);
+    expect(line.split(pdf).join('')).not.toContain(folder);
+  }
 
   // REV-07: the findings, in order and word for word, are the parent's for the fixture.
   const findings = portable(readFileSync(join(folder, 'findings.json'), 'utf8'), site);
@@ -106,4 +130,20 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   expect(text).not.toMatch(/ghostreach/i);
   // The crawler kept to robots.txt and never asked for the PDF, as the parent's does.
   expect(site.pagePaths().filter((p) => p.startsWith('/private/') || p.endsWith('.pdf'))).toEqual([]);
+});
+
+test('ghostreach <site> that does not answer: no review, and no file of the folder named (TODO 2.5)', async () => {
+  test.setTimeout(120_000);
+  site = await startFixtureSite();
+  const origin = site.origin;
+  await site.close();
+  site = undefined;
+  data = mkdtempSync(join(tmpdir(), 'ghostreach-data-'));
+  const { code, lines } = await run([`${origin}/`], data);
+  expect(code).toBe(2);
+  expect(lines.at(-1)).toMatch(/^No review was written: .*\.$/);
+  for (const line of lines) {
+    expect(line).not.toMatch(UNNAMED);
+    expect(line).not.toContain(data);
+  }
 });

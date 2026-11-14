@@ -21,6 +21,9 @@ describe('ghostreach <site> (GR-003: no flag)', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(await main(['--help'])).toBe(0);
     expect(said()[0]).toMatch(/^ghostreach <site>/);
+    // TODO 2.5: the PDF is the one artefact; the help names no other file of the review's folder.
+    expect(said()[0]).toContain('PDF');
+    expect(said()[0]).not.toMatch(/AUDIT\.html|\.json/);
   });
   it('any other option is refused as a missing site', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
