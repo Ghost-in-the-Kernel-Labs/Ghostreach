@@ -30,7 +30,7 @@ SUITE_SIDE = re.compile(r"^src/(kits|model|targets|bench|truth|theme|guide|sec)/
 CARRIED_FROM_MODEL = {"src/model/links-to-look.ts"}
 OPTION = re.compile(r"^\s+'?([a-z][a-z0-9-]*)'?: \{ type: '(?:string|boolean)'(.*)\},?$", re.M)
 FLAG_WORD = re.compile(r"(?<![\w-])--([a-z][a-z0-9]*(?:-[a-z0-9]+)*)\b")
-PIN_SITES = ("docs/CUT.md", "test/unit/cut.test.ts", "test/unit/audit-golden.test.ts", "scripts/parent-findings.mjs")
+PIN_SITES = ("docs/CUT.md",)
 
 
 def git(parent: Path, *args: str) -> str:

@@ -1,8 +1,9 @@
 // The parent's own findings and audit page for its fixture crawl (TODO 1.5, 1.6, REV-07): Suite Builder's siteFindings and
 // auditHtml at the pinned commit, run by the parent's code, never this program's, over the parent's crawl of its fixture site;
 // written to test/golden/fixture-site.findings.json and test/golden/fixture-site.AUDIT.html, which test/crawl/ghostreach.spec.ts
-// and test/unit/audit-golden.test.ts compare this program's review with. Run from the repository root:
-//   git -C <parent> archive a4c8045 src test/golden/fixture-site.crawl.json | tar -x -C <dir>
+// and test/unit/audit-golden.test.ts compare this program's review with. Run from the repository root, <pin> docs/CUT.md's
+// `Parent commit:` line:
+//   git -C <parent> archive <pin> src test/golden/fixture-site.crawl.json | tar -x -C <dir>
 //   node scripts/parent-findings.mjs <dir> > test/golden/fixture-site.findings.json
 //   node scripts/parent-findings.mjs <dir> audit > test/golden/fixture-site.AUDIT.html
 // The audit page is the parent's bare `suite audit <site>`'s (auditHtml's defaults: not short, no expected links, no lists),

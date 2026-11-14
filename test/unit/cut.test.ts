@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { pinIn } from '../support/pin.js';
 
 // docs/CUT.md held to src/ (GR-002, docs/ROADMAP.md §5): every copied file is listed, nothing of the suite side is, and no
 // file names a flag the document says was stripped; and every listed file is copied (1.2 turned that check from `it.fails`
@@ -39,7 +40,7 @@ interface Cut {
 /** docs/CUT.md as data: its parent commit, its file rows, Ghostreach's own files, and the flags it says are stripped. */
 function parseCut(text: string): Cut {
   return {
-    commit: /^Parent commit: `([0-9a-f]{7,40})`/m.exec(text)?.[1] ?? null,
+    commit: pinIn(text),
     files: rows(section(text, 'The files')).map(([parent, here]) => ({ parent: unquote(parent), here: unquote(here) })),
     own: section(text, "Ghostreach's own files").filter((l) => l.startsWith('- `')).map((l) => unquote(l.slice(2))),
     stripped: rows(section(text, 'The flags stripped')).filter((r) => r[2] === 'stripped').map((r) => unquote(r[0])),
@@ -78,14 +79,20 @@ function testsUnaccounted(text: string, present: string[]): string[] {
   ];
 }
 
+/** The commit GR-002's decision line names (`at commit `<hash>``), Ghost's text: a resync's bump is owed there (docs/CUT.md). */
+function gr002Pin(text: string): string | null {
+  return /^### GR-002:.*\n- \*\*Decision:\*\*.*?at commit `([0-9a-f]{7,40})`/m.exec(text)?.[1] ?? null;
+}
+
 const cut = parseCut(read('docs/CUT.md'));
 const unitTests = fs.readdirSync(new URL('test/unit/', ROOT)).filter((f) => f.endsWith('.test.ts'));
 const modules = Object.values((JSON.parse(read('docs/modules.json')) as { modules: Record<string, { folder: string }> }).modules).map((m) => `${m.folder}/`);
 const sources = fs.readdirSync(new URL('src/', ROOT), { recursive: true, encoding: 'utf8' }).map((f) => `src/${f.replace(/\\/g, '/')}`).filter((f) => /\.(ts|mts|js|mjs)$/.test(f));
 
 describe('docs/CUT.md (GR-002)', () => {
-  it('names the parent commit, a4c8045', () => {
-    expect(cut.commit).toBe('a4c8045');
+  it('names the parent commit, the one GR-002 names', () => {
+    expect(cut.commit).toMatch(/^[0-9a-f]{7,40}$/);
+    expect(cut.commit).toBe(gr002Pin(read('theGhost.md')));
   });
   it('lists the files to copy, each once, each into a module folder of docs/modules.json', () => {
     expect(cut.files.length).toBeGreaterThan(100);
@@ -127,6 +134,12 @@ describe('the checks catch what they are for (planted breaks)', () => {
       '| `--sec` | the guards | at 1.3 |',
     ].join('\n'),
   );
+  it('reads the pin and the commit GR-002 names, so a pin GR-002 does not name is refused', () => {
+    const decision = '### GR-002: the cut point\n- **Decision:** the parent at commit `a4c8045` (v1.39.0), copied';
+    expect(planted.commit).toBe('a4c8045');
+    expect(gr002Pin(decision)).toBe('a4c8045');
+    expect(pinIn('Parent commit: `0123abc`')).not.toBe(gr002Pin(decision));
+  });
   it('reads the rows, the own files and only the flags marked stripped', () => {
     expect(planted.files.map((f) => f.here)).toEqual(['src/audit/bugs.ts', 'src/audit/links-to-look.ts', 'src/findings/findings.ts']);
     expect(planted.own).toEqual(['src/cli/main.ts']);

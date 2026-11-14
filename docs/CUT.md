@@ -517,6 +517,17 @@ file differs from the parent's golden crawl only in fields a cut or the bare def
 audit's pace, settle and second look where the parent's crawl spec ran with none); every other field, and the order of every key,
 is the parent's (a structural diff, J-019).
 
+## The test side, in one place
+
+What 1.4 to 1.6 copied from the pin outside `src/`, each said in full in its item's section above (tune-up pass 1, after the
+debriefs of 1.4 and 1.7): the carried `test/unit/*.test.ts` (1.4's list) and `test/unit/taint.ts`; `test/support/{audit-crawls,
+banned-words,made-up-keys,review-reports,secret-shapes-before-gate}.ts`; `test/golden/{fixture,frames,library}-site.crawl.json`
+(the parent's `portable` crawls, origin rewritten: compare a crawl, never a page, 1.6); `test/data/address-reach.json`;
+`test/fixture-site/server.ts` and `test/fixture-site/pages/*.html`; `playwright.config.ts`. Written by the parent's code, not
+copied: `test/golden/fixture-site.findings.json` and `test/golden/fixture-site.AUDIT.html` (`scripts/parent-findings.mjs`).
+Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
+resync block's `own`), `test/support/{audit-golden,pin}.ts` and `test/crawl/ghostreach.spec.ts`.
+
 ## The resync recipe
 
 A later parent commit comes in only by this recipe (GR-002; TODO 1.7, 5.5), mechanically. `scripts/resync_moves.py` lists
@@ -540,8 +551,10 @@ Over the parent's diff from the pin to the target, each changed file is one move
    `src/cli/parse.ts`), or a `--word` on a copied file's new line: fixed at its bare default, a row in the flags table (P-15).
    `strip`: a new line naming a stripped flag, applied without it.
 
-Then, for any move or none: the pin bumped in this file, `test/unit/cut.test.ts`, `PIN` in `test/unit/audit-golden.test.ts` and
-`scripts/parent-findings.mjs`'s header; GR-002's text names the pin and is Ghost's, so its change is listed as owed, never made;
+Then, for any move or none: the pin bumped in this file's `Parent commit:` line, the one place it is written (`test/support/pin.ts`
+reads it for `test/unit/cut.test.ts` and `test/unit/audit-golden.test.ts`; `scripts/parent-findings.mjs` says `<pin>`); GR-002's
+text names the pin and is Ghost's, so its change is listed as owed, never made, and `test/unit/cut.test.ts`, which holds this
+file's pin to GR-002's, stays red until Ghost makes it;
 1.5 and 1.6 rerun, three runs: `scripts/parent-findings.mjs` from the new pin's archive (the findings, and `audit` for the page),
 or `UPDATE_GOLDEN=1 npx vitest run --project unit test/unit/audit-golden.test.ts` for the page (it archives the parent at `PIN`),
 each golden re-recorded only from the parent's code; then the unit project and `npx playwright test`. A sentence `ALLOWED`

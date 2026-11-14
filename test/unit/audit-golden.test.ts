@@ -14,8 +14,8 @@ import { auditHtml } from '../../src/audit/audit.js';
 import { siteFindings } from '../../src/findings/findings.js';
 import { auditedCrawl } from '../../src/project/crawl.js';
 import { ALLOWED, GOLDEN_AUDIT, GOLDEN_WHEN, asParent, parentAudit } from '../support/audit-golden.js';
+import { PIN } from '../support/pin.js';
 
-const PIN = 'a4c8045';
 const root = resolve(new URL('../../', import.meta.url).pathname);
 
 if (process.env.UPDATE_GOLDEN === '1') {
