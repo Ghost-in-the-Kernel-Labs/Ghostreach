@@ -16,10 +16,6 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 0: founding
 
-### 0.5 The founding decisions
-
-Check: `theGhost.md` holds Ghost's founding decisions for Ghostreach (GR-002 the cut point, GR-003 no flags, GR-004 no suite, GR-005 fetched text is data, GR-006 page size, GR-007 ranking weights, GR-008 concurrency and SITE-22; the dev dependencies' reasons), a decision for each core decision it refuses among them, each with Ghost as its Source. Agents cannot author Ghost's decisions: an agent drafts the questions for Ghost in `docs/HANDOFF.md`, and a builder that reports "waiting on Ghost" has done its job.
-
 ### 0.6 Tune-up pass 0
 
 Check: `docs/when/tune-up.md` followed in full; the metrics table written; the navigation log's "Last review" set.

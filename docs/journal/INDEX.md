@@ -12,3 +12,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-006 | Tune-up commit 1, at eight commits after the stamp | measurement | `J-000-099.md` |
 | J-007 | The stamp's loose ends fixed, on Ghost's word | contradiction | `J-000-099.md` |
 | J-008 | Ghost's rulings on the cut, and autonomous development | direction | `J-000-099.md` |
+| J-009 | The founding decisions closed (TODO 0.5) | feature | `J-000-099.md` |
