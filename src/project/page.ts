@@ -50,14 +50,15 @@ function addedNotice(added: Added | undefined): string {
   return `${queued}${refused ? `\n<ul>\n${refused}\n</ul>` : ''}`;
 }
 
-/** The queue in pasted order, each site with its state; a failed one with its error line and a retry button. */
+/** The queue in pasted order, each site with its state and, from the lead finder, its reason (4.10); a failed one with its error line and a retry button. */
 function queueList(sites: readonly QueueEntry[]): string {
   if (!sites.length) return '<p>No site queued.</p>';
   const rows = sites.map((e) => {
     const failed = e.state === 'failed'
       ? ` <span class="error">${esc(e.error ?? '')}</span> <form method="post" action="/queue/retry"><input type="hidden" name="id" value="${e.id}"><button>Retry</button></form>`
       : '';
-    return `<li>${esc(e.site)} <span class="state">${e.state}</span>${failed}</li>`;
+    const reason = e.reason ? ` <span class="day">from ${esc(e.reason.source)}${e.reason.url ? `: <a href="${esc(e.reason.url)}" rel="noopener noreferrer">posting</a>` : ''}</span>` : '';
+    return `<li>${esc(e.site)} <span class="state">${e.state}</span>${reason}${failed}</li>`;
   });
   return `<ol>\n${rows.join('\n')}\n</ol>`;
 }
@@ -76,7 +77,7 @@ function keysList(): string {
 /** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company and discovery lanes, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
 export function reviewsPage(view: View, said?: Said): string {
   const { reviews, sites, settings, lookups, discovery } = view;
-  const companies: Rows = { notes: view.notes, refused: said?.row };
+  const companies: Rows = { notes: view.notes, refused: said?.row, reviews, sites };
   const added = said?.added;
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';

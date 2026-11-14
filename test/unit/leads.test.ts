@@ -4,7 +4,7 @@
  * site's posting pasted (4.9), kept as a note and never fetched. No network: the page's lead finder is handed a transport that
  * records every call, and the one fetch function is watched (`fetchSource`, spied on as the module is loaded); neither is called.
  */
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -14,6 +14,8 @@ import { companiesFile, type CompanyLookup } from '../../src/project/company.js'
 import { fetchSource, type Transport } from '../../src/project/fetch.js';
 import { CLOSED_SITES, companyKey, keepPosting, keepWebsite, postingsOf, readNotes, websiteOf } from '../../src/project/leads.js';
 import { parseSources, sourcesText } from '../support/sources.js';
+import { queueFile, readQueue } from '../../src/project/queue.js';
+import { pdfName } from '../../src/project/review.js';
 import { servePage, type ServedPage } from '../../src/project/serve.js';
 
 // The one fetch function, watched: every module of the program that imports it gets this spy.
@@ -46,7 +48,7 @@ const RUN: DiscoveryRun = {
 /** A company lane lookup typed as a site, and one typed as a name, as `keepLookup` writes them. */
 const LOOKUPS: CompanyLookup[] = [
   { asked: 'initech.com', at: '2026-11-14T10:00:00.000Z', slugs: ['initech'], boards: [], unanswered: [] },
-  { asked: 'Hooli', at: '2026-11-14T09:00:00.000Z', slugs: ['hooli'], boards: [], unanswered: [] },
+  { asked: 'Hooli', at: '2026-11-14T09:00:00.000Z', slugs: ['hooli'], boards: [{ source: 'Greenhouse', slug: 'hooli', open: 3, roles: [{ title: 'Test Lead' }, { title: 'QA Engineer', url: 'https://boards.greenhouse.io/hooli/jobs/1' }] }], unanswered: [] },
 ];
 
 /** A raw form post, as the page's own browser sends it unless said otherwise (`null`: no `Origin`). */
@@ -175,5 +177,69 @@ describe('the paste lane (TODO 4.9)', () => {
       expect((await post(page.url, '/company/posting', { company: 'Hooli', posting: POSTING }, origin)).status).toBe(403);
     }
     expect(readNotes(data)).toEqual({});
+  });
+});
+
+describe('queue this site (TODO 4.10)', () => {
+  const button = (name: string, lane: string): string => `<form method="post" action="/queue/lead"><input type="hidden" name="company" value="${name}"><input type="hidden" name="lane" value="${lane}"><button>Queue this site</button></form>`;
+  /** The queue's review, held until the test lets it go, so an entry stays running. */
+  let release = (): void => {};
+  const held = async (): Promise<string | null> => new Promise((done) => (release = () => done(null)));
+
+  it('puts a discovery row\'s website into the queue in one click, the lead\'s source and posting its reason; the row then says so', async () => {
+    keepWebsite(data, 'ACME Robotics', 'acme-robotics.com');
+    page = await servePage(data, held, transport, {});
+    expect(await (await fetch(page.url)).text()).toContain(button('ACME Robotics', 'discovery'));
+    const res = await post(page.url, '/queue/lead', { company: 'ACME Robotics', lane: 'discovery' });
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('1 site queued.');
+    expect(readQueue(data).map(({ site, reason }) => ({ site, reason }))).toEqual([
+      { site: 'https://acme-robotics.com', reason: { source: 'Remotive', url: 'https://remotive.com/remote-jobs/qa/qa-engineer-1' } },
+    ]);
+    expect(res.text).toContain('<span class="day">from Remotive: <a href="https://remotive.com/remote-jobs/qa/qa-engineer-1" rel="noopener noreferrer">posting</a></span>');
+    expect(res.text).not.toContain(button('ACME Robotics', 'discovery'));
+    expect((await (await fetch(page.url)).text())).toContain('<span class="state">in the queue</span>');
+    release();
+    expect(calls).toEqual([]);
+  });
+
+  it('puts a company lane row\'s website in with its board and QA role, or the lane, as its reason', async () => {
+    keepWebsite(data, 'Hooli', 'hooli.example');
+    page = await servePage(data, held, transport, {});
+    await post(page.url, '/queue/lead', { company: 'Hooli', lane: 'company' });
+    await post(page.url, '/queue/lead', { company: 'initech.com', lane: 'company' });
+    expect(readQueue(data).map(({ site, reason }) => ({ site, reason }))).toEqual([
+      { site: 'https://hooli.example', reason: { source: 'Greenhouse', url: 'https://boards.greenhouse.io/hooli/jobs/1' } },
+      { site: 'https://initech.com', reason: { source: 'company lane' } },
+    ]);
+    release();
+  });
+
+  it('shows a company already reviewed as reviewed, its day and PDF, and no score, in place of the button', async () => {
+    keepWebsite(data, 'ACME Robotics', 'https://www.acme-robotics.com/');
+    mkdirSync(join(data, 'acme-robotics.com-2026-11-10'));
+    writeFileSync(join(data, 'acme-robotics.com-2026-11-10', pdfName('acme-robotics.com')), '%PDF-1.7\n%%EOF\n');
+    page = await servePage(data, held, transport, {});
+    const html = await (await fetch(page.url)).text();
+    expect(html).toContain('<span class="state">reviewed 2026-11-10, <a href="/reviews/acme-robotics.com-2026-11-10/acme-robotics.com%20site%20review.pdf">PDF</a></span>');
+    expect(html).not.toContain(button('ACME Robotics', 'discovery'));
+    expect(html).not.toMatch(/score/i);
+  });
+
+  it('refuses a row with no website, and a post from another origin or none, queueing nothing', async () => {
+    keepWebsite(data, 'Globex Corporation', 'globex.example');
+    page = await servePage(data, held, transport, {});
+    expect((await post(page.url, '/queue/lead', { company: 'Hooli', lane: 'company' })).text).toContain('<p class="refused">No website kept for this company.</p>');
+    expect((await post(page.url, '/queue/lead', { company: 'Nobody', lane: 'discovery' })).status).toBe(200);
+    for (const origin of [null, 'null', 'http://evil.example']) {
+      expect((await post(page.url, '/queue/lead', { company: 'Globex Corporation', lane: 'discovery' }, origin)).status).toBe(403);
+    }
+    expect(readQueue(data)).toEqual([]);
+  });
+
+  it('reads a queue written before, with no reason, and shows it as it was', async () => {
+    writeFileSync(queueFile(data), JSON.stringify({ sites: [{ id: 1, site: 'a.example', host: 'a.example', state: 'failed', error: 'stopped' }] }));
+    page = await servePage(data, held, transport, {});
+    expect(await (await fetch(page.url)).text()).toContain('<li>a.example <span class="state">failed</span> <span class="error">stopped</span>');
   });
 });

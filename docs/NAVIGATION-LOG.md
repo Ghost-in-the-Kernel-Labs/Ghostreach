@@ -106,3 +106,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `TODO.md`, `docs/ROADMAP.md`, `docs/SOURCES.md`, `src/project/leads.ts`, `src/project/page-leads.ts`, `src/project/serve.ts`, `test/unit/leads.test.ts`, `test/unit/hosts.test.ts`, `test/unit/company.test.ts`, `docs/DONE.md`.
 - **Complaints**: none.
 - **Suggestions**: none.
+
+### 2026-11-14 · TODO 4.10, queue this site · Opus
+
+- **Task**: "Queue this site" on a company row with a website, the lead's source and URL the queue entry's reason; a reviewed company shown as reviewed, no score (GR-007 waits).
+- **Opened**: `TODO.md`, `docs/ROADMAP.md`, `src/project/queue.ts`, `src/project/leads.ts`, `src/project/page-leads.ts`, `src/project/page.ts`, `src/project/serve.ts`, `test/unit/serve.test.ts`, `test/unit/leads.test.ts`, `docs/DONE.md`.
+- **Complaints**: the item's check names a score that a Phase W item (3.6, GR-007) owns; the item's text does not say so.
+- **Suggestions**: an item whose check depends on an item in Phase W carries a `From` line naming it, as the chain's rule asks for open questions.

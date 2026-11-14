@@ -8,10 +8,15 @@
  * The paste lane (TODO 4.9, RF-06): a posting the salesperson saw on a closed site (LinkedIn, Indeed, Glassdoor, ZipRecruiter;
  * docs/SOURCES.md's `paste only` rows) is kept on its company's row as a note, its address alone, and never fetched: nothing here
  * imports the fetch function, and the page shows the address as text in a link the salesperson may open.
+ *
+ * "Queue this site" (TODO 4.10): a row with a website goes into the queue (3.3) with the lead as its reason (`leadOf`), read here
+ * from what the data folder keeps of that row, never from the form beyond the company's name and its lane.
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { candidateSlugs, cleanTitle, companyWords } from './company.js';
+import { candidateSlugs, cleanTitle, companyWords, readLookups } from './company.js';
+import { readDiscovery } from './discover.js';
+import type { Reason } from './queue.js';
 import { startUrl } from './review.js';
 
 /** The longest website kept. */
@@ -126,3 +131,35 @@ export function keepPosting(data: string, company: string, pasted: string, now: 
 
 /** The postings pasted for a company row, newest first. */
 export const postingsOf = (notes: Readonly<Record<string, CompanyNotes>>, name: string): readonly Pasted[] => noteOf(notes, companyKey(name))?.postings ?? [];
+
+/** The lane a company row is on: the discovery lane's last run, or the company lane's lookups. */
+export type Lane = 'discovery' | 'company';
+
+/**
+ * A company row's lead, read from the data folder (4.10): its website, and the reason it goes into the queue, the row's source
+ * and posting (the discovery row's own; a lookup's first board with a QA role's address kept, and that address, else its first board; else the newest posting
+ * pasted). Null when the row is not kept or has no website.
+ */
+export function leadOf(data: string, company: string, lane: Lane): { website: string; reason: Reason } | null {
+  const key = companyKey(company);
+  if (!key) return null;
+  const notes = readNotes(data);
+  const pasted = noteOf(notes, key)?.postings?.[0];
+  let reason: Reason | undefined;
+  let name: string | undefined;
+  let typedAsSite = false;
+  if (lane === 'discovery') {
+    const row = readDiscovery(data).run?.rows.find((r) => companyKey(r.company) === key);
+    if (row) [name, reason] = [row.company, { source: row.source, ...(row.url ? { url: row.url } : {}) }];
+  } else {
+    const lookup = readLookups(data).find((l) => companyKey(l.asked) === key);
+    const linked = lookup?.boards.find((b) => b.roles.some((r) => r.url));
+    const board = linked ?? lookup?.boards[0];
+    const url = linked?.roles.find((r) => r.url)?.url;
+    if (lookup) [name, typedAsSite] = [lookup.asked, true];
+    if (board) reason = { source: board.source, ...(url ? { url } : {}) };
+    else if (lookup) reason = pasted ? { source: 'pasted', url: pasted.url } : { source: 'company lane' };
+  }
+  const website = name ? websiteOf(notes, name, typedAsSite) : undefined;
+  return website && reason ? { website, reason } : null;
+}

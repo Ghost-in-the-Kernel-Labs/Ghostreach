@@ -22,11 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.10 Queue this site
-
-From 4.8 and 4.9 (J-039, J-040): a company row's website is `websiteOf` of `src/project/leads.ts` (typed, or a lookup typed as a site), its pasted closed-site postings `postingsOf`; the row's tools are `companyTools` in `src/project/page-leads.ts`, its posts guarded in `src/project/serve.ts`. GR-007 (the ranking) waits in Phase W, so a company already reviewed shows its review ("reviewed <date>, PDF"), no score.
-Check: the queue entry carries the lead's source and URL; a company already audited shows its score instead.
-
 ### 4.11 Attribution
 
 From 4.3 (J-034): the link-back sources are the rows `docs/SOURCES.md` marks `yes` (Remotive; Adzuna, excluded); The Muse's, Jooble's and Arbeitnow's, which the roadmap names, are `unverified` there.
@@ -83,6 +78,7 @@ Check: `docs/when/tune-up.md` followed in full.
 
 Waits on: Ghost's ruling on GR-007 (the ranking's weights, `proposed`; nothing is built on a proposed entry, C-008)
 Moved: from Phase 3
+From 4.10 (J-041): a lead finder row whose site is already reviewed shows "reviewed <date>, PDF" in place of the score 4.10's check names (`queueThis`, `src/project/page-leads.ts`); once the ranking is built, the row shows the review's score there too.
 Check: a fixture set of three summaries ranks in the known order by `major × 3 + minor × 1` (GR-007), pages read beside; a tie breaks by findings per page; each row links its PDF.
 
 ### 3.7 The ranking as CSV

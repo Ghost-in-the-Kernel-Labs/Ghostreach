@@ -24,6 +24,14 @@ export interface QueueEntry {
   state: QueueState;
   /** A failed review's one line saying why. */
   error?: string;
+  /** Why it was queued, when from the lead finder (4.10): the lead's source and its posting's address. Absent in a queue written before. */
+  reason?: Reason;
+}
+
+/** A lead's source (a source's name, or the lane it came by) and the posting's address when one is kept. */
+export interface Reason {
+  source: string;
+  url?: string;
 }
 
 /** What a paste did: the sites queued, and each line refused with why. */
@@ -68,9 +76,10 @@ function update<T>(data: string, change: (sites: QueueEntry[]) => T): T {
 
 /**
  * Queues the pasted text, one site per line, in its order; a blank line is skipped. A line that is not a web address
- * (`startUrl`, the review's own test), or whose host is already waiting or running, is refused and never queued.
+ * (`startUrl`, the review's own test), or whose host is already waiting or running, is refused and never queued. A site queued
+ * from the lead finder carries its `reason` (4.10).
  */
-export function addSites(data: string, text: string): Added {
+export function addSites(data: string, text: string, reason?: Reason): Added {
   const added: Added = { queued: [], refused: [] };
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (!lines.length) return added;
@@ -87,7 +96,7 @@ export function addSites(data: string, text: string): Added {
         added.refused.push({ line, why: 'already in the queue' });
         continue;
       }
-      const entry: QueueEntry = { id: ++id, site: line, host, state: 'waiting' };
+      const entry: QueueEntry = { id: ++id, site: line, host, state: 'waiting', ...(reason ? { reason } : {}) };
       sites.push(entry);
       added.queued.push(entry);
     }

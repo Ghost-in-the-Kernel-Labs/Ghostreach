@@ -21,7 +21,7 @@ import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
 import { reviewsPage, type ListedReview, type Said } from './page.js';
-import { keepPosting, keepWebsite, readNotes } from './leads.js';
+import { keepPosting, keepWebsite, leadOf, readNotes } from './leads.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -89,7 +89,7 @@ function sendPage(data: string, settings: Settings, req: IncomingMessage, res: S
 const MAX_BODY = 64 * 1024;
 
 /** The POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry', '/company', '/company/site', '/company/posting', '/discover/search', '/discover/run']);
+const POSTS = new Set(['/queue', '/queue/retry', '/queue/lead', '/company', '/company/site', '/company/posting', '/discover/search', '/discover/run']);
 
 /** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the lead finder's network and keys (a test's). */
 interface Served {
@@ -132,6 +132,15 @@ function post(data: string, served: Served, origin: string, path: string, req: I
         },
       ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
       return;
+    }
+    if (path === '/queue/lead') {
+      // "Queue this site" (4.10): the row's website and reason read from the data folder, the form naming only the company and its lane.
+      const company = form.get('company') ?? '';
+      const lead = leadOf(data, company, form.get('lane') === 'company' ? 'company' : 'discovery');
+      if (!lead) return sendPage(data, settings, req, res, { row: { company, why: 'No website kept for this company.' } });
+      const added = addSites(data, lead.website, lead.reason);
+      runner.kick();
+      return sendPage(data, settings, req, res, { added });
     }
     if (path === '/company/site' || path === '/company/posting') {
       // The salesperson's typed website (4.8), held to a site's test, or a closed site's posting (4.9): kept, never fetched.
