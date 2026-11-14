@@ -18,14 +18,15 @@ workpath's file, never here.
 ## Commands
 
 `scripts/fast.sh` is the fast loop: every doc check and unit test, under 30 s (`docs/AGENT.md` has the last measure), nothing
-installed. Three checkpoints (C-040): `scripts/save.sh -m <message>` saves a session's work on its own branch
-(the key scan, a plain commit as Ghost, a push of that branch; no gate), so no turn ends with a dirty tree.
-`scripts/gate.sh --fast` is the fast checks, the check before a landing: the fast loop, the key scan, each present
-stack's fast checks; it records the tree it passed on (C-037). `scripts/commit.sh -a -F <message>` is the only way a
-commit reaches `main`: it stages, scans, runs the fast loop, refuses a tree the gate did not record, and refuses any
-but a `tune-up:` commit while a tune-up is due; `scripts/ship.sh` is the only push to `main`. The full gate,
-`scripts/gate.sh` (the slow tests, every stack's gate, the metrics; build/gate.log, one `gate:` verdict line), is the
-release checkpoint: each tune-up pass and before a real project is stamped. Long output goes to a file (`docs/when/long-run.md`).
+installed. Three checkpoints (C-040), three kinds of gate (GR-010). `scripts/save.sh -m <message>` saves a session's work on
+its own branch (key scan, a plain commit as Ghost, a push of that branch; no gate). `scripts/gate.sh --fast` is the landing's
+check: the fast loop, the key scan, the stack's fast checks (unit tests, typecheck, knip, cooldown, advisories), under a minute;
+`--medium` adds the integration project and the crawl specs, minutes, and is what a ship carrying code needs; bare, the full
+gate adds mutation and the metrics, the release checkpoint at each tune-up. Each records the tree it passed on (C-037).
+`scripts/commit.sh -a -F <message>` is the only way a commit reaches `main` (it refuses an unrecorded tree, and any but a
+`tune-up:` commit while one is due); `scripts/ship.sh` is the only push, and refuses a fast record when code changed.
+`scripts/sweep.sh` is the slow overnight run, the cold full gate, never a gate itself. Long output goes to a file
+(`docs/when/long-run.md`).
 `python3 -I scripts/next_id.py decision|journal` gives the next id after fetching main.
 
 ## When X happens, read Y

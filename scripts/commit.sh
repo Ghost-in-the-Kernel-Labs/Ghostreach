@@ -13,8 +13,8 @@
 #      word, moves the count's start to that commit when it is newer than the last tune-up
 #   5. the fast loop (scripts/fast.sh)
 #   6. the record: the staged tree must be the tree scripts/gate.sh passed on (.git/ghost/tree): the fast checks
-#      (`scripts/gate.sh --fast`, the landing checkpoint, C-040) or the full gate; a fast record (.git/ghost/kind says
-#      `fast`) adds the trailer `Gate: fast checks` to the message. With --docs-only (or GHOST_GATE=skip) and every
+#      (`scripts/gate.sh --fast`, the landing checkpoint, C-040), the medium checks (`--medium`, GR-010) or the full gate;
+#      a fast or medium record (.git/ghost/kind) adds the trailer `Gate: fast checks` or `Gate: medium checks`. With --docs-only (or GHOST_GATE=skip) and every
 #      staged path under docs/, the record is not compared and the message gets the trailer `Gate: fast loop only`
 #   7. the secret scan again, and the staged tree unchanged since step 6
 #   8. the commit: `git commit-tree` of the recorded tree on the parent HEAD named at step 1, author Ghost and committer
@@ -129,6 +129,7 @@ elif [ "$staged" != "$recorded" ]; then
 else
   tree=$recorded
   [ "$kind" != fast ] || git interpret-trailers --in-place --trailer "Gate: fast checks" "$scratch/message"
+  [ "$kind" != medium ] || git interpret-trailers --in-place --trailer "Gate: medium checks" "$scratch/message"
 fi
 
 # 7. The scan again: a step could have changed what is staged.

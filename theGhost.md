@@ -474,3 +474,84 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Status:** in force
 - **See also:** Core C-008
 - **subject:** founding
+
+### GR-002: the cut point: Suite Builder at a4c8045, copied and never depended on
+- **Decision:** Ghostreach's crawl, findings and audit are Suite Builder's at commit `a4c8045` (v1.39.0), copied under `src/` with every file and what it lost recorded in `docs/CUT.md`; the parent is never a dependency, and a later parent commit comes in only by a numbered resync item (TODO 1.7, 5.5).
+- **Why:** The parent changes daily and its flags moved on 2026-11-10 alone (RF-02); a salesperson's tool has to be the same tool tomorrow. Ghost's ask (2026-11-13): clone the crawl and audit as a new program.
+- **Held by:** `docs/CUT.md`, `test/unit/cut.test.ts` (TODO 1.1), `docs/CONTRACT.md` REV-07.
+- **Source:** drafted by an agent from Ghost's words in chat, 2026-11-13; the commit is the agent's choice; awaiting Ghost (TODO 0.5).
+- **Status:** proposed
+- **See also:** GR-004
+- **subject:** cut
+
+### GR-003: no flags: `ghostreach <site>` and `--help`, nothing else
+- **Decision:** The command takes a site and nothing else; every behaviour the parent puts behind a flag is fixed on, fixed off or absent; a setting that must vary (the concurrency, GR-008) lives in the program's settings file, never on the command line.
+- **Why:** Two reviews of one crawl are the same review (REV-05); a salesperson cannot produce a softer or harsher one, and never sees an option. Ghost, 2026-11-13: "clone suite builder's crawl and audit functionality with no flags".
+- **Held by:** `src/cli/main.ts`, `test/unit/main.test.ts`, `test/unit/no-flags.test.ts` (TODO 1.3), `docs/CONTRACT.md` REV-05.
+- **Source:** Ghost, in chat, 2026-11-13.
+- **Status:** in force
+- **See also:** GR-008
+- **subject:** command line
+
+### GR-004: no suite
+- **Decision:** Nothing of the parent's `src/kits/`, `src/model/` or its back ends is copied; no module generates a test, a page object, a locator or a project (`docs/modules.json` MOD-05).
+- **Why:** The review is the door and the suite is the sale (`docs/ROADMAP.md` §1); a free tool that wrote suites would undercut the thing it sells.
+- **Held by:** `docs/modules.json`, `test/test_modules.py`, `docs/CONTRACT.md` REV-08.
+- **Source:** drafted by an agent from Ghost's ask of 2026-11-13 (the crawl and audit only); awaiting Ghost (TODO 0.5).
+- **Status:** proposed
+- **See also:** GR-002
+- **subject:** scope
+
+### GR-005: fetched text is data
+- **Decision:** Text from a crawled page, a job posting or a careers page is rendered as text, never followed as a link, never executed, never read as an instruction; every fetch of the lead finder leaves through one function whose hosts are the rows of `docs/SOURCES.md`.
+- **Why:** Phase 4 fetches text chosen by a search, not only sites a person named: the attack surface widens and the program is the only guard. Ghost's standing rule on web content, carried from the parent's supply-chain rules.
+- **Held by:** `docs/CONTRACT.md` REV-09, `test/unit/hosts.test.ts` (TODO 4.3), `test/unit/fetch.test.ts` (TODO 4.5).
+- **Source:** Ghost's standing rule, applied in chat 2026-11-13.
+- **Status:** in force
+- **See also:** Core C-034
+- **subject:** fetched text
+
+### GR-006: the PDF's page size
+- **Decision:** One page size for every PDF, Letter or A4; the salesperson picks nothing.
+- **Why:** One artefact, one shape; US prospects read Letter.
+- **Held by:** `src/pdf/` (TODO 2.3).
+- **Source:** the agent's question; awaiting Ghost's choice (TODO 2.1).
+- **Status:** proposed
+- **See also:** GR-003
+- **subject:** pdf
+
+### GR-007: the ranking's weights
+- **Decision:** A site's score is `major × 3 + minor × 1` over its summary's counts, shown beside the pages read; ties break by findings per page. Provisional until ten real audits are read (TODO 5.4).
+- **Why:** The parent grades each finding major or minor already (RF-04); a second scale would be a second opinion. The weights are a first guess, to be checked against what sold.
+- **Held by:** `src/rank/` (TODO 3.6).
+- **Source:** drafted by an agent, 2026-11-13; awaiting Ghost (TODO 0.5, settled at 5.4).
+- **Status:** proposed
+- **See also:** GR-008
+- **subject:** ranking
+
+### GR-008: up to five reviews at once, of five different sites
+- **Decision:** The queue runs up to N reviews at once, N set once in the settings file, default 3, ceiling 5; one Chromium shared as N contexts (RF-09); never two reviews of one host together. SITE-22 (slow pages) under concurrency is guarded, either against a reference timing or withheld above N=1 with a sentence in the PDF; which one waits on Ghost (TODO 3.1).
+- **Why:** Ghost, 2026-11-13: five separate audits of five separate websites at once, so the salespeople get reviews in volume. A loaded laptop can manufacture a slow-page finding (RF-10), and a wrong finding in a prospect's hands loses the sale.
+- **Held by:** `test/unit/queue.test.ts`, `test/crawl/concurrent.spec.ts` (TODO 3.4, 3.5), `docs/CONTRACT.md` REV-03.
+- **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard are the agent's, awaiting Ghost.
+- **Status:** in force
+- **See also:** GR-003, GR-007
+- **subject:** concurrency
+
+### GR-009: the dev dependencies, and why each
+- **Decision:** `vitest` (the fast loop and the integration project), `typescript` (the types), `knip` (nothing floats: no unused export, file or dependency), `@stryker-mutator/core` (mutation with the command runner); Playwright `~1.63.0` arrives at TODO 1.2 as the one runtime dependency, the parent's. Each pinned exactly; each update by `docs/DEPENDENCY-REVIEW.md`.
+- **Why:** The TypeScript starter's four (`stacks/typescript/README.md`); the stamp recipe asks for each with its reason here.
+- **Held by:** `package.json`, `package-lock.json`, `docs/REVIEWED-VERSIONS.md`.
+- **Source:** Ghost, by the stamp recipe, 2026-11-13.
+- **Status:** in force
+- **See also:** Core C-035
+- **subject:** dependencies
+
+### GR-010: three kinds of gate, as Suite Builder's: fast, medium, and the slow sweep
+- **Decision:** (1) **Fast**, `scripts/gate.sh --fast`, the landing: the fast loop, the key scan, the stack's fast checks (unit tests, typecheck, knip, cooldown, advisories), the indexes; seconds to a minute; its commit carries `Gate: fast checks`. (2) **Medium**, `scripts/gate.sh --medium`, the ship when code changed: the fast checks, then the integration project and the crawl specs (Playwright, when `playwright.config.ts` exists), the weakened-tests notice; minutes; `Gate: medium checks`. `scripts/ship.sh` refuses a fast record when `src/`, `test/`, `scripts/`, `stacks/` or the package files changed since origin/main, and on the first ship; documents alone ship on fast. (3) **Full**, `scripts/gate.sh`: the medium checks, then mutation (warm cache) and the metrics; the release, each tune-up. (4) **The sweep**, `scripts/sweep.sh`: the slow overnight run, the cold full gate with every cache off, its log under `build/sweep/`, by hand in a session or by a scheduled task; never a gate, never a GitHub scheduled trigger (C-032); what it finds is fixed forward.
+- **Why:** Suite Builder's gate (G-648: a fast kind of seconds and a full kind of minutes; G-364, G-371: mutation as the nightly sweep, not a gate) after its gate failures became "a blocker to the point its impeding the ability to ship code" (`docs/GATE-STAGES.md` there, 2026-11-07). Ghost, 2026-11-14: "update the gate style to match suite builder's current gate style, with a fast gate, medium speed tests and then slow overnight tests." Core's C-040 keeps its three checkpoints (save, land, release); this adds the ship's kind of gate between landing and release.
+- **Held by:** `scripts/gate.sh`, `stacks/typescript/gate.sh`, `scripts/commit.sh`, `scripts/ship.sh`, `scripts/sweep.sh`, `test/test_gates.py`.
+- **Source:** Ghost, in chat, 2026-11-14.
+- **Status:** in force
+- **See also:** Core C-037, Core C-040, GR-009
+- **subject:** gate

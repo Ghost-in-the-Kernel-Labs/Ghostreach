@@ -3,12 +3,16 @@
 # It runs every step on the working tree as it stands, never on a commit. In order: the fast loop (timed), the key scan
 # over the tree's changes, the slow tests, each stack's own gate where a stack is present, the generated files, the
 # metrics.
-# The fast checks: `scripts/gate.sh --fast` is the landing checkpoint (C-040): the fast loop, the key scan, each present
-# stack's fast checks (its gate.sh run with --fast) and the generated files, no slow tests, no stack gate, no metrics; it
-# records the tree as the full gate does, and `.git/ghost/kind` says `fast`, which scripts/commit.sh turns into the
-# trailer `Gate: fast checks`. Its verdict line begins `gate (fast):`, its log is build/gate-fast.log and its times
-# build/gate-fast-times.txt, so the full gate's files stay. The full gate is the release checkpoint: each tune-up pass
-# (the two-run rule, docs/when/tune-up.md) and before a real project is stamped.
+# Three kinds of gate (GR-010, after Suite Builder's G-648). The fast checks: `scripts/gate.sh --fast` is the landing checkpoint
+# (C-040): the fast loop, the key scan, each present stack's fast checks (its gate.sh run with --fast) and the generated
+# files, no slow tests, no mutation, no metrics; seconds to a minute. The medium checks: `scripts/gate.sh --medium` is the
+# shipping checkpoint when code changed (scripts/ship.sh): the same, with each stack's gate run with --medium (its
+# integration tests and crawl specs); minutes. Each records the tree as the full gate does, and `.git/ghost/kind` says
+# `fast` or `medium`, which scripts/commit.sh turns into the trailer `Gate: fast checks` or `Gate: medium checks`. Their
+# verdict lines begin `gate (fast):` and `gate (medium):`, their logs are build/gate-fast.log and build/gate-medium.log
+# and their times the matching -times.txt, so the full gate's files stay. The full gate is the release checkpoint: each
+# tune-up pass (the two-run rule, docs/when/tune-up.md) and before a real project is stamped. The slow overnight run is
+# scripts/sweep.sh: the cold full gate, by hand or by a scheduled task, never a commit gate.
 # The terminal shows only `== <step>: passed (N s)` per step and one verdict line last, `gate: passed …` or
 # `gate: refused at …`; every step's output goes to build/gate.log, each step's seconds to build/gate-times.txt
 # (below), so run it as it is: `scripts/gate.sh` (docs/when/long-run.md).
@@ -35,15 +39,18 @@ log=build/gate.log
 times=build/gate-times.txt
 cold=
 fast=
+medium=
 kind=full
 for arg in "$@"; do
   case "$arg" in
     --fast) fast=1; kind=fast; log=build/gate-fast.log; times=build/gate-fast-times.txt;;
-    *) echo "gate: refused at the arguments (unknown argument $arg; usage: scripts/gate.sh [--fast])"; exit 1;;
+    --medium) medium=1; kind=medium; log=build/gate-medium.log; times=build/gate-medium-times.txt;;
+    *) echo "gate: refused at the arguments (unknown argument $arg; usage: scripts/gate.sh [--fast | --medium])"; exit 1;;
   esac
 done
+[ -z "$fast" ] || [ -z "$medium" ] || { echo "gate: refused at the arguments (one kind: --fast or --medium)"; exit 1; }
 if [ "${GHOST_COLD:-}" = 1 ]; then
-  [ -z "$fast" ] || { echo "gate: refused at the arguments (the cold run is the full gate's: GHOST_COLD=1 scripts/gate.sh)"; exit 1; }
+  [ -z "$fast$medium" ] || { echo "gate: refused at the arguments (the cold run is the full gate's: GHOST_COLD=1 scripts/gate.sh)"; exit 1; }
   cold=--cold; log=build/gate-cold.log; times=build/gate-cold-times.txt
 fi
 export GHOST_COLD
@@ -52,6 +59,7 @@ verdict() {
   local line=$1
   [ -z "$cold" ] || line="gate (cold):${line#gate:}"
   [ -z "$fast" ] || line="gate (fast):${line#gate:}"
+  [ -z "$medium" ] || line="gate (medium):${line#gate:}"
   echo "$line"; echo "$line" >> "$log"
 }
 stop() { verdict "gate: refused at $1"; exit 1; }
@@ -122,6 +130,7 @@ for stack in stacks/*/gate.sh; do
   name=$(basename "$dir")
   [ -f "$dir/PRESENT" ] || continue
   if [ -n "$fast" ]; then step "the $name stack's fast checks" "the $name stack's fast checks" bash "$stack" --fast
+  elif [ -n "$medium" ]; then step "the $name stack's medium checks" "the $name stack's medium checks" bash "$stack" --medium
   else step "the $name stack's gate" "the $name stack's gate" bash "$stack"; fi
 done
 
@@ -129,7 +138,7 @@ step "docs/decisions.md" "a stale docs/decisions.md" python3 -I scripts/decision
 step "docs/journal/INDEX.md" "a stale docs/journal/INDEX.md" python3 -I scripts/journal_index.py --check
 
 gate_minutes=$(awk -v a="$started" -v b="$(date +%s)" 'BEGIN { printf "%.2f", (b - a) / 60 }')
-[ -n "$fast" ] || step "the metrics" "a metric that regressed" python3 -I scripts/metrics.py --fast-loop "$fast_loop" --gate "$gate_minutes" $cold
+[ -n "$fast$medium" ] || step "the metrics" "a metric that regressed" python3 -I scripts/metrics.py --fast-loop "$fast_loop" --gate "$gate_minutes" $cold
 
 after=$(tree) || stop "the record (git write-tree failed after the last step: build/gate.log)"
 [ "$before" = "$after" ] || stop "the record (the tree changed while the gate ran: nothing recorded; run it again)"

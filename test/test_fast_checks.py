@@ -63,7 +63,7 @@ class TheFastChecks(unittest.TestCase):
         other = self.fast(root)
         self.assertEqual(other.returncode, 0)
         unknown = subprocess.run(["bash", "scripts/gate.sh", "--slow"], cwd=root, capture_output=True, text=True)
-        self.assertEqual((unknown.returncode, unknown.stdout), (1, "gate: refused at the arguments (unknown argument --slow; usage: scripts/gate.sh [--fast])\n"))
+        self.assertEqual((unknown.returncode, unknown.stdout), (1, "gate: refused at the arguments (unknown argument --slow; usage: scripts/gate.sh [--fast | --medium])\n"))
 
     def test_commit_sh_accepts_a_fast_record_and_says_so_in_a_trailer(self) -> None:
         root = repo_with(1)

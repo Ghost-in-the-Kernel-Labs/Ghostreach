@@ -86,6 +86,7 @@ that is gone). The stamp rewrites the table for the stamped tree.
 | `scripts/gate.sh` | a script the gate or the commit runs |
 | `scripts/save.sh` | a script the gate or the commit runs |
 | `scripts/ship.sh` | a script the gate or the commit runs |
+| `scripts/sweep.sh` | a script the gate or the commit runs |
 | `stacks/typescript/gate.sh` | a stack's gate |
 
 ## The hosts a session needs

@@ -8,3 +8,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-002 | The TypeScript stack wired (TODO 0.2) | feature | `J-000-099.md` |
 | J-003 | The roadmap and TODO filled (TODO 0.3) | feature | `J-000-099.md` |
 | J-004 | The contract and the leaf module (TODO 0.4) | feature | `J-000-099.md` |
+| J-005 | Three kinds of gate, as Suite Builder's (GR-010) | decision | `J-000-099.md` |
