@@ -11,9 +11,21 @@ try:
     from scripts import stamp
 except ImportError:  # a stamped project does not carry the stamp
     stamp = None
+from scripts.checks import ghost
 from test.support import ROOT
 
 STACKS = ROOT / "stacks"
+
+
+def mutation_refused(text: str | None = None) -> str | None:
+    """The in-force decision of theGhost.md (or of `text`) whose Supersedes line names Core C-018, so this project runs
+    no mutation and the checks of its runner stand aside (Ghostreach GR-013; F-007 for Core); None while C-018 holds."""
+    entries = ghost.split_entries(text if text is not None else (ROOT / "theGhost.md").read_text())
+    return next((rid for rid, entry in entries.items() if ghost.fields_of(entry).get("Status") == "in force"
+                 and "C-018" in ghost.fields_of(entry).get("Supersedes", "")), None)
+
+
+NO_MUTATION = f"{mutation_refused()} refuses Core C-018: no mutation runner in this project"
 
 
 def present() -> list[str]:
@@ -65,6 +77,18 @@ class TheStacks(unittest.TestCase):
         self.assertIn('step "the $name stack\'s fast checks" "the $name stack\'s fast checks" bash "$stack" --fast', text)
 
 
+class TheMutationRefusal(unittest.TestCase):
+    def entry(self, status: str, supersedes: str) -> str:
+        """A project entry with the status and Supersedes line given: entry("in force", "C-018")."""
+        return f"### GR-001: x\n- **Status:** {status}\n- **Supersedes:** {supersedes}\n"
+
+    def test_only_an_in_force_entry_that_names_c_018_refuses_it(self) -> None:
+        self.assertEqual(mutation_refused(self.entry("in force", "C-018 for this project")), "GR-001")
+        self.assertIsNone(mutation_refused(self.entry("withdrawn", "C-018")))
+        self.assertIsNone(mutation_refused(self.entry("in force", "C-036")))
+        self.assertIsNone(mutation_refused("### C-018: mutation\n- **Status:** in force\n"))
+
+
 def typescript_file(relative: str) -> Path:
     """A TypeScript starter file: in the template under stacks/typescript/starter/, in a stamped project at the root."""
     template = STACKS / "typescript" / "starter" / relative
@@ -78,11 +102,13 @@ class TheTypeScriptStarter(unittest.TestCase):
             with self.subTest(file=name):
                 self.assertNotIn("@stryker-mutator/command-runner", typescript_file(name).read_text())
 
+    @unittest.skipIf(mutation_refused(), NO_MUTATION)
     def test_mutation_covers_src_only(self) -> None:
         text = typescript_file("stryker.config.mjs").read_text()
         self.assertIn("mutate: ['src/**/*.ts', '!src/**/*.gen.ts'],", text)
         self.assertNotIn("scripts/*.mjs'", text)
 
+    @unittest.skipIf(mutation_refused(), NO_MUTATION)
     def test_the_mutation_runner_is_not_the_stub(self) -> None:
         text = typescript_file("scripts/mutate.mjs").read_text()
         self.assertNotIn("not wired yet", text)
@@ -91,12 +117,14 @@ class TheTypeScriptStarter(unittest.TestCase):
             with self.subTest(part=part):
                 self.assertIn(part, text)
 
+    @unittest.skipIf(mutation_refused(), NO_MUTATION)
     def test_the_cache_folder_is_ignored_and_the_mutation_document_is_there(self) -> None:
         starter = STACKS / "typescript" / "starter" / "gitignore.append"
         ignore = starter if starter.exists() else ROOT / ".gitignore"
         self.assertIn("/reports/", ignore.read_text().splitlines())
         self.assertIn("## Survivors", typescript_file("docs/MUTATION.md").read_text())
 
+    @unittest.skipIf(mutation_refused(), NO_MUTATION)
     def test_vitest_is_started_by_node_not_npx(self) -> None:
         text = typescript_file("stryker.config.mjs").read_text()
         self.assertIn("node node_modules/vitest/vitest.mjs run", text)
@@ -190,6 +218,7 @@ console.log(JSON.stringify({
 
 
 @unittest.skipUnless((STACKS / "typescript").is_dir() and shutil.which("node"), "no TypeScript stack, or no node")
+@unittest.skipIf(mutation_refused(), NO_MUTATION)
 class TheMutationRunnerRunsOnAGraph(unittest.TestCase):
     """1.30: the runner's graph and key functions, executed by node on test/fixtures/typescript-graph/."""
 

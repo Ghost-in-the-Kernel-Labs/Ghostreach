@@ -1,4 +1,4 @@
-# A long run: the gate, mutation testing, anything that prints pages (C-019)
+# A long run: the gate, anything that prints pages (C-019)
 
 Read this when you start a run whose output is long, or one that may outlive your next call.
 

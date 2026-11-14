@@ -42,7 +42,7 @@ async function publishTime(nameAtVersion) {
 }
 
 /** Whether this file is the one node was asked to run: its real path against argv[1]'s, so a path with a space, a `%`
- * or a symlink still runs, and an import (or `node -e`) does not (the form scripts/mutate.mjs uses). */
+ * or a symlink still runs, and an import (or `node -e`) does not. */
 export function isDirectRun(moduleUrl, argv1) {
   if (!argv1 || !existsSync(argv1)) return false;
   return realpathSync(fileURLToPath(moduleUrl)) === realpathSync(argv1);

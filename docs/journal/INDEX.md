@@ -27,3 +27,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-021 | Tune-up pass 1 (TODO 1.8), saved for the reviewer; it waits on Ghost-Core in Phase W | measurement | `J-000-099.md` |
 | J-022 | Ghost settles the PDF's page size and address | decision | `J-000-099.md` |
 | J-023 | The audit page as a PDF, US Letter (TODO 2.3) | feature | `J-000-099.md` |
+| J-024 | Ghost cuts mutation testing (GR-013) | decision | `J-000-099.md` |

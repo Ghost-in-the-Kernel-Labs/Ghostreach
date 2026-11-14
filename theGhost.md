@@ -231,7 +231,7 @@ how work is done, then how the repository is kept.
 - **Source:** Ghost; inherited from SB G-239, G-287 and G-290, Katana R-056, EE E-019 and E-059, NR R-015.
 - **Status:** in force
 - **Core:** part of Ghost-Core; may not apply to every project, but a rule that appears in four projects is there for a reason.
-- **See also:** C-001, C-017
+- **See also:** C-001, C-017, GR-013 (Ghostreach refuses this decision)
 - **subject:** mutation
 
 ### C-019: A long run's output goes to a file; an agent reads its verdict and its failures
@@ -544,7 +544,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `package.json`, `package-lock.json`, `docs/REVIEWED-VERSIONS.md`.
 - **Source:** Ghost, by the stamp recipe, 2026-11-13; confirmed by Ghost in chat, 2026-11-14.
 - **Status:** in force
-- **See also:** Core C-035
+- **See also:** Core C-035, GR-013
 - **subject:** dependencies
 
 ### GR-010: three kinds of gate, as Suite Builder's: fast, medium, and the slow sweep
@@ -553,7 +553,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `scripts/gate.sh`, `stacks/typescript/gate.sh`, `scripts/commit.sh`, `scripts/ship.sh`, `scripts/sweep.sh`, `test/test_gates.py`.
 - **Source:** Ghost, in chat, 2026-11-14.
 - **Status:** in force
-- **See also:** Core C-037, Core C-040, GR-009
+- **See also:** Core C-037, Core C-040, GR-009, GR-013
 - **subject:** gate
 
 ### GR-011: Node's type declarations, @types/node, a dev dependency
@@ -573,3 +573,13 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Status:** in force
 - **See also:** GR-006
 - **subject:** pdf
+
+### GR-013: no mutation testing: Core C-018 refused, Stryker removed
+- **Decision:** Ghostreach runs no mutation testing: not in the full gate, not in the sweep, not in a tune-up. It refuses Core C-018 for itself: no mutation tool, no survivors list in `docs/MUTATION.md`, no declared mutation per check in its place (C-001's planted breaks and AGT-06 still hold every check). It keeps C-018's rule that a test is never weakened to make code pass, and the weakened-tests notice (`scripts/weakened.mjs`) that lists one for the reviewer. `@stryker-mutator/core` leaves the dev dependencies with every package only it brought (158 lockfile entries) and the 34 cooldown overrides that existed only for its tree, together with its config (`stryker.config.mjs`), its runner (`scripts/mutate.mjs`), the `mutate` npm script and knip's Stryker setting. The full gate is the medium checks and the metrics; the sweep is that gate run cold, overnight.
+- **Why:** Ghost, 2026-11-14: "Cut the mutant testing. Its been copied in and is mostly already done for the crawl. There are minimal benefits from it, and suite builder needed it for the compiler. Our faults are less systemic if they occur." The copied crawl and audit carry the parent's tests, which were mutated there; the first full gate over the copy ran its mutation step for over two hours and stopped red with 2,637 survivors in code the parent had already tried (J-021, `docs/HANDOFF.md` "For Ghost" F). A compiler's fault reaches every suite it writes; a review's fault reaches one PDF.
+- **Held by:** `package.json`, `package-lock.json`, `stacks/typescript/gate.sh`, `stacks/typescript/README.md`, `test/test_stacks.py` (`mutation_refused`: the runner's checks stand aside while this entry is in force), `docs/MUTATION.md`.
+- **Source:** Ghost, in chat, 2026-11-14 (the quote above; J-024); his word is also the approval the supply-chain rule asks for to remove a dependency. Recorded by an agent.
+- **Status:** in force
+- **See also:** Core C-018, Core C-001, Core C-035, GR-009, GR-010
+- **subject:** mutation
+- **Supersedes:** Core C-018 for this project (refused; its never-weaken rule kept), and GR-009 and GR-010, in part: GR-009's `@stryker-mutator/core` (mutation with the command runner) among the dev dependencies; GR-010's "then mutation (warm cache)" in the full gate (3), now the medium checks then the metrics, and its sweep's "every cache off" (4), with no mutation cache left to turn off. The rest of each stands, so its Status stays `in force` and its See also names GR-013.

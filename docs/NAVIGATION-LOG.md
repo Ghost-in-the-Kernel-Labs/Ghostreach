@@ -36,3 +36,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: the brief says "RF-03" and GR-006's "Held by" names the file, but neither says where RF-03 lives (`docs/ROADMAP.md`'s table, found by grep). Node's type stripping refuses parameter properties, which a test helper run outside vitest meets first; nothing says helpers should avoid them.
 - **Suggestions**: a line in the stack README that `test/support/` is TypeScript Node can strip (no parameter properties, no enums), so a helper can be run by `node` alone for a look.
 
+
+### 2026-11-14 · Ghost's ruling: mutation cut (GR-013) · Opus
+
+- **Task**: carry out Ghost's word "Cut the mutant testing": remove Stryker and everything only it brought, the gate's mutation step and its documents; record the refusal of Core C-018; make Core's checks hold the choice.
+- **Opened**: `docs/MUTATION.md`, `docs/HANDOFF.md`, `docs/AGENT.md`, `theGhost.md`, `docs/journal/J-000-099.md`, `test/test_ghost.py`, `scripts/checks/ghost.py`, `package.json`, `knip.json`, `stacks/typescript/gate.sh`, `stacks/typescript/README.md`, `scripts/sweep.sh`, `scripts/gate.sh`, `test/test_stacks.py`, `docs/FINDINGS.md`, `docs/when/core-update.md`, `docs/DEPENDENCY-REVIEW.md`, `docs/REVIEWED-VERSIONS.md`, `scripts/checks/dependency_review.py`, `docs/when/dependency-update.md`, `scripts/metrics.py`, `scripts/checks/agent_table.py`, `scripts/checks/pointers.py`, `docs/paths/process.md`, `docs/when/tune-up.md`, `docs/when/long-run.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: nothing says how a dependency's removal is recorded: `docs/DEPENDENCY-REVIEW.md` and `docs/when/dependency-update.md` cover additions and updates, so whether a removed package's baseline rows stay was a guess (kept). No document says how a project refuses a core decision that a Core check enforces (F-007). `theGhost.md`'s entries are single long lines, so `sed -n` on a range printed 45 KB.
+- **Suggestions**: one line in `docs/when/dependency-update.md` for a removal (the lockfile diff shows only deletions; the rows stay as the record); Core's checks read a project's refusal the way `test/test_stacks.py` now does here.
