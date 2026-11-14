@@ -36,3 +36,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/paths/code.md`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md`, `src/project/serve.ts`, `src/project/html.ts`, `src/project/page.ts`, `src/project/page-leads.ts`, `src/project/text-file.ts`, `src/project/queue.ts`, `src/project/settings.ts`, `src/project/fetch.ts`, `src/project/company.ts`, `src/project/discover.ts`, `src/project/leads.ts`, `docs/CUT.md`, `docs/modules.json`, `test/unit/serve.test.ts`, `test/unit/company.test.ts`, `docs/when/handoff.md`, `docs/JOURNAL.md`, `docs/FINDINGS.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: the local page's row in `docs/paths/code.md` opens three files, but the fault list reached seven (the four readers live in the lead finder's files); the largest-file metric (< 400 lines) counts test files too, said only by the fast loop's failure, so a test added to `serve.test.ts` had to move to a file of its own.
 - **Suggestions**: the local page's row names the data files' readers (`src/project/kept.ts` now holds the rule); `docs/AGENT.md`'s largest-file row says it counts tests.
+
+### 2026-11-14 · Ghost's direction recorded (J-046), TODO 5.5 to Phase W · Opus
+
+- **Task**: record Ghost's newest direction verbatim (the audit at a4c8045 is the product; deployment first), handle TODO 5.5 by `TODO.md`'s rules, update HANDOFF.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/when/handoff.md`, `docs/paths/process.md`, `docs/JOURNAL.md`, `docs/journal/J-000-099.md`, `theGhost.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: `TODO.md`'s header has no shape for an item Ghost withdraws; the waiting shape fits only by reading "not planned" as a choice Ghost may still make.
+- **Suggestions**: none.

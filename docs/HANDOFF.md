@@ -42,6 +42,7 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 - 4.11 done (J-042): `LINK_BACK` (`src/project/discover.ts`), held by `test/unit/sources.test.ts` to SOURCES.md's `in` rows marked `yes` (Remotive alone), names each such row's source as a link to its own posting page; a posting of it with no page on its domain is not shown. Open for the ruling grade, the agent's choices (J-042): the `yes` rows alone; dropping what cannot be attributed.
 - 4.12, tune-up pass 4, ran (J-044): both full gates green (cold 4.15 min, warm 4.08 min, the fast loop 23.92 s; 9 of 9 measured, none regressed; mandatory context 1,190 words); the gate's rise from 1.5 min is the concurrent spec's 3.3 min; `npm audit` 0. Ghost-Core attached on request, its `main` still 9a29945: nothing to adopt. The debriefs of 2.7 to 4.11 reviewed and the log wiped (Last review 6f17b67); the product's code now routed by `docs/paths/code.md` (CLAUDE.md's contract row widened to it). Its security read of the local server found the page's forms refused in a real browser (`Referrer-Policy: no-referrer` makes Chromium post `Origin: null`): fixed apart, in its own commit 6f17b67 (J-043, a real-Chromium test red first), for the reviewer to land beside the `tune-up:` commit. Saved for the reviewer, who lands both and moves 4.12 to `docs/DONE.md`.
 - The four faults J-044's security read left fixed (J-045): every value written into the local page goes through `esc` (`src/project/html.ts`, any value); `queue.json`, `companies.json`, `discovery.json` and `leads.json` read by `readKept` (`src/project/kept.ts`), one that cannot be read never written, the page up and saying so in one line naming it; no request stops the server (`guarded`, `src/project/serve.ts`); the PDF piped by `pipeline`, a read error ending that answer alone; one company lookup and one discovery run at a time, a second said back. `test/unit/serve-faults.test.ts`, eight tests red first. Open for the ruling grade, the agent's choices (J-045): the line's words, the new file, a limit per lane. Saved for the reviewer to land beside 4.12.
+- Ghost's direction (J-046): the audit as cut at `a4c8045` is the product and deploying it is the priority; no resync is planned, so 5.5 moved to Phase W (`Waits on:` Ghost's choice to resync); the recipe and `scripts/resync_moves.py` stay.
 - Next: Phase 5 (5.1, packaging); 2.7 and 4.12 wait for the reviewer to land.
 
 ## For Ghost: waiting on you
@@ -76,7 +77,7 @@ J. SITE-22 under load (TODO 3.1, GR-014, J-032): the ruling grade chose withhold
 
 ## Phase W: the questions waiting on Ghost (TODO.md)
 
-4.1 the lead-finder keys and Adzuna's licence (Adzuna's own terms exclude it without a written agreement, J-034); 4.2 paid aggregators of closed job sites; 6.1 hosting a shared queue. Each unblocks the item that builds it.
+4.1 the lead-finder keys and Adzuna's licence (Adzuna's own terms exclude it without a written agreement, J-034); 4.2 paid aggregators of closed job sites; 5.5 a resync to the parent, not planned (J-046: the audit at a4c8045 is the product); 6.1 hosting a shared queue. Each unblocks the item that builds it.
 
 ## Cooldown overrides: remove at a tune-up once past the cooldown (stack README, Cooldown)
 

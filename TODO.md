@@ -47,10 +47,6 @@ Check: `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty; a reader who is not
 Reads 3.6's ranking, which waits on GR-007 in Phase W (J-033).
 Check: `theGhost.md` carries Ghost's ruling on the weights (GR-007 settled) and the ranking's columns.
 
-### 5.5 Resync once to the parent's then-HEAD
-
-Check: 1.5 and 1.6 green after the resync by 1.7's recipe.
-
 ### 5.6 Tune-up pass 5
 
 Check: `docs/when/tune-up.md` followed in full.
@@ -106,6 +102,12 @@ Check: the four keys' environment variable names in `docs/SOURCES.md`.
 Waits on: Ghost's choice whether a paid aggregator that reads LinkedIn/Indeed/Glassdoor pages on the program's behalf is acceptable given the terms posture; the free published sources ship first either way.
 Moved: from Phase 4
 Check: a decision in `theGhost.md`, in force or refused.
+
+### 5.5 Resync once to the parent's then-HEAD
+
+Waits on: Ghost's choice to resync (J-046: the audit at a4c8045 is the product; not planned)
+Moved: from Phase 5
+Check: 1.5 and 1.6 green after the resync by 1.7's recipe.
 
 ### 6.1 Hosting a shared queue
 
