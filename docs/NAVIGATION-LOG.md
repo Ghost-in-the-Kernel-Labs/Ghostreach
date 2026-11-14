@@ -57,3 +57,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/when/handoff.md`, `.github/workflows/ci.yml`, `scripts/checks/supply_chain.py`, `test/crawl/package.spec.ts`, `package.json`, `playwright.config.ts`, `stacks/typescript/gate.sh`, `src/project/review.ts`, `docs/journal/J-000-099.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: the session's GitHub tools and API reach only this organization's repositories, so an action's release could be read only from its git tags (`git ls-remote`, then a shallow fetch of the tag); nothing says where a pin's evidence is recorded (here, the journal).
 - **Suggestions**: `docs/SUPPLY-CHAIN.md` names how an action's SHA is verified and where it is written down.
+
+### 2026-11-14 · TODO 5.3, docs/SALES-GUIDE.md · Opus
+
+- **Task**: TODO 5.3: the one-page salesperson's guide, accurate to the program as run, the PDF its only file, no score; then 5.3 to Phase W for its reader.
+- **Opened**: `README.md`, `src/cli/main.ts`, `src/project/page.ts`, `src/project/page-leads.ts`, `src/project/serve.ts`, `src/project/review.ts`, `src/project/queue.ts`, `src/leaf/words.ts`, `src/project/company.ts`, `src/project/keys.ts`, `src/project/ready.ts`, `test/fixture-site/server.ts`, `TODO.md`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md`.
+- **Complaints**: no routing row names the salesperson's documents (the README's install, this guide); walking the page by hand needed the fixture site started from its TypeScript source, which nothing documents outside the specs.
+- **Suggestions**: a row in `docs/paths/code.md` for "the salesperson's documents: README's Install, docs/SALES-GUIDE.md", read against `--help`, `doctor` and the page at each tune-up (ROADMAP §4 says so already).

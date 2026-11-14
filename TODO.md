@@ -28,12 +28,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 5: in the salesperson's hands
 
-### 5.3 docs/SALES-GUIDE.md
-
-The guide's "read the ranking" needs 3.6, which waits on GR-007 in Phase W (J-033).
-Carried from 2.5 (J-026): the guide links to and names the PDF only, never `AUDIT.html` or a review's JSON files.
-Check: `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty; a reader who is not Ghost follows it on a clean machine and reaches a PDF, recorded as a finding (P-03).
-
 ### 5.4 Ten real audits read
 
 Reads 3.6's ranking, which waits on GR-007 in Phase W (J-033).
@@ -101,6 +95,15 @@ Waits on: Ghost to run the workflow by hand (CI minutes, P-13)
 Moved: from Phase 5
 From 5.2 (J-048): the workflow is `.github/workflows/windows.yml` (Actions, "windows", "Run workflow"); it runs `test/crawl/package.spec.ts` on `windows-latest`.
 Check: the `workflow_dispatch` run (pinned actions, `permissions: contents: read`) green once per release: install, audit the fixture, read the PDF's text; its minutes in the journal's Cost line.
+
+### 5.3 docs/SALES-GUIDE.md
+
+Waits on: a reader who is not Ghost, on a clean machine (P-03)
+Moved: from Phase 5
+From 5.3 (J-049): the guide is written and its grep half passes; it says nothing of a score (the ranking, 3.6, waits on GR-007).
+The guide's "read the ranking" needs 3.6, which waits on GR-007 in Phase W (J-033).
+Carried from 2.5 (J-026): the guide links to and names the PDF only, never `AUDIT.html` or a review's JSON files.
+Check: `grep -rn "AUDIT.html" docs/SALES-GUIDE.md` is empty; a reader who is not Ghost follows it on a clean machine and reaches a PDF, recorded as a finding (P-03).
 
 ### 5.5 Resync once to the parent's then-HEAD
 

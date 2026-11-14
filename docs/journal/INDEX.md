@@ -52,3 +52,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-046 | Ghost: the audit at a4c8045 is the product; deployment first, no resync planned | direction | `J-000-099.md` |
 | J-047 | Packaging (TODO 5.1): the tarball installs with one command and reviews the fixture | feature | `J-000-099.md` |
 | J-048 | Windows on GitHub Actions (TODO 5.2): the workflow written, its run waits on Ghost | feature | `J-000-099.md` |
+| J-049 | The salesperson's guide (TODO 5.3): written against the program as built; its reader waits | feature | `J-000-099.md` |
