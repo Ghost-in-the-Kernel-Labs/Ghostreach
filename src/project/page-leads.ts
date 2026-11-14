@@ -2,12 +2,12 @@
  * The lead finder's sections of the local page (split out of `serve.ts`): the company lane's lookups (4.6, `company.ts`), each
  * board's QA roles as text and a kept address as a link, no board offering the paste lane (4.9); the discovery lane (4.7,
  * `discover.ts`), the saved search's form, the last run's rows one per company and each skipped source named; on each company row,
- * what the salesperson keeps about it (`leads.ts`): its website (4.8).
+ * what the salesperson keeps about it (`leads.ts`): its website (4.8), the closed sites' postings pasted (4.9).
  */
 import type { CompanyLookup } from './company.js';
 import type { DiscoveryRow, DiscoveryRun, SavedSearch } from './discover.js';
 import { esc } from './html.js';
-import { companyKey, websiteOf, type CompanyNotes } from './leads.js';
+import { companyKey, postingsOf, websiteOf, type CompanyNotes } from './leads.js';
 
 /** What the company rows are drawn with: what is kept per company, and a post on one row refused, said under that row. */
 export interface Rows {
@@ -17,19 +17,28 @@ export interface Rows {
 
 /**
  * What a company row offers the salesperson (4.8): the company's website, typed in a text box since no source gives one, kept
- * when it reads as a site, never looked up. A row whose website is known shows it in the box, to correct; blank forgets it.
+ * when it reads as a site, never looked up. A row whose website is known shows it in the box, to correct; blank forgets it. The
+ * paste lane (4.9): the closed sites' postings pasted for it, each a link the salesperson may open (never fetched, no referrer, no
+ * opener), and a box to paste another.
  */
 function companyTools(name: string, rows: Rows, typedAsSite = false): string {
   const website = websiteOf(rows.notes, name, typedAsSite);
   const said = website ? '' : ' <span class="state">no website given</span>';
   const refused = rows.refused && companyKey(rows.refused.company) === companyKey(name) ? `\n<p class="refused">${esc(rows.refused.why)}</p>` : '';
   return `${said}${refused}
-<form method="post" action="/company/site"><input type="hidden" name="company" value="${esc(name)}"><label>Website: <input name="site" type="text" maxlength="300" placeholder="acme.com" value="${esc(website ?? '')}"></label> <button>Keep the site</button></form>`;
+<form method="post" action="/company/site"><input type="hidden" name="company" value="${esc(name)}"><label>Website: <input name="site" type="text" maxlength="300" placeholder="acme.com" value="${esc(website ?? '')}"></label> <button>Keep the site</button></form>${pasteLane(name, rows)}`;
 }
 
-/** What the page says when no board is found: the paste lane is the way left (4.9 builds it). */
+/** The paste lane on a row (4.9): each posting pasted, as a link, and the form to paste another. */
+function pasteLane(name: string, rows: Rows): string {
+  const pasted = postingsOf(rows.notes, name).map((p) => `<li><a href="${esc(p.url)}" rel="noopener noreferrer">${esc(p.url)}</a> <span class="day">pasted ${esc(p.at.slice(0, 10))}</span></li>`);
+  return `${pasted.length ? `\n<ul class="roles">\n${pasted.join('\n')}\n</ul>` : ''}
+<form method="post" action="/company/posting"><input type="hidden" name="company" value="${esc(name)}"><label>A posting seen on LinkedIn, Indeed, Glassdoor or ZipRecruiter: <input name="posting" type="text" maxlength="2000" placeholder="the posting's address"></label> <button>Keep the posting</button></form>`;
+}
+
+/** What the page says when no board is found: the paste lane is the way left (4.9). */
 export const NO_BOARD = 'No public board found.';
-export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter? Keep that posting with the paste lane, which comes in a later version.';
+export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter? Keep it with the paste lane below: its address is kept as a note, never opened by this program.';
 
 /** One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept. */
 function boardItem(board: CompanyLookup['boards'][number]): string {

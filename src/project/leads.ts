@@ -4,6 +4,10 @@
  * text is held to the test a review holds a site to (`startUrl`), and kept in `<data>/leads.json`, written whole (temporary file
  * and rename). A row is one company by the company lane's words (`companyWords`), so the discovery lane's "ACME Robotics" and the
  * company lane's "Acme Robotics, Inc." share what is kept.
+ *
+ * The paste lane (TODO 4.9, RF-06): a posting the salesperson saw on a closed site (LinkedIn, Indeed, Glassdoor, ZipRecruiter;
+ * docs/SOURCES.md's `paste only` rows) is kept on its company's row as a note, its address alone, and never fetched: nothing here
+ * imports the fetch function, and the page shows the address as text in a link the salesperson may open.
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -13,10 +17,23 @@ import { startUrl } from './review.js';
 /** The longest website kept. */
 const MAX_SITE = 300;
 
-/** What is kept for one company: its name as last shown, and its website when typed. */
+/** The closed sites' domains, one per `paste only` row of docs/SOURCES.md (RF-06): a posting on one is a note, never a fetch. */
+export const CLOSED_SITES: readonly string[] = ['linkedin.com', 'indeed.com', 'glassdoor.com', 'ziprecruiter.com'];
+/** The longest posting address kept, and the most kept for one company (the newest). */
+const MAX_POSTING = 2000;
+const MAX_POSTINGS = 20;
+
+/** A closed site's posting the salesperson pasted: its address, and the day it was pasted. */
+interface Pasted {
+  url: string;
+  at: string;
+}
+
+/** What is kept for one company: its name as last shown, its website when typed (4.8), and the postings pasted (4.9). */
 export interface CompanyNotes {
   name: string;
   website?: string;
+  postings?: Pasted[];
 }
 
 /** A company's key: its words, accents folded, lowercase, a trailing legal form dropped, joined by a space; '' when it has none. */
@@ -81,3 +98,31 @@ export function websiteOf(notes: Readonly<Record<string, CompanyNotes>>, name: s
   if (kept) return kept;
   return typedAsSite && candidateSlugs(name).companyDomain ? (startUrl(name.trim()) ?? undefined) : undefined;
 }
+
+/** A pasted address as kept: https on the default port, no credentials, on a closed site's domain; else undefined. */
+function closedPosting(text: string): string | undefined {
+  const url = startUrl(text);
+  if (!url || url.length > MAX_POSTING || !URL.canParse(url)) return undefined;
+  const address = new URL(url);
+  const host = address.hostname.toLowerCase();
+  if (address.protocol !== 'https:' || address.port !== '' || address.username !== '' || address.password !== '') return undefined;
+  return CLOSED_SITES.some((d) => host === d || host.endsWith(`.${d}`)) ? address.href : undefined;
+}
+
+/**
+ * Keeps a closed site's posting the salesperson pasted on a company's row (4.9), newest first, none twice, at most
+ * `MAX_POSTINGS`: null when kept, else why not. Never fetched.
+ */
+export function keepPosting(data: string, company: string, pasted: string, now: Date = new Date()): string | null {
+  const name = named(company);
+  if (!name) return 'That row names no company.';
+  const url = closedPosting(pasted.trim());
+  if (!url) return 'Not a posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter (an https address).';
+  change(data, name, (notes) => {
+    notes.postings = [{ url, at: now.toISOString() }, ...(notes.postings ?? []).filter((p) => p.url !== url)].slice(0, MAX_POSTINGS);
+  });
+  return null;
+}
+
+/** The postings pasted for a company row, newest first. */
+export const postingsOf = (notes: Readonly<Record<string, CompanyNotes>>, name: string): readonly Pasted[] => noteOf(notes, companyKey(name))?.postings ?? [];

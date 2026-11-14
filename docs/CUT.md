@@ -267,7 +267,7 @@ sites pasted there, kept in `queue.json` with a state each and reviewed up to N 
 bucket kept in `<data>/buckets.json`; `src/project/company.ts` (4.6) the company lane, a typed company's board names probed on the
 company-lane sources through it, the QA roles of each board found kept in `<data>/companies.json`; `src/project/discover.ts` (4.7) the
 discovery lane, one saved search run across the discovery-lane sources through it, one row per company kept in `<data>/discovery.json`;
-`src/project/leads.ts` (4.8) what the salesperson keeps on a company row, its typed website, in `<data>/leads.json`.
+`src/project/leads.ts` (4.8) what the salesperson keeps on a company row, its typed website and the closed sites' postings pasted (4.9), in `<data>/leads.json`.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`

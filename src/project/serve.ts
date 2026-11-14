@@ -21,7 +21,7 @@ import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
 import { reviewsPage, type ListedReview, type Said } from './page.js';
-import { keepWebsite, readNotes } from './leads.js';
+import { keepPosting, keepWebsite, readNotes } from './leads.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -89,7 +89,7 @@ function sendPage(data: string, settings: Settings, req: IncomingMessage, res: S
 const MAX_BODY = 64 * 1024;
 
 /** The POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry', '/company', '/company/site', '/discover/search', '/discover/run']);
+const POSTS = new Set(['/queue', '/queue/retry', '/company', '/company/site', '/company/posting', '/discover/search', '/discover/run']);
 
 /** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the lead finder's network and keys (a test's). */
 interface Served {
@@ -133,10 +133,10 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
       return;
     }
-    if (path === '/company/site') {
-      // The salesperson's typed website (4.8): held to a site's test and kept, never looked up.
+    if (path === '/company/site' || path === '/company/posting') {
+      // The salesperson's typed website (4.8), held to a site's test, or a closed site's posting (4.9): kept, never fetched.
       const company = form.get('company') ?? '';
-      const why = keepWebsite(data, company, form.get('site') ?? '');
+      const why = path === '/company/site' ? keepWebsite(data, company, form.get('site') ?? '') : keepPosting(data, company, form.get('posting') ?? '');
       return sendPage(data, settings, req, res, why ? { row: { company, why } } : undefined);
     }
     if (path === '/discover/search') {

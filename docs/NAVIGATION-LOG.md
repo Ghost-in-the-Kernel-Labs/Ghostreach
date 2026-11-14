@@ -99,3 +99,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `src/project/serve.ts`, `src/project/queue.ts`, `src/project/discover.ts`, `src/project/company.ts`, `src/project/review.ts`, `src/leaf/pages/url.ts`, `docs/modules.json`, `docs/CUT.md`, `test/unit/serve.test.ts`, `test/unit/discover.test.ts`, `test/unit/company.test.ts`, `test/unit/sources.test.ts`, `test/unit/hosts.test.ts`, `docs/SOURCES.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: "the company row" is two things on the page (a discovery row, a company lane lookup), and the item does not say which; the metrics table's largest-file line goes stale on a refactor and fails the fast loop until rewritten.
 - **Suggestions**: none beyond the `leads` module ruling already asked.
+
+### 2026-11-14 · TODO 4.9, the paste lane · Opus
+
+- **Task**: a closed site's posting pasted on a company row, kept as a note, never fetched; rendered escaped, a link with `rel="noopener noreferrer"`.
+- **Opened**: `TODO.md`, `docs/ROADMAP.md`, `docs/SOURCES.md`, `src/project/leads.ts`, `src/project/page-leads.ts`, `src/project/serve.ts`, `test/unit/leads.test.ts`, `test/unit/hosts.test.ts`, `test/unit/company.test.ts`, `docs/DONE.md`.
+- **Complaints**: none.
+- **Suggestions**: none.

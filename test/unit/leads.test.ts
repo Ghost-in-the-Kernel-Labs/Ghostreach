@@ -1,18 +1,26 @@
 /**
  * What the salesperson keeps on a company row of the lead finder (TODO 4.8 on): the website typed in a text box, since no source
- * gives one, held to a site's test and kept in the data folder, never looked up (no fetch, no search engine; GR-005). No network:
- * the page's lead finder is handed a transport that records every call, and none is made.
+ * gives one, held to a site's test and kept in the data folder, never looked up (no fetch, no search engine; GR-005); a closed
+ * site's posting pasted (4.9), kept as a note and never fetched. No network: the page's lead finder is handed a transport that
+ * records every call, and the one fetch function is watched (`fetchSource`, spied on as the module is loaded); neither is called.
  */
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { discoveryFile, type DiscoveryRun } from '../../src/project/discover.js';
 import { companiesFile, type CompanyLookup } from '../../src/project/company.js';
-import type { Transport } from '../../src/project/fetch.js';
-import { companyKey, keepWebsite, readNotes, websiteOf } from '../../src/project/leads.js';
+import { fetchSource, type Transport } from '../../src/project/fetch.js';
+import { CLOSED_SITES, companyKey, keepPosting, keepWebsite, postingsOf, readNotes, websiteOf } from '../../src/project/leads.js';
+import { parseSources, sourcesText } from '../support/sources.js';
 import { servePage, type ServedPage } from '../../src/project/serve.js';
+
+// The one fetch function, watched: every module of the program that imports it gets this spy.
+vi.mock('../../src/project/fetch.js', async (original) => {
+  const real = await original<typeof import('../../src/project/fetch.js')>();
+  return { ...real, fetchSource: vi.fn(real.fetchSource) };
+});
 
 let data: string;
 let calls: string[];
@@ -60,6 +68,7 @@ function post(url: string, path: string, fields: Record<string, string>, origin:
 beforeEach(() => {
   data = mkdtempSync(join(tmpdir(), 'ghostreach-leads-'));
   calls = [];
+  vi.mocked(fetchSource).mockClear();
   writeFileSync(discoveryFile(data), JSON.stringify({ search: RUN.search, run: RUN }));
   writeFileSync(companiesFile(data), JSON.stringify({ lookups: LOOKUPS }));
 });
@@ -114,6 +123,56 @@ describe('the website a salesperson types (TODO 4.8)', () => {
     page = await servePage(data, async () => null, transport, {});
     for (const origin of [null, 'null', 'http://evil.example']) {
       expect((await post(page.url, '/company/site', { company: 'Hooli', site: 'hooli.example' }, origin)).status).toBe(403);
+    }
+    expect(readNotes(data)).toEqual({});
+  });
+});
+
+describe('the paste lane (TODO 4.9)', () => {
+  const POSTING = 'https://www.linkedin.com/jobs/view/4001001/?trk=x';
+
+  it('names one closed site per paste-only row of docs/SOURCES.md', () => {
+    const closed = parseSources(sourcesText()).filter((r) => r.status === 'paste only').map((r) => `${r.source.toLowerCase()}.com`);
+    expect([...CLOSED_SITES]).toEqual(closed);
+  });
+
+  it('keeps a closed site\'s posting on its company, newest first, none twice; refuses any other address', () => {
+    const at = new Date('2026-11-14T12:00:00Z');
+    expect(keepPosting(data, 'Hooli', POSTING, at)).toBeNull();
+    expect(keepPosting(data, 'Hooli', 'uk.indeed.com/viewjob?jk=abc', at)).toBeNull();
+    expect(keepPosting(data, 'Hooli', POSTING, at)).toBeNull();
+    expect(postingsOf(readNotes(data), 'Hooli, Inc.').map((p) => p.url)).toEqual([POSTING, 'https://uk.indeed.com/viewjob?jk=abc']);
+    const refused = 'Not a posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter (an https address).';
+    for (const text of ['https://hooli.example/jobs/1', 'http://www.linkedin.com/jobs/view/1', 'https://linkedin.com.evil.example/x', 'https://user:pw@www.glassdoor.com/x', 'https://www.ziprecruiter.com:8443/x', 'javascript:alert(1)', 'not an address', '']) {
+      expect([text, keepPosting(data, 'Hooli', text, at)]).toEqual([text, refused]);
+    }
+    expect(fetchSource).not.toHaveBeenCalled();
+  });
+
+  it('is offered on every company row; a pasted posting is shown as an escaped link, opened by no one but the salesperson, and the fetch function is never called', async () => {
+    page = await servePage(data, async () => null, transport, {});
+    const blank = await (await fetch(page.url)).text();
+    expect(blank.match(/<form method="post" action="\/company\/posting">/g)).toHaveLength(4);
+    const network = vi.spyOn(globalThis, 'fetch');
+    const pasted = `${POSTING}&q="><script>alert(1)</script>`;
+    const kept = await post(page.url, '/company/posting', { company: 'Globex Corporation', posting: pasted });
+    expect(network).not.toHaveBeenCalled();
+    network.mockRestore();
+    expect(kept.status).toBe(200);
+    expect(kept.text).not.toMatch(/<script/i);
+    const href = new URL(pasted).href;
+    expect(kept.text).toContain(`<li><a href="${href.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" rel="noopener noreferrer">`);
+    expect(kept.text).toContain('<span class="day">pasted ');
+    const refused = await post(page.url, '/company/posting', { company: 'Hooli', posting: 'https://hooli.example/jobs/1' });
+    expect(refused.text).toContain('<p class="refused">Not a posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter (an https address).</p>');
+    expect(fetchSource).not.toHaveBeenCalled();
+    expect(calls).toEqual([]);
+  });
+
+  it('refuses a post from another origin or from none, keeping nothing', async () => {
+    page = await servePage(data, async () => null, transport, {});
+    for (const origin of [null, 'null', 'http://evil.example']) {
+      expect((await post(page.url, '/company/posting', { company: 'Hooli', posting: POSTING }, origin)).status).toBe(403);
     }
     expect(readNotes(data)).toEqual({});
   });

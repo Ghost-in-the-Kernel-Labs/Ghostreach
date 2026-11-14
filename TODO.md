@@ -22,13 +22,9 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.9 The paste lane
-
-From 4.8 (J-039): what the salesperson keeps on a company row is `src/project/leads.ts` (`<data>/leads.json`, by `companyKey`, the company lane's `companyWords` joined), drawn on each row of both lanes by `companyTools` in `src/project/page-leads.ts`; its posts are guarded in `src/project/serve.ts` as the others are.
-Check: the fetch function is never called for a pasted URL.
-
 ### 4.10 Queue this site
 
+From 4.8 and 4.9 (J-039, J-040): a company row's website is `websiteOf` of `src/project/leads.ts` (typed, or a lookup typed as a site), its pasted closed-site postings `postingsOf`; the row's tools are `companyTools` in `src/project/page-leads.ts`, its posts guarded in `src/project/serve.ts`. GR-007 (the ranking) waits in Phase W, so a company already reviewed shows its review ("reviewed <date>, PDF"), no score.
 Check: the queue entry carries the lead's source and URL; a company already audited shows its score instead.
 
 ### 4.11 Attribution
