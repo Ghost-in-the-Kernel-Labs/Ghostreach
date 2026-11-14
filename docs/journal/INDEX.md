@@ -45,3 +45,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-039 | Website resolution by the salesperson (TODO 4.8) | decision | `J-000-099.md` |
 | J-040 | The paste lane (TODO 4.9) | decision | `J-000-099.md` |
 | J-041 | Queue this site (TODO 4.10) | decision | `J-000-099.md` |
+| J-042 | Attribution (TODO 4.11) | decision | `J-000-099.md` |

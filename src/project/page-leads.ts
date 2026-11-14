@@ -5,7 +5,7 @@
  * what the salesperson keeps about it (`leads.ts`): its website (4.8), the closed sites' postings pasted (4.9).
  */
 import type { CompanyLookup } from './company.js';
-import type { DiscoveryRow, DiscoveryRun, SavedSearch } from './discover.js';
+import { LINK_BACK, type DiscoveryRow, type DiscoveryRun, type SavedSearch } from './discover.js';
 import { esc } from './html.js';
 import { companyKey, postingsOf, websiteOf, type CompanyNotes, type Lane } from './leads.js';
 import type { QueueEntry } from './queue.js';
@@ -79,11 +79,13 @@ export function lookupsList(lookups: readonly CompanyLookup[], rows: Rows): stri
   return `<ul>\n${items.join('\n')}\n</ul>`;
 }
 
-/** One company found: its newest QA posting (a link when its address was kept), the source and day, and how many more. */
+/** One company found: its newest QA posting (a link when its address was kept), the source (attributed, 4.11) and day, and how many more. */
 function discoveryItem(row: DiscoveryRow, rows: Rows): string {
   const title = row.url ? `<a href="${esc(row.url)}" rel="noreferrer">${esc(row.title)}</a>` : esc(row.title);
   const more = row.others ? `, and ${row.others} more posting${row.others === 1 ? '' : 's'}` : '';
-  return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${esc(row.source)}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span>${companyTools(row.company, rows, 'discovery')}</li>`;
+  // Attribution (4.11): a source asking for a link back is named as a link to its own posting page.
+  const source = row.url && LINK_BACK.includes(row.source) ? `from <a href="${esc(row.url)}" rel="noopener noreferrer">${esc(row.source)}</a>` : esc(row.source);
+  return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${source}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span>${companyTools(row.company, rows, 'discovery')}</li>`;
 }
 
 /** The discovery lane: the saved search's form, the run button, and the last run's rows and skipped sources. */

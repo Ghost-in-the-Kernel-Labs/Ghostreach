@@ -1,5 +1,11 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { FETCHED_SOURCES } from '../../src/project/fetch.js';
+import { DISCOVERY, LINK_BACK, discover } from '../../src/project/discover.js';
+import { FETCHED_SOURCES, type Transport } from '../../src/project/fetch.js';
+import { discoverySection } from '../../src/project/page-leads.js';
+import * as remotive from '../support/boards/remotive.js';
 import { COLUMNS, header, hostsOf, keysOf, parseSources, section, sourcesText, type Row } from '../support/sources.js';
 
 // docs/SOURCES.md held (TODO 4.3, docs/ROADMAP.md §5, RF-06 to RF-08): one row per source the roadmap names, each cell
@@ -66,5 +72,34 @@ describe('docs/SOURCES.md (TODO 4.3)', () => {
     const code = sourcesInCode();
     expect(code.length).toBeGreaterThan(0);
     expect(code.filter((s) => byName.get(s.name)?.status !== 'in' || !hostsOf(byName.get(s.name)?.host ?? '').includes(s.host)).map((s) => s.name)).toEqual([]);
+  });
+});
+
+describe('attribution: a link back where a source asks for one (TODO 4.11)', () => {
+  it('names as link-back sources the in rows of docs/SOURCES.md whose Link back is yes, and no other', () => {
+    expect([...LINK_BACK]).toEqual(rows.filter((r) => r.status === 'in' && r.linkBack.startsWith('yes')).map((r) => r.source));
+  });
+
+  it('gives every row from a link-back source its posting page on the source, named as the source, and shows no posting it cannot link', async () => {
+    const data = mkdtempSync(join(tmpdir(), 'ghostreach-attribution-'));
+    try {
+      // Remotive's fixture, and one posting more whose address is off Remotive's own domain: it cannot be attributed.
+      const jobs = JSON.parse(remotive.JOBS) as { jobs: Record<string, unknown>[] };
+      jobs.jobs.push({ ...jobs.jobs[0], id: 9003, company_name: 'Initech', title: 'QA Engineer', url: 'https://initech.example/jobs/9003' });
+      const transport: Transport = async (url) => (url.startsWith('https://remotive.com/')
+        ? new Response(JSON.stringify(jobs), { headers: { 'Content-Type': remotive.TYPE } })
+        : new Response('', { status: 503 }));
+      const run = await discover({ titles: ['QA engineer'], location: 'remote' }, { data, transport, env: {}, now: () => new Date('2026-11-14T12:00:00Z') });
+      const linkBack = run.rows.filter((r) => LINK_BACK.includes(r.source));
+      expect(linkBack.map((r) => r.company)).toEqual(['Globex Corporation', 'Hooli']);
+      const domain = (source: string): string => DISCOVERY.find((d) => d.source === source)!.postingDomain;
+      const on = (url: string, d: string): boolean => new URL(url).hostname === d || new URL(url).hostname.endsWith(`.${d}`);
+      expect(linkBack.filter((r) => !r.url || !on(r.url, domain(r.source)))).toEqual([]);
+      const html = discoverySection(run.search, run, undefined, { notes: {}, reviews: [], sites: [] });
+      for (const r of linkBack) expect(html).toContain(`from <a href="${r.url}" rel="noopener noreferrer">${r.source}</a>`);
+      expect(html).not.toContain('Initech');
+    } finally {
+      rmSync(data, { recursive: true, force: true });
+    }
   });
 });

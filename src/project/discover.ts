@@ -12,6 +12,10 @@
  * (P-16): titles and names kept as plain text, written escaped by the page; a posting's address kept only by `keptUrl` (https on
  * the source's own domain). None of the four sources gives a company's website (docs/SOURCES.md, its Website cells), so a row
  * carries none until 4.8 lets the salesperson type it.
+ *
+ * Attribution (TODO 4.11): a source whose terms ask for a link back (`LINK_BACK`, docs/SOURCES.md's `in` rows marked `yes`) has
+ * each of its rows link the source's own posting page: a posting of it whose address is not kept (not https on its own domain)
+ * cannot be attributed, so it is not shown.
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -33,6 +37,9 @@ export const MAX_SEARCH_TITLES = 5;
 const MAX_FIELD = 100;
 /** How long one call may take: the salesperson waits on the run, every source asked at once. */
 const CALL_TIMEOUT_MS = 15_000;
+
+/** The sources whose terms ask for a link back to their own posting page, named on the row (docs/SOURCES.md, Link back `yes`). */
+export const LINK_BACK: readonly string[] = ['Remotive'];
 
 /** A posting as a source gives it: the company's name, the title, the address, and when it was posted (ISO, or '' unknown). */
 interface Found {
@@ -202,6 +209,8 @@ export async function discover(search: SavedSearch, options: DiscoverOptions): P
   const postings = answers.flatMap((a) => a.found)
     .map((f) => ({ company: cleanName(f.company), title: typeof f.title === 'string' ? cleanTitle(f.title) : '', url: keptUrl(f.url, f.source, null), source: f.source.source, at: f.at }))
     .filter((p) => p.company !== '' && p.title !== '' && isQaTitle(p.title))
+    // A link-back source's posting without its own page to link is not shown (4.11).
+    .filter((p) => p.url !== undefined || !LINK_BACK.includes(p.source))
     // One posting found under two titles (Jooble, USAJOBS) is one posting: by its source and address, or its company and title.
     .filter((p) => once(seen, `${p.source}\n${p.url ?? `${p.company}\n${p.title}`}`));
   // Newest first; a posting with no day last; a tie keeps the sources' order.

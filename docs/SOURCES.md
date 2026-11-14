@@ -67,7 +67,9 @@ saved title (at most five; one phrase a request), Arbeitnow once (no search para
 each posting's `location`, "remote" to its `remote` flag), Remotive once, in its Quality Assurance category (`category=qa`, the slug
 its categories list gives; `limit=100`), so a run is at most twelve calls and Remotive's 4 a day allow four runs. A source over
 its cap, without its key or failing is skipped and named on the page. The postings are kept by the company lane's title rule,
-then one row per company; a posting's address is a link only when https on the source's own domain; no source gives a website.
+then one row per company; a posting's address is a link only when https on the source's own domain; no source gives a website,
+so the salesperson types it on the row (4.8), never looked up. A source whose Link back is `yes` (Remotive; `LINK_BACK`, 4.11)
+has each of its rows name it as a link to its own posting page, and a posting of it with no such page is not shown.
 
 Three kinds of network use are outside it, each by design and each named in `test/unit/hosts.test.ts`:
 

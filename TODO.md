@@ -22,11 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.11 Attribution
-
-From 4.3 (J-034): the link-back sources are the rows `docs/SOURCES.md` marks `yes` (Remotive; Adzuna, excluded); The Muse's, Jooble's and Arbeitnow's, which the roadmap names, are `unverified` there.
-Check: `test/unit/sources.test.ts` holds that every row from a link-back source carries its source URL.
-
 ### 4.12 Tune-up pass 4
 
 Check: `docs/when/tune-up.md` followed in full.

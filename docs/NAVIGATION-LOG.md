@@ -113,3 +113,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `TODO.md`, `docs/ROADMAP.md`, `src/project/queue.ts`, `src/project/leads.ts`, `src/project/page-leads.ts`, `src/project/page.ts`, `src/project/serve.ts`, `test/unit/serve.test.ts`, `test/unit/leads.test.ts`, `docs/DONE.md`.
 - **Complaints**: the item's check names a score that a Phase W item (3.6, GR-007) owns; the item's text does not say so.
 - **Suggestions**: an item whose check depends on an item in Phase W carries a `From` line naming it, as the chain's rule asks for open questions.
+
+### 2026-11-14 · TODO 4.11, attribution · Opus
+
+- **Task**: where SOURCES.md says a source asks for a link back (`yes` only), each of its rows links the source's own posting page; `sources.test.ts` holds it.
+- **Opened**: `TODO.md`, `docs/SOURCES.md`, `src/project/discover.ts`, `src/project/page-leads.ts`, `test/unit/sources.test.ts`, `test/support/sources.ts`, `test/support/boards/remotive.ts`, `test/unit/discover.test.ts`, `docs/DONE.md`.
+- **Complaints**: the roadmap's step names three link-back sources the document left `unverified`; the item's text corrects it, the roadmap does not.
+- **Suggestions**: none.
