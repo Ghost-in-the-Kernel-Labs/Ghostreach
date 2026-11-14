@@ -34,9 +34,9 @@ None yet.
 
 The slow overnight run: `scripts/sweep.sh`, the cold full gate (`GHOST_COLD=1 scripts/gate.sh`: every cache off, so every
 mutant of every file is tried), its log under `build/sweep/`, never committed. Not a gate: nothing lands or ships on it, and
-what it finds is fixed forward, never a reason to undo a landing (C-040). A Claude scheduled task named "Ghostreach nightly
-sweep" opens a fresh session on this repository at 03:23 America/Chicago each night and runs it (never a GitHub scheduled
-trigger: C-032). Where its brief and this section differ, this section wins.
+what it finds is fixed forward, never a reason to undo a landing (C-040). A Claude agent runs it nightly: the code session
+that owns this project sets up the scheduled task (a fresh session on this repository each night; Ghost, 2026-11-14), never a
+GitHub scheduled trigger (C-032). Where the task's brief and this section differ, this section wins.
 
 The sweep session: setup from `origin/main` on a branch `sweep-<date>`; `scripts/sweep.sh`; on a passed verdict, report and
 stop. Otherwise fix what it found there and then, one attempt each: a surviving mutant gets a unit test that kills it
