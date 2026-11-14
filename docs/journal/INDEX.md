@@ -21,3 +21,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-015 | The four new dependencies read by the read-only reviewer | measurement | `J-000-099.md` |
 | J-016 | The flags stripped (TODO 1.3) | feature | `J-000-099.md` |
 | J-017 | The parent's unit tests carried (TODO 1.4) | feature | `J-000-099.md` |
+| J-018 | One command: ghostreach <site> (TODO 1.5) | feature | `J-000-099.md` |

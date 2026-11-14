@@ -26,8 +26,6 @@ import { routeCrawl } from './router.js';
 import { H } from '../leaf/heuristics/crawl.js';
 import { DEFAULT_USER_AGENT, type CrawlReport } from '../leaf/report.js';
 
-export { DEFAULT_USER_AGENT };
-
 import type { CrawlOptions } from './options.js';
 export type { CrawlOptions } from './options.js';
 

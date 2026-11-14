@@ -1,8 +1,7 @@
 /**
- * A crawl's names (G-090: its hash) and, for a file written before G-480, what it held before the reading masked it. Kept
- * apart from report-read.ts, which reads a report through it, so a reader of hashes alone needs no more.
+ * For a file written before G-480, what a crawl held before the reading masked it. Kept apart from report-read.ts, which
+ * reads a report through it.
  */
-import { createHash } from 'node:crypto';
 import type { CrawlReport } from '../leaf/report.js';
 import { scrub } from './report-scrub.js';
 
@@ -21,7 +20,3 @@ export function asWritten(held: CrawlReport): CrawlReport {
   return report;
 }
 
-/** A crawl's identity: sha-256 of its JSON, however the file holding it is spaced (crawl/history.ts names crawls by it). */
-export function crawlHash(report: CrawlReport): string {
-  return createHash('sha256').update(JSON.stringify(report)).digest('hex');
-}

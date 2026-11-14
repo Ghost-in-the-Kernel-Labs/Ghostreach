@@ -328,6 +328,16 @@ function addressPattern(url: string): string {
 }
 
 /**
+ * What someone types to start a crawl: "www.example.com" or "example.com/careers" become https://
+ * URLs; anything with a scheme is left as it is (so ftp:// is still refused later).
+ */
+export function startUrlFromArg(arg: string): string {
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(arg)) return arg;
+  if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?(\/.*)?$/i.test(arg)) return `https://${arg}`;
+  return arg;
+}
+
+/**
  * An address no site has, for asking it what it says to a page that does not exist: the same for a
  * site every time (a hash of its host name), so a recrawl asks the same address.
  */

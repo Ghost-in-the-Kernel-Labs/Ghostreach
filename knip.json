@@ -2,11 +2,6 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     "src/cli/main.ts",
-    "src/crawl/crawler.ts",
-    "src/crawl/report-scrub.ts",
-    "src/crawl/report-read.ts",
-    "src/audit/audit.ts",
-    "src/project/crawl.ts",
     "scripts/*.mjs",
     "test/unit/**/*.test.ts"
   ],

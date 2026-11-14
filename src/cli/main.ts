@@ -1,5 +1,7 @@
-// ghostreach <site>: the one command (GR-003: no flag). Until Phase 1 lands the crawl, it says what it will take.
+// ghostreach <site>: the one command (GR-003: no flag). It reads the site and writes its review (src/project/review.ts).
 // Decision: GR-003
+import { dataDir, review } from '../project/review.js';
+
 const USAGE = 'ghostreach <site>: reviews the site and writes its Suite Builder PDF. Nothing else is typed.';
 
 /** What the command line holds: the site, and nothing else. The parent's options collapse to this (P-15, GR-003). */
@@ -18,12 +20,12 @@ export function parse(argv: readonly string[]): Values | 'help' | null {
   return { site: argv[0] };
 }
 
-export function main(argv: readonly string[]): number {
+/** The command: its exit code. `data` is where the reviews go; a test names its own folder, the salesperson never does (no flag). */
+export async function main(argv: readonly string[], data = dataDir()): Promise<number> {
   const values = parse(argv);
   if (values === null || values === 'help') {
     console.log(USAGE);
     return values === 'help' ? 0 : 1;
   }
-  console.log(`${USAGE}\nThe review of ${values.site} arrives with Phase 1 (docs/ROADMAP.md).`);
-  return 2;
+  return (await review({ site: values.site, data, say: (line) => console.log(line) })).code;
 }

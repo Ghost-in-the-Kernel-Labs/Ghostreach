@@ -22,7 +22,7 @@ import { CHECKS } from '../findings/check-catalogue.js';
  * words), and each fact it states follows the report's (test/unit/audit-truth.test.ts).
  */
 // Decision: G-633
-export const auditHeading = (host: string): string => `Automated site review: ${host}`;
+const auditHeading = (host: string): string => `Automated site review: ${host}`;
 
 /** The report's facts, which an older or partial report may lack. */
 const factsOf = (report: CrawlReport): Partial<CrawlReport> => report;
@@ -30,7 +30,7 @@ const factsOf = (report: CrawlReport): Partial<CrawlReport> => report;
 
 /** What follows "N pages of <origin>" under the heading: who read it, when, and that nothing was sent (the read never signs in, GR-003). */
 // Decision: G-633
-export function auditReadBy(report: CrawlReport, day: string): string {
+function auditReadBy(report: CrawlReport, day: string): string {
   return `read on ${day} by Suite Builder's crawler in a real browser, logged out, as a first-time visitor sees them. Nothing was sent, bought or signed in to. ${auditScope(report, CHECKS)}`;
 }
 
@@ -38,7 +38,7 @@ const SEVERITY_WORDS = 'Major: lets a visitor or a search engine down now. Minor
 
 /** The severities, and whether the pages a finding lists may be a sample: only a read that did not end of itself may have missed more. */
 // Decision: G-633
-export function auditSeverities(report: CrawlReport): string {
+function auditSeverities(report: CrawlReport): string {
   const ended = factsOf(report).stopReason;
   const sure = ended === 'page-limit' || ended === 'saturated';
   const reach = ended === 'complete' ? '.' : `; the read ${sure ? 'is a sample of a big' : 'may be a sample of the'} site, so a finding can reach further than it lists.`;
@@ -77,7 +77,7 @@ function noneFound(report: CrawlReport, read: number): string {
 
 /** A review that found nothing says what it checked and what it could not do, never that every page was fine. */
 // Decision: G-633
-export function auditNothing(report: CrawlReport): { title: string; body: string } {
+function auditNothing(report: CrawlReport): { title: string; body: string } {
   const { read } = auditCounts(report, []);
   const said = noneFound(report, read);
   return { title: 'Nothing to report', body: [said, ...readLimits(report), `That is what an automated read of the public site can say${onlyReadings(report, CHECKS) ? '; it is not a security test.' : '.'}`].join(' ') };
@@ -166,7 +166,7 @@ ${body}
 const n = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
 
 /** The site's findings. */
-export function auditFindings(report: CrawlReport): SiteFinding[] {
+function auditFindings(report: CrawlReport): SiteFinding[] {
   return siteFindings(report);
 }
 

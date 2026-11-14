@@ -1,0 +1,467 @@
+[
+  {
+    "code": "SITE-02",
+    "severity": "major",
+    "listed": [
+      "link",
+      "links"
+    ],
+    "title": "1 broken link: the site links to an address that answers an error",
+    "where": [
+      {
+        "url": "http://fixture.test/missing",
+        "says": "answered 404; linked from /",
+        "link": {
+          "paths": [
+            "/missing"
+          ],
+          "status": 404,
+          "answer": "answered 404",
+          "from": [
+            "/"
+          ],
+          "more": 0,
+          "why": "broken"
+        },
+        "item": {
+          "at": "address",
+          "key": "/missing",
+          "url": "http://fixture.test/missing",
+          "status": 404,
+          "from": [
+            "/"
+          ],
+          "more": 0
+        }
+      }
+    ],
+    "why": "A visitor who follows one of these links reaches an error instead of the page promised.",
+    "fix": "Point each link at a page that exists, or bring the page back (or redirect its old address to where it went)."
+  },
+  {
+    "code": "SITE-11",
+    "severity": "major",
+    "title": "13 pages have no viewport setting",
+    "where": [
+      {
+        "url": "http://fixture.test/",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/all",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/all",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/all"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/pikachu",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/pikachu",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/pikachu"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/charmander",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/charmander",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/charmander"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/bulbasaur",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/bulbasaur",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/bulbasaur"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/grass",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/type/grass",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/grass"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/fire",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/type/fire",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/fire"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/about",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/about",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/about"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/electric",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/type/electric",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/electric"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/wartortle",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/wartortle",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/wartortle"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/squirtle",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/squirtle",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/squirtle"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/ivysaur",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/ivysaur",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/ivysaur"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/water",
+        "says": "no <meta name=\"viewport\">: a phone shows the desktop page, shrunk",
+        "item": {
+          "at": "markup",
+          "key": "/type/water",
+          "read": "viewport",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/water"
+          ]
+        }
+      }
+    ],
+    "why": "On a phone a page with no viewport setting is drawn at desktop width and shrunk to fit, and Google ranks it as not mobile-friendly. A page that stops zooming fails people who need larger text (WCAG 1.4.4).",
+    "fix": "Use <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">, without user-scalable=no or maximum-scale=1."
+  },
+  {
+    "code": "SITE-17",
+    "severity": "minor",
+    "title": "13 pages have no description for search results",
+    "where": [
+      {
+        "url": "http://fixture.test/",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/all",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/all",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/all"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/pikachu",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/pikachu",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/pikachu"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/charmander",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/charmander",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/charmander"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/bulbasaur",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/bulbasaur",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/bulbasaur"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/grass",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/type/grass",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/grass"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/fire",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/type/fire",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/fire"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/about",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/about",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/about"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/electric",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/type/electric",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/electric"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/wartortle",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/wartortle",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/wartortle"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/squirtle",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/squirtle",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/squirtle"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/pokedex/ivysaur",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/pokedex/ivysaur",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/pokedex/ivysaur"
+          ]
+        }
+      },
+      {
+        "url": "http://fixture.test/type/water",
+        "says": "no meta description",
+        "item": {
+          "at": "markup",
+          "key": "/type/water",
+          "read": "undescribed",
+          "said": null,
+          "pages": [
+            "http://fixture.test/type/water"
+          ]
+        }
+      }
+    ],
+    "why": "Search results show the description under the title; without one, the search engine picks a line of the page, often the menu or a cookie notice.",
+    "fix": "Give each page a <meta name=\"description\"> of a sentence or two saying what it offers."
+  },
+  {
+    "code": "SITE-03",
+    "severity": "minor",
+    "listed": [
+      "link",
+      "links"
+    ],
+    "title": "1 of the site's own links redirects before it arrives",
+    "where": [
+      {
+        "url": "http://fixture.test/old-list",
+        "says": "301 to /pokedex/all",
+        "item": {
+          "at": "address",
+          "key": "/old-list",
+          "url": "http://fixture.test/old-list",
+          "status": 301,
+          "to": "http://fixture.test/pokedex/all"
+        }
+      }
+    ],
+    "why": "Every click on one of these links costs an extra round trip before the page starts loading, and search engines see one page at two addresses.",
+    "fix": "Link to each page's final address (with or without its trailing slash, as the server serves it)."
+  },
+  {
+    "code": "SITE-28",
+    "severity": "minor",
+    "listed": [
+      "address",
+      "addresses"
+    ],
+    "title": "The site has no sitemap search engines can read",
+    "where": [
+      {
+        "url": "http://fixture.test/sitemap.xml",
+        "says": "answered 404",
+        "item": {
+          "at": "file",
+          "key": "missing",
+          "url": "http://fixture.test/sitemap.xml",
+          "status": 404
+        }
+      }
+    ],
+    "why": "A sitemap tells search engines every page to index, and how fresh each is; without one they find pages only by following links, and one listing wrong addresses spends their visits on errors.",
+    "fix": "Publish /sitemap.xml listing each page's final address (most site builders and CMSs have a setting or plugin for it), and name it in robots.txt (Sitemap: ...)."
+  },
+  {
+    "code": "SITE-29",
+    "severity": "minor",
+    "listed": [
+      "address",
+      "addresses"
+    ],
+    "title": "The site publishes no security.txt, the file that tells security researchers whom to contact",
+    "where": [
+      {
+        "url": "http://fixture.test/.well-known/security.txt",
+        "says": "answered 404",
+        "item": {
+          "at": "file",
+          "key": "security.txt",
+          "url": "http://fixture.test/.well-known/security.txt",
+          "status": 404
+        }
+      }
+    ],
+    "why": "Researchers who find a security problem look for /.well-known/security.txt to know whom to tell (RFC 9116); without it they may not report it, or report it publicly.",
+    "fix": "Publish /.well-known/security.txt with a Contact line (an email address or a form) and an Expires line."
+  }
+]

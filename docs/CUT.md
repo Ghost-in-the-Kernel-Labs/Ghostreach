@@ -119,8 +119,9 @@ the crawl module), is a module change and waits on Ghost; it is listed under Que
   approval before anything lands on `main` (J-013). It brings `undici-types` 6.21.0.
 - Playwright `~1.63.0` (locked at 1.63.0, past the cooldown), the one runtime dependency (GR-009); it brings `playwright-core`.
   No browser is downloaded here.
-- `knip.json` names the five entries of the block above beside `src/cli/main.ts`: until 1.5 wires the command to them, they
-  are the roots knip measures the copy from. 1.5 drops them as `src/cli/main.ts` comes to reach each.
+- `knip.json` named the five entries of the block above beside `src/cli/main.ts`: until 1.5 wired the command to them, they
+  were the roots knip measured the copy from. 1.5 dropped all five (`src/cli/main.ts` reaches each through
+  `src/project/review.ts`); what they alone kept alive went ("Exports dropped at 1.5").
 - What the cut left unused went (`knip`, `tsc --noUnusedLocals`): the functions and constants each row names, and four whole
   files ("Traced, not copied"). An export only the parent's own tests imported lost its `export` ("Exports dropped at 1.2").
 - The largest-source-file target (`docs/AGENT.md`, < 400 lines) is armed (378 before the copy), not unarmed as 1.1 wrote.
@@ -159,7 +160,7 @@ at their defaults). A dash: nothing.
 | `src/pages/site-of.ts` | `src/leaf/pages/site-of.ts` | 16 | — | — |
 | `src/pages/site-text.ts` | `src/leaf/pages/site-text.ts` | 59 | `SITE_TEXT_NOTE`, `PLAIN_TEXT`, `plainOrQuoted`, `outsideQuotes`, `withSiteTextNote` | — |
 | `src/pages/twin-name.ts` | `src/leaf/pages/twin-name.ts` | 6 | — | — |
-| `src/pages/url.ts` | `src/leaf/pages/url.ts` | 373 | `PAGE_EXTENSION`, `asRole`, `exactPattern`, `startUrlFromArg` (1.5 brings it back from `a4c8045` when the command calls it) | — |
+| `src/pages/url.ts` | `src/leaf/pages/url.ts` | 373 | `PAGE_EXTENSION`, `asRole`, `exactPattern` (`startUrlFromArg`, cut at 1.2, back at 1.5: the command calls it) | — |
 | `src/pages/viewport-zoom.ts` | `src/leaf/pages/viewport-zoom.ts` | 6 | — | — |
 | `src/pages/worded-headings.ts` | `src/leaf/pages/worded-headings.ts` | 16 | — | — |
 | `src/crawl/report.ts` | `src/leaf/report.ts` | 777 | the types of `declared`, `labels`, `roleForms*`, `snapshot`, `apiDocument` (`RoleProbe`, `ApiDocument`, `ApiOperation`, `ApiAnswer`, `ApiField`); gains `PRODUCT_TOKEN`, and `DEFAULT_USER_AGENT` from `crawl/loop.ts` at 1.4 (J-017); its page parts moved to `report-page.ts` (next row) | --all-languages, --exclude, --include, --login, --long, --offline, --sec, --short |
@@ -170,7 +171,7 @@ at their defaults). A dash: nothing.
 | `src/crawl/checklist.ts` | `src/crawl/checklist.ts` | 118 | `comparePage` (history.ts), the `before` map (a local set keeps a page queued once), `said`, `say` and the `pages` option (a recrawl's comparison) | previous (`--fresh`), session (`--login`) |
 | `src/crawl/context.ts` | `src/crawl/context.ts` | 32 | — | — |
 | `src/crawl/controls-script.ts` | `src/crawl/controls-script.ts` | 3 | — | — |
-| `src/crawl/crawler.ts` | `src/crawl/crawler.ts` | 71 | `markedAs` (as-role.ts) and the `options.session` branch: the report is returned as read | --offline, saturationPages (`--long`), session (`--login`) |
+| `src/crawl/crawler.ts` | `src/crawl/crawler.ts` | 71 | `markedAs` (as-role.ts) and the `options.session` branch: the report is returned as read; the `DEFAULT_USER_AGENT` re-export (1.5: nothing reads it from here) | --offline, saturationPages (`--long`), session (`--login`) |
 | `src/crawl/credentials-entry.ts` | `src/crawl/credentials-entry.ts` | 48 | the `labels` line | — |
 | `src/crawl/deadline.ts` | `src/crawl/deadline.ts` | 80 | — | — |
 | `src/crawl/destination.ts` | `src/crawl/destination.ts` | 221 | `guardedPost` (`--vulnsec`'s lists) | --offline |
@@ -207,8 +208,8 @@ at their defaults). A dash: nothing.
 | `src/crawl/redirects.ts` | `src/crawl/redirects.ts` | 51 | `movedOffline` | --offline |
 | `src/crawl/refusals.ts` | `src/crawl/refusals.ts` | 31 | — | session (`--login`) |
 | `src/crawl/relaxed-chain.ts` | `src/crawl/relaxed-chain.ts` | 98 | — | --offline |
-| `src/crawl/report-held.ts` | `src/crawl/report-held.ts` | 55 | `asHeld`, `maskedOnRead`, `alsoKnownAs`, `crawlHashes`, `NAMES` (the parent's history) | — |
-| `src/crawl/report-read.ts` | `src/crawl/report-read.ts` | 199 | — | — |
+| `src/crawl/report-held.ts` | `src/crawl/report-held.ts` | 55 | `asHeld`, `maskedOnRead`, `alsoKnownAs`, `crawlHashes`, `NAMES` (the parent's history); `crawlHash` (1.5: read by nothing once the command is the root) | — |
+| `src/crawl/report-read.ts` | `src/crawl/report-read.ts` | 199 | at 1.5, once the command is knip's root and nothing reads them: `signInForms` (the sign-in form per role, `--login`), `JSON_TYPE`, `pathAt` (the parent's API documents), the `crawlHash` re-export | — |
 | `src/crawl/report-scrub.ts` | `src/crawl/report-scrub.ts` | 127 | — | — |
 | `src/crawl/robots-fetch.ts` | `src/crawl/robots-fetch.ts` | 102 | `PRODUCT_TOKEN`'s definition (moved to `leaf/report.ts`, imported back) | — |
 | `src/crawl/robots.ts` | `src/crawl/robots.ts` | 165 | — | — |
@@ -254,10 +255,12 @@ at their defaults). A dash: nothing.
 ## Ghostreach's own files
 
 Files under `src/` that are not copies; every other file there is a row above. A new file of Ghostreach's own (the PDF,
-the review's folder, the queue) adds its line here.
+the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5, REV-06) is one review, from the site to
+`<data>/<host>-<date>/`.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
+- `src/project/review.ts`
 
 ## Traced, not copied: left unused by the cut
 
@@ -304,6 +307,12 @@ unexported (no carried test reads them, `knip` green):
 - `src/leaf/pages/site-text.ts`: `SITE_TEXT_MAX`
 - `src/leaf/pages/url.ts`: `INDEX_FILE`, `addressSearch`, `hashRouteOf`, `isTracking`
 - `src/leaf/report.ts` (`report-page.ts`): `GuardLimits`, `LoginField`
+
+## Exports dropped at 1.5
+
+Exported because the five entries were knip's roots; with `src/cli/main.ts` the one root (1.5), each was read only inside its
+file: `src/audit/audit.ts`: `auditHeading`, `auditReadBy`, `auditSeverities`, `auditNothing`, `auditFindings`. Read by nothing
+at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-read.ts` name them.
 
 ## Named losses: what a prospect reads differently
 
@@ -483,7 +492,11 @@ One line each, in name order: what went and why (cut at 1.2, stripped at 1.3, or
 
 The parent's fixture site, copied as a test helper: `test/fixture-site/server.ts` (191 lines; `startFixtureSite`, the made-up
 "Fixture Dex", every request logged) and its six pages, `test/fixture-site/pages/{home,list,pokemon,type,about,not-found}.html`
-(126 lines), to the same paths here. Not `serve.ts` (`npm run serve:fixture`), which also starts the sign-in site
+(126 lines), to the same paths here, unchanged (1.5); with the parent's `playwright.config.ts`, its runner imported from
+`playwright/test` (no `@playwright/test`), and `test/crawl/ghostreach.spec.ts`, which the medium gate runs. The parent's findings
+for the fixture are `test/golden/fixture-site.findings.json`, written by the parent's own code at `a4c8045` (its `siteFindings`
+over its own `fixture-site.crawl.json`), never this program's: `scripts/parent-findings.mjs` (its header has the two commands);
+the spec holds this program's `findings.json`, the fixture's port made `http://fixture.test`, to it byte for byte. Not `serve.ts` (`npm run serve:fixture`), which also starts the sign-in site
 (`login.ts`, `identity.ts`): a review reads the public site. The parent's `AUDIT.html` for the fixture, the golden 1.6 compares
 to, is made once by the parent's own build in a scratch folder, never in its tree.
 

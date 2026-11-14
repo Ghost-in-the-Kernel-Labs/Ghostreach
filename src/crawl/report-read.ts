@@ -1,12 +1,11 @@
 /**
- * What is read from a crawl report (report.ts holds its types): a saved report read and checked, its identity, the
- * pages a redirect sent to the site's http:// address, the headings a visitor sees, pages at two addresses, the
- * sign-in form for each role, whether another site's address is gone, and which links a visitor sees on arrival.
+ * What is read from a crawl report (report.ts holds its types): a saved report read and checked, the
+ * pages a redirect sent to the site's http:// address, the headings a visitor sees, pages at two addresses,
+ * whether another site's address is gone, and which links a visitor sees on arrival.
  */
-import { signInKind } from '../leaf/pages/url.js';
 import { markCredentialsIn } from './credentials-entry.js';
 import { asWritten } from './report-held.js';
-import { type CrawledPage, type CrawlReport, type ExternalAnswer, type LinkEdge, type LoginForm, type ProviderSignIn, REPORT_VERSION } from '../leaf/report.js';
+import { type CrawledPage, type CrawlReport, type ExternalAnswer, type LinkEdge, type ProviderSignIn, REPORT_VERSION } from '../leaf/report.js';
 
 /**
  * The pages a redirect sent from the https site to its own http:// address (quotes.toscrape.com's 50 author
@@ -118,24 +117,6 @@ export function readCrawlReport(text: string | (() => string), file: string): Cr
   return asWritten(report as CrawlReport);
 }
 
-// A crawl's identity, and its name from before G-480 (report-held.ts): read from here as before.
-export { crawlHash } from './report-held.js';
-
-/**
- * The sign-in form each role signs in through, one per role: a form on a sign-in address (/login) first,
- * the shallowest of them, then one opened from a sign-in link, then any other, each in the order found. A page with a password
- * field is not always a sign-in page (practice.expandtesting.com's /inputs, met before /login: Ghost's
- * run, 2026-10-04), and the first form found is not the one to type an account into.
- */
-// Decision: G-164
-export function signInForms(forms: LoginForm[] | undefined): LoginForm[] {
-  const rank = (f: LoginForm) => (signInKind(f.url) === 'login' ? 0 : f.via === 'sign-in-link' ? 1 : 2);
-  // Of two sign-in addresses, the site's own before a part's: /login before /bookstore/user/signin.
-  const depth = (f: LoginForm) => new URL(f.url).pathname.split('/').filter(Boolean).length;
-  // Roles in the order first found; within a role, the best form.
-  const roles = [...new Set((forms ?? []).map((f) => f.role))];
-  return roles.map((role) => (forms ?? []).filter((f) => f.role === role).reduce((best, f) => (rank(f) - rank(best) || depth(f) - depth(best)) < 0 ? f : best));
-}
 
 /**
  * Whether another site's address is gone (G-241, G-655): it answered 404 or 410, its name no longer resolves or nothing
@@ -188,12 +169,4 @@ export function providerList(providers: ProviderSignIn[]): string {
   const pages = new Map<string, string[]>();
   for (const p of providers) pages.set(p.provider, [...(pages.get(p.provider) ?? []), new URL(p.page).pathname]);
   return [...pages].map(([provider, at]) => `${provider} at ${[...new Set(at)].join(' and ')}`).join(', ');
-}
-
-/** A media type that is JSON: application/json, and any +json (application/problem+json). */
-export const JSON_TYPE = /^application\/(?:[\w.-]+\+)?json$/i;
-
-/** The address an operation is at, from the site's own: a base address's path and the operation's, one slash between. */
-export function pathAt(base: URL, path: string): string {
-  return `${base.pathname.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 }

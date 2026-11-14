@@ -16,17 +16,11 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.5 One command: ghostreach <site>
-
-Check: `test/crawl/ghostreach.spec.ts` against the fixture server: the findings list, in order, equals the parent's for the same fixture; `AUDIT.html`, `findings.json` and `summary.json` written under `<data>/<host>-<date>/`.
-
-From 1.2 (J-013): `knip.json` names CUT.md's five entries as roots until `src/cli/main.ts` reaches them; drop each as it does. `startUrlFromArg` (the site as typed into a start address) was cut from `src/leaf/pages/url.ts` as unused; bring it back from `a4c8045` when the command calls it. `crawlToFile` now takes a required `out`; from 1.3 (J-016) `CrawlRequest` has no `limits`, and `parse` in `src/cli/main.ts` gives `{ site }`, `'help'` or null.
-
-From 1.4 (J-017): no carried test needs a real browser; the integration project runs the same files as `unit`. 1.5 brings the first crawl spec, so `playwright.config.ts` (the medium gate runs `npx playwright test` once it exists) and a Chromium for it: none is installed in the session (`~/.cache/ms-playwright` absent), and `npx playwright install chromium` downloads from Playwright's CDN, a host the session may need allowed. The three fixture crawls under `test/golden/` are the parent's own, recorded at `a4c8045`; 1.5's spec compares this program's findings for the fixture with the parent's, so `test/golden/fixture-site.crawl.json`'s findings (`siteFindings`) are one ready reference. `DEFAULT_USER_AGENT` now lives in `src/leaf/report.ts`.
-
 ### 1.6 The audit golden against the parent
 
 Check: the parent's `AUDIT.html` for the fixture and this program's differ only in the title line and the footer; recorded once with `UPDATE_GOLDEN=1`, read by hand.
+
+From 1.5 (J-018): `main(argv, data)` in `src/cli/main.ts` runs one review into `<data>/<host>-<date>/` (`src/project/review.ts`; the data folder defaults to `~/Ghostreach`, a test names its own); `test/crawl/ghostreach.spec.ts` runs it on the fixture in real Chromium (about 45 s at the crawl's own pace, no flag) and holds `findings.json` to `test/golden/fixture-site.findings.json`, the parent's own output. The parent's `AUDIT.html` can be made the same way, in the scratchpad and never in its tree: `scripts/parent-findings.mjs`'s hook runs the parent's TypeScript under Node's type stripping (`auditHtml` from its `src/project/audit.ts` over its `fixture-site.crawl.json`, with a fixed date). The audit page's date is the day the crawl started, UTC (`toISOString`). Chromium is at `/opt/pw-browsers` (`PLAYWRIGHT_BROWSERS_PATH`), build 1243, the one Playwright 1.63.0 asks for: no `playwright install`, no `executablePath`. Nothing runs `ghostreach` outside a test yet (no `bin`, no build step: the code is TypeScript with `.js` imports); 5.1's packaging brings the runnable command.
 
 ### 1.7 The resync recipe
 
