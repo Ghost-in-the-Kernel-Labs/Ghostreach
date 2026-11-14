@@ -51,6 +51,8 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 ## For Ghost: waiting on you
 
+O. The API contract (GR-015, J-054): a draft v1 went to the web design session; confirm it before either side builds. Also: does the free review get the full PDF, or only the short view? The VPS, the Tunnel hostname under forecursor.com and Access are yours to create.
+
 A. Approve `@types/node` 22.20.5 (with `undici-types` 6.21.0) as a dev dependency, GR-011 `proposed` (J-013): `tsc` cannot check the copied crawl without Node's types. Nothing lands on `main` before your answer; the review rows in `docs/REVIEWED-VERSIONS.md` say UNSURE because the read-only reviewer was not run. Reputation (J-051): @types/node CLEAN; its undici-types 6.21.0 CONCERN, medium-low, unverified (published without provenance; one closed takeover report without evidence; types only, no runtime code).
 
 B. The largest-source-file target at 1.2: ruled by the ruling grade (split `src/crawl/state.ts` by what it does, no exemption; C-022, C-023), done in J-014; reversible.

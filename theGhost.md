@@ -592,3 +592,22 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Status:** in force
 - **See also:** GR-008
 - **subject:** concurrency
+
+### GR-015: Ghostreach is a service behind an API; the website is the salesperson's interface
+- **Decision:** Ghostreach runs on a server (a VPS behind a Cloudflare Tunnel hostname, with Access in front of a bearer token) and offers a JSON API that the website (forecursor.com's Worker) calls server to server: queue a review, read its state and result (summary numbers and a short view of the top findings), fetch its PDF, delete it, and a health check. The website signs salespeople in; Ghostreach holds no accounts. The API never returns the crawl, AUDIT.html or the code. This replaces the downloadable zip and launcher; the local page stays for development. The contract is drafted with the web design session and confirmed by Ghost before it is built (`docs/API.md`).
+- **Why:** Ghost, 2026-11-14: "can we make ghostreach compatible with the website hosting with an API?" and "You have my approval." A hosted service ships no code to anyone, which also closes the lineage exposure a distributed package carries (J-052), and a link is simpler for a salesperson than any install.
+- **Held by:** `docs/HANDOFF.md` (docs/API.md once Ghost confirms the contract).
+- **Source:** Ghost, in chat, 2026-11-14 (J-054).
+- **Status:** in force
+- **See also:** GR-003, GR-016
+- **subject:** delivery
+
+### GR-016: esbuild approved, deferred while no code ships
+- **Decision:** A bundler and minifier (esbuild, one pinned dev dependency, reviewed by `docs/DEPENDENCY-REVIEW.md`) may be added to bundle the shipped code; it is deferred while Ghostreach is delivered as a service (GR-015), since no code then leaves the server.
+- **Why:** Ghost, 2026-11-14, "yes" to "May I add esbuild?"; the reason was to hide file layout and names in a distributed package, which GR-015 makes moot for now.
+- **Held by:** `package.json` (when added), `docs/REVIEWED-VERSIONS.md`.
+- **Source:** Ghost, in chat, 2026-11-14 (J-054).
+- **Status:** in force
+- **See also:** GR-015
+- **subject:** dependencies
+

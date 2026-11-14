@@ -57,3 +57,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-051 | The reputation check run for the four new dependencies | measurement | `J-000-099.md` |
 | J-052 | Ghost: a distributable that does not say how much was taken from Suite Builder | direction | `J-000-099.md` |
 | J-053 | The distributable names no source: comments dropped, a salesperson's README, a lineage check on the tarball | feature | `J-000-099.md` |
+| J-054 | Ghostreach as a service behind an API | direction | `J-000-099.md` |

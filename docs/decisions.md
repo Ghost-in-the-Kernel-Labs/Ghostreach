@@ -58,3 +58,5 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-012 | the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel | in force | pdf |
 | GR-013 | no mutation testing: Core C-018 refused, Stryker removed | in force | mutation |
 | GR-014 | SITE-22 withheld from a review that ran alongside another | in force | concurrency |
+| GR-015 | Ghostreach is a service behind an API; the website is the salesperson's interface | in force | delivery |
+| GR-016 | esbuild approved, deferred while no code ships | in force | dependencies |
