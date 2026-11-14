@@ -16,13 +16,11 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.1 docs/CUT.md written before the copy
-
-Check: `test/unit/cut.test.ts` fails (no files yet) then passes at 1.2.
-
 ### 1.2 The parent's crawl, findings and audit copied at a4c8045
 
-Check: `tsc --noEmit` green; `knip` reports no unused export; Playwright `~1.63.0` the one runtime dependency, its reason in `theGhost.md`.
+Check: `tsc --noEmit` green; `knip` reports no unused export; Playwright `~1.63.0` the one runtime dependency, its reason in `theGhost.md`; `test/unit/cut.test.ts` green with its `it.fails` turned into `it` (1.1's check, its second half).
+
+The copy is `docs/CUT.md`'s list, cut as its rows say (J-012). Open from 1.1: `tsc` needs `@types/node`, which GR-009 does not name (`docs/CUT.md`, Questions 3); every relative import takes `.js` under the stack's `NodeNext`.
 
 ### 1.3 The flags stripped
 
