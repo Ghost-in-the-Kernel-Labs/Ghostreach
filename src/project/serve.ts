@@ -5,37 +5,25 @@
  * of the folder. Every name it shows comes from the data folder or the salesperson's paste and is written as text, never as
  * markup (P-16). Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
  * failed one's retry to `/queue/retry`; while a site waits or runs, the page reloads itself (a meta refresh; no script runs in it).
- * The keys (4.4, `keys.ts`): "key present" or "key absent", never a key. The company lane (4.6, `company.ts`): a company to `/company`,
- * each board's QA roles as text, a kept address as a link, no board offering the paste lane (4.9). The discovery lane (4.7,
- * `discover.ts`): the saved search edited at `/discover/search`, run at `/discover/run`, the last run's rows one per company and
- * each skipped source named. The ranking (3.6) comes later.
+ * The company lane (4.6, `company.ts`): a company to `/company`. The discovery lane (4.7, `discover.ts`): the saved search edited
+ * at `/discover/search`, run at `/discover/run`. The page's HTML is `page.ts` and `page-leads.ts`. The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { join, relative, isAbsolute, sep } from 'node:path';
-import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type Added, type QueueEntry, type QueueRunner, type ReviewRun } from './queue.js';
+import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type QueueRunner, type ReviewRun } from './queue.js';
 import { pdfName } from './review.js';
 import { sharedBrowser } from './crawl.js';
 import { readSettings, type Settings } from './settings.js';
-import { keyStates } from './keys.js';
-import { keepLookup, lookUpCompany, readLookups, type CompanyLookup } from './company.js';
+import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
-import { discover, keepRun, parseSearch, readDiscovery, saveSearch, type DiscoveryRow, type DiscoveryRun, type SavedSearch } from './discover.js';
+import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
+import { reviewsPage, type ListedReview, type Said } from './page.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
-
-/** A review on the page: the site, the day, and the path its PDF is served at. */
-export interface ListedReview {
-  host: string;
-  date: string;
-  /** The review's folder under the data folder, as written by `reviewFolder` (`<host>-<date>`, `-2`, ...). */
-  folder: string;
-  /** The page's link to the PDF: `/reviews/<folder>/<host> site review.pdf`, each part percent-encoded. */
-  href: string;
-}
 
 /** A review folder's name read back: `<host>-<YYYY-MM-DD>`, then `-2`, `-3` for a second review that day (`reviewFolder`). */
 const FOLDER = /^(.+)-(\d{4}-\d{2}-\d{2})(?:-([2-9]|[1-9]\d+))?$/;
@@ -75,141 +63,6 @@ function pdfIn(data: string, folder: string, file: string): string | null {
   }
 }
 
-/** Text written into the page as text: every character markup could read escaped (P-16). */
-const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-/** What a paste did, said back above the queue: how many were queued, and each refused line with why. */
-function addedNotice(added: Added | undefined): string {
-  if (!added) return '';
-  const queued = `<p class="said">${added.queued.length} site${added.queued.length === 1 ? '' : 's'} queued.</p>`;
-  const refused = added.refused.map((r) => `<li class="refused">Refused: ${esc(r.line)} (${esc(r.why)})</li>`).join('\n');
-  return `${queued}${refused ? `\n<ul>\n${refused}\n</ul>` : ''}`;
-}
-
-/** The queue in pasted order, each site with its state; a failed one with its error line and a retry button. */
-function queueList(sites: readonly QueueEntry[]): string {
-  if (!sites.length) return '<p>No site queued.</p>';
-  const rows = sites.map((e) => {
-    const failed = e.state === 'failed'
-      ? ` <span class="error">${esc(e.error ?? '')}</span> <form method="post" action="/queue/retry"><input type="hidden" name="id" value="${e.id}"><button>Retry</button></form>`
-      : '';
-    return `<li>${esc(e.site)} <span class="state">${e.state}</span>${failed}</li>`;
-  });
-  return `<ol>\n${rows.join('\n')}\n</ol>`;
-}
-
-/**
- * The lead finder's keyed sources (TODO 4.4), each "key present" or "key absent": whether its variables are set, asked at each
- * request, never a key's value, which the page never reads.
- */
-function keysList(): string {
-  const rows = keyStates().map((k) => k.present
-    ? `<li>${esc(k.source)} <span class="state">key present</span></li>`
-    : `<li>${esc(k.source)} <span class="state">key absent</span> <span class="error">skipped until ${esc(k.variables.join(' and '))} ${k.variables.length === 1 ? 'is' : 'are'} set</span></li>`);
-  return `<ul>\n${rows.join('\n')}\n</ul>`;
-}
-
-/** What the page says when no board is found: the paste lane is the way left (4.9 builds it). */
-export const NO_BOARD = 'No public board found.';
-export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter? Keep that posting with the paste lane, which comes in a later version.';
-
-/** One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept. */
-function boardItem(board: CompanyLookup['boards'][number]): string {
-  const head = `${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${board.roles.length} QA, test or SDET`;
-  if (!board.roles.length) return `<li>${head}.</li>`;
-  const roles = board.roles.map((r) => `<li>${r.url ? `<a href="${esc(r.url)}" rel="noreferrer">${esc(r.title)}</a>` : esc(r.title)}</li>`).join('\n');
-  return `<li>${head}:\n<ul class="roles">\n${roles}\n</ul></li>`;
-}
-
-/** The lookups kept, newest first: each company's boards, or no board and the paste lane; each source that could not be asked. */
-function lookupsList(lookups: readonly CompanyLookup[]): string {
-  if (!lookups.length) return '<p>No company looked up yet.</p>';
-  const rows = lookups.map((l) => {
-    const found = l.boards.length ? `<ul>\n${l.boards.map(boardItem).join('\n')}\n</ul>` : `<p>${NO_BOARD} ${PASTE_LANE}</p>`;
-    const unanswered = l.unanswered.map((why) => `<p class="error">Not asked: ${esc(why)}</p>`).join('\n');
-    return `<li><strong>${esc(l.asked)}</strong> <span class="day">${esc(l.at.slice(0, 10))}</span>\n${found}${unanswered ? `\n${unanswered}` : ''}</li>`;
-  });
-  return `<ul>\n${rows.join('\n')}\n</ul>`;
-}
-
-/** One company found: its newest QA posting (a link when its address was kept), the source and day, and how many more. */
-function discoveryItem(row: DiscoveryRow): string {
-  const title = row.url ? `<a href="${esc(row.url)}" rel="noreferrer">${esc(row.title)}</a>` : esc(row.title);
-  const more = row.others ? `, and ${row.others} more posting${row.others === 1 ? '' : 's'}` : '';
-  return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${esc(row.source)}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span> <span class="state">no website given</span></li>`;
-}
-
-/** The discovery lane: the saved search's form, the run button, and the last run's rows and skipped sources. */
-function discoverySection(search: SavedSearch, run: DiscoveryRun | undefined, refused: string | undefined): string {
-  const form = `<form method="post" action="/discover/search">
-<p><label for="titles">Titles, one per line:</label></p><textarea id="titles" name="titles" rows="5">${esc(search.titles.join('\n'))}</textarea>
-<p><label for="location">A location, or remote:</label> <input id="location" name="location" type="text" maxlength="100" value="${esc(search.location)}"> <button>Save the search</button></p>
-</form>
-<form method="post" action="/discover/run"><p><button>Run the search</button></p></form>
-${refused ? `<p class="refused">${esc(refused)}</p>\n` : ''}`;
-  if (!run) return `${form}<p>The search has not run yet.</p>`;
-  const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${run.rows.length} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
-  const rows = run.rows.length ? `\n<ul>\n${run.rows.map(discoveryItem).join('\n')}\n</ul>` : '';
-  return `${form}${head}${rows}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(why)}</p>`).join('')}`;
-}
-
-/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company and discovery lanes, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
-function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, lookups: readonly CompanyLookup[], discovery: ReturnType<typeof readDiscovery>, said?: Said): string {
-  const added = said?.added;
-  const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
-  const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
-  // No script (the policy allows none): the page asks for itself again while anything is still to come.
-  const busy = sites.some((e) => e.state === 'waiting' || e.state === 'running');
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-${busy ? '<meta http-equiv="refresh" content="5; url=/">\n' : ''}<title>Ghostreach: the reviews</title>
-<style>
-body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 40rem; padding: 0 1rem; color: #1b1b1b; background: #fafaf7; }
-ul { list-style: none; padding: 0; }
-li { padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
-.day, .state { color: #666; margin-left: 0.5rem; }
-.error, .refused { color: #a12; }
-textarea { width: 100%; font: inherit; }
-li form { display: inline; }
-ul.roles { padding-left: 1.5rem; list-style: disc; }
-ul.roles li { border: none; padding: 0.1rem 0; }
-</style>
-</head>
-<body>
-<h1>The reviews</h1>
-<h2>Sites to review</h2>
-<form method="post" action="/queue">
-<p><label for="sites">One site per line:</label></p>
-<textarea id="sites" name="sites" rows="6" placeholder="www.example.com"></textarea>
-<p><button>Queue</button></p>
-</form>
-<p>Up to ${settings.reviewsAtOnce} site${settings.reviewsAtOnce === 1 ? ' is' : 's are'} reviewed at once.</p>
-${settings.note ? `<p class="error">${esc(settings.note)}</p>\n` : ''}${addedNotice(added)}
-${queueList(sites)}
-<p><a href="/">Reload</a></p>
-<h2>Done</h2>
-<p>Each site reviewed, newest first. Open a review to read or send its PDF.</p>
-${body}
-<h2>Is this company hiring QA?</h2>
-<form method="post" action="/company">
-<p><label for="company">A company's name or its site:</label></p>
-<p><input id="company" name="company" type="text" maxlength="200" placeholder="Acme Robotics, or acme.com"> <button>Look up</button></p>
-</form>
-${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookupsList(lookups)}
-<h2>Who is hiring QA?</h2>
-<p>A saved search, run on request across every job board below whose key is set, within each board's own limits. One row per company.</p>
-${discoverySection(discovery.search, discovery.run, said?.searchRefused)}
-<h2>Lead sources</h2>
-<p>Each source that needs a key, and whether its key is set.</p>
-${keysList()}
-</body>
-</html>
-`;
-}
-
 /** The headers every answer carries: nothing runs in the page, nothing is sniffed, no other origin may read it (no CORS header, ever). */
 const HEADERS = {
   'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'",
@@ -221,13 +74,6 @@ const HEADERS = {
 function answer(res: ServerResponse, status: number, text: string): void {
   res.writeHead(status, { ...HEADERS, 'Content-Type': 'text/plain; charset=utf-8' });
   res.end(`${text}\n`);
-}
-
-/** What a post did, said back on the page: the paste's queued and refused lines, a company lookup refused, or a search refused. */
-interface Said {
-  added?: Added;
-  refused?: string;
-  searchRefused?: string;
 }
 
 /** The page as HTML. */
