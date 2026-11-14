@@ -92,3 +92,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/SOURCES.md`, `docs/journal/J-000-099.md`, `src/project/company.ts`, `src/project/fetch.ts`, `src/project/keys.ts`, `src/project/serve.ts`, `test/unit/company.test.ts`, `test/unit/hosts.test.ts`, `test/unit/sources.test.ts`, `test/support/sources.ts`, `test/support/boards/greenhouse.ts`, `test/support/boards/lever.ts`, `docs/CUT.md`, `docs/DONE.md`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: the brief's "one page per source per run" and the roadmap's titles meet badly where a source searches one phrase a request (Jooble, USAJOBS): one call could carry only one title. Arbeitnow's fields sat behind a Postman page 4.3 did not read; its JSON form (documenter.gw.postman.com) answered where the page timed out.
 - **Suggestions**: the `leads` module ruled: the lead finder is now four files in `src/project/` beside the review's.
+
+### 2026-11-14 · TODO 4.8, website resolution by the salesperson · Opus
+
+- **Task**: split `src/project/serve.ts` (398 lines) as a refactor; then a text box per company row for the salesperson's typed website, validated like a site, kept, never looked up.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `src/project/serve.ts`, `src/project/queue.ts`, `src/project/discover.ts`, `src/project/company.ts`, `src/project/review.ts`, `src/leaf/pages/url.ts`, `docs/modules.json`, `docs/CUT.md`, `test/unit/serve.test.ts`, `test/unit/discover.test.ts`, `test/unit/company.test.ts`, `test/unit/sources.test.ts`, `test/unit/hosts.test.ts`, `docs/SOURCES.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: "the company row" is two things on the page (a discovery row, a company lane lookup), and the item does not say which; the metrics table's largest-file line goes stale on a refactor and fails the fast loop until rewritten.
+- **Suggestions**: none beyond the `leads` module ruling already asked.

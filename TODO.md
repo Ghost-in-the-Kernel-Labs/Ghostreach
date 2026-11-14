@@ -22,13 +22,9 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.8 Website resolution by the salesperson
-
-From 4.7 (J-038): the discovery lane is `src/project/discover.ts`; its saved search and last run are kept in `<data>/discovery.json`, one row per company (`DiscoveryRow`: company, title, a kept address, source, day, others counted). None of its four sources gives a website, and the company lane's lookups none either, so every company row is a row without a site; the company key is `companyWords` of `src/project/company.ts`.
-Check: `test/unit/hosts.test.ts` holds that no fetch leaves the allow-list; a company without a site shows a text box.
-
 ### 4.9 The paste lane
 
+From 4.8 (J-039): what the salesperson keeps on a company row is `src/project/leads.ts` (`<data>/leads.json`, by `companyKey`, the company lane's `companyWords` joined), drawn on each row of both lanes by `companyTools` in `src/project/page-leads.ts`; its posts are guarded in `src/project/serve.ts` as the others are.
 Check: the fetch function is never called for a pasted URL.
 
 ### 4.10 Queue this site

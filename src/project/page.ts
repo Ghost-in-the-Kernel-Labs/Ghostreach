@@ -8,7 +8,8 @@ import type { Settings } from './settings.js';
 import { keyStates } from './keys.js';
 import type { CompanyLookup } from './company.js';
 import type { readDiscovery } from './discover.js';
-import { discoverySection, lookupsList } from './page-leads.js';
+import { discoverySection, lookupsList, type Rows } from './page-leads.js';
+import type { CompanyNotes } from './leads.js';
 import { esc } from './html.js';
 
 /** A review on the page: the site, the day, and the path its PDF is served at. */
@@ -21,11 +22,24 @@ export interface ListedReview {
   href: string;
 }
 
+/** What the page shows, read from the data folder at each request. */
+export interface View {
+  reviews: readonly ListedReview[];
+  sites: readonly QueueEntry[];
+  settings: Settings;
+  lookups: readonly CompanyLookup[];
+  discovery: ReturnType<typeof readDiscovery>;
+  /** What the salesperson kept per company (`leads.ts`). */
+  notes: Readonly<Record<string, CompanyNotes>>;
+}
+
 /** What a post did, said back on the page: the paste's queued and refused lines, a company lookup refused, or a search refused. */
 export interface Said {
   added?: Added;
   refused?: string;
   searchRefused?: string;
+  /** A post on one company row refused (4.8): said under that row. */
+  row?: Rows['refused'];
 }
 
 /** What a paste did, said back above the queue: how many were queued, and each refused line with why. */
@@ -60,7 +74,9 @@ function keysList(): string {
 }
 
 /** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the company and discovery lanes, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
-export function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, lookups: readonly CompanyLookup[], discovery: ReturnType<typeof readDiscovery>, said?: Said): string {
+export function reviewsPage(view: View, said?: Said): string {
+  const { reviews, sites, settings, lookups, discovery } = view;
+  const companies: Rows = { notes: view.notes, refused: said?.row };
   const added = said?.added;
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
@@ -104,10 +120,10 @@ ${body}
 <p><label for="company">A company's name or its site:</label></p>
 <p><input id="company" name="company" type="text" maxlength="200" placeholder="Acme Robotics, or acme.com"> <button>Look up</button></p>
 </form>
-${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookupsList(lookups)}
+${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookupsList(lookups, companies)}
 <h2>Who is hiring QA?</h2>
 <p>A saved search, run on request across every job board below whose key is set, within each board's own limits. One row per company.</p>
-${discoverySection(discovery.search, discovery.run, said?.searchRefused)}
+${discoverySection(discovery.search, discovery.run, said?.searchRefused, companies)}
 <h2>Lead sources</h2>
 <p>Each source that needs a key, and whether its key is set.</p>
 ${keysList()}

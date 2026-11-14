@@ -266,7 +266,8 @@ sites pasted there, kept in `queue.json` with a state each and reviewed up to N 
 `src/project/fetch.ts` (4.5, P-16) the lead finder's one fetch function, to docs/SOURCES.md's `in` hosts alone, each capped source's
 bucket kept in `<data>/buckets.json`; `src/project/company.ts` (4.6) the company lane, a typed company's board names probed on the
 company-lane sources through it, the QA roles of each board found kept in `<data>/companies.json`; `src/project/discover.ts` (4.7) the
-discovery lane, one saved search run across the discovery-lane sources through it, one row per company kept in `<data>/discovery.json`.
+discovery lane, one saved search run across the discovery-lane sources through it, one row per company kept in `<data>/discovery.json`;
+`src/project/leads.ts` (4.8) what the salesperson keeps on a company row, its typed website, in `<data>/leads.json`.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
@@ -283,6 +284,7 @@ discovery lane, one saved search run across the discovery-lane sources through i
 - `src/project/fetch.ts`
 - `src/project/company.ts`
 - `src/project/discover.ts`
+- `src/project/leads.ts`
 
 ## Traced, not copied: left unused by the cut
 

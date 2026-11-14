@@ -21,6 +21,7 @@ import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
 import { reviewsPage, type ListedReview, type Said } from './page.js';
+import { keepWebsite, readNotes } from './leads.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -79,14 +80,16 @@ function answer(res: ServerResponse, status: number, text: string): void {
 /** The page as HTML. */
 function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, said?: Said): void {
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(req.method === 'HEAD' ? undefined : reviewsPage(listReviews(data), readQueue(data), settings, readLookups(data), readDiscovery(data), said));
+  res.end(req.method === 'HEAD' ? undefined : reviewsPage({
+    reviews: listReviews(data), sites: readQueue(data), settings, lookups: readLookups(data), discovery: readDiscovery(data), notes: readNotes(data),
+  }, said));
 }
 
 /** The most a form's body may hold: thousands of sites, and no more read into memory. */
 const MAX_BODY = 64 * 1024;
 
-/** The five POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry', '/company', '/discover/search', '/discover/run']);
+/** The POST routes. */
+const POSTS = new Set(['/queue', '/queue/retry', '/company', '/company/site', '/discover/search', '/discover/run']);
 
 /** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the lead finder's network and keys (a test's). */
 interface Served {
@@ -130,6 +133,12 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
       return;
     }
+    if (path === '/company/site') {
+      // The salesperson's typed website (4.8): held to a site's test and kept, never looked up.
+      const company = form.get('company') ?? '';
+      const why = keepWebsite(data, company, form.get('site') ?? '');
+      return sendPage(data, settings, req, res, why ? { row: { company, why } } : undefined);
+    }
     if (path === '/discover/search') {
       const parsed = parseSearch(form.get('titles') ?? '', form.get('location') ?? '');
       if ('refused' in parsed) return sendPage(data, settings, req, res, { searchRefused: parsed.refused });
@@ -150,7 +159,7 @@ function post(data: string, served: Served, origin: string, path: string, req: I
   });
 }
 
-/** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the five forms' posts, and nothing else. */
+/** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the forms' posts, and nothing else. */
 function handle(data: string, served: Served, port: () => number, req: IncomingMessage, res: ServerResponse): void {
   const { settings } = served;
   // A page another site's script reaches through a name it points at 127.0.0.1 (DNS rebinding) carries that name: refused.

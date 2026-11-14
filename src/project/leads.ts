@@ -1,0 +1,83 @@
+/**
+ * What the salesperson keeps about a company row of the lead finder (TODO 4.8): the company's website, typed on the local page,
+ * since no source gives one (docs/SOURCES.md, its Website cells). Never looked up: no search engine, no fetch (GR-005); the typed
+ * text is held to the test a review holds a site to (`startUrl`), and kept in `<data>/leads.json`, written whole (temporary file
+ * and rename). A row is one company by the company lane's words (`companyWords`), so the discovery lane's "ACME Robotics" and the
+ * company lane's "Acme Robotics, Inc." share what is kept.
+ */
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { candidateSlugs, cleanTitle, companyWords } from './company.js';
+import { startUrl } from './review.js';
+
+/** The longest website kept. */
+const MAX_SITE = 300;
+
+/** What is kept for one company: its name as last shown, and its website when typed. */
+export interface CompanyNotes {
+  name: string;
+  website?: string;
+}
+
+/** A company's key: its words, accents folded, lowercase, a trailing legal form dropped, joined by a space; '' when it has none. */
+export const companyKey = (name: string): string => companyWords(name).join(' ');
+
+const leadsFile = (data: string): string => join(data, 'leads.json');
+
+/** What is kept, by company key; none yet, none. A file that cannot be read stops the page rather than be overwritten. */
+export function readNotes(data: string): Record<string, CompanyNotes> {
+  const file = leadsFile(data);
+  if (!existsSync(file)) return {};
+  const read = JSON.parse(readFileSync(file, 'utf8')) as { companies?: unknown };
+  if (typeof read.companies !== 'object' || read.companies === null || Array.isArray(read.companies)) throw new Error(`${file} is not a list of companies.`);
+  return read.companies as Record<string, CompanyNotes>;
+}
+
+/** One company's notes by its key, an own key of what is kept alone. */
+const noteOf = (companies: Readonly<Record<string, CompanyNotes>>, key: string): CompanyNotes | undefined => (Object.hasOwn(companies, key) ? companies[key] : undefined);
+
+/** Changes one company's notes: read, changed, written whole; synchronous, so nothing else changes them in between. */
+function change(data: string, name: string, edit: (notes: CompanyNotes) => void): void {
+  const companies = readNotes(data);
+  const key = companyKey(name);
+  // Own keys alone: a company named "Constructor" is not the object's own constructor.
+  const notes = noteOf(companies, key) ?? { name };
+  notes.name = name;
+  edit(notes);
+  companies[key] = notes;
+  mkdirSync(data, { recursive: true });
+  const file = leadsFile(data);
+  const temp = `${file}.${process.pid}.tmp`;
+  writeFileSync(temp, `${JSON.stringify({ companies }, null, 2)}\n`);
+  renameSync(temp, file);
+}
+
+/** A company's name from the page's form: plain text on one line, as a title is; '' when it gives no key. */
+const named = (company: string): string => {
+  const name = cleanTitle(company);
+  return companyKey(name) ? name : '';
+};
+
+/**
+ * Keeps the website the salesperson typed for a company: a web address as a review takes one (`startUrl`), kept as that address;
+ * blank, the website kept before is forgotten. Null when kept, else why not. Nothing is fetched.
+ */
+export function keepWebsite(data: string, company: string, typed: string): string | null {
+  const name = named(company);
+  if (!name) return 'That row names no company.';
+  const text = typed.trim();
+  const site = text ? startUrl(text) : null;
+  if (text && (!site || site.length > MAX_SITE)) return `Not a web address: ${text.slice(0, MAX_SITE)}`;
+  change(data, name, (notes) => {
+    if (site) notes.website = site;
+    else delete notes.website;
+  });
+  return null;
+}
+
+/** The website of a company row: the one typed for it, else, for a company lane lookup typed as a site, that site; else none. */
+export function websiteOf(notes: Readonly<Record<string, CompanyNotes>>, name: string, typedAsSite = false): string | undefined {
+  const kept = noteOf(notes, companyKey(name))?.website;
+  if (kept) return kept;
+  return typedAsSite && candidateSlugs(name).companyDomain ? (startUrl(name.trim()) ?? undefined) : undefined;
+}
