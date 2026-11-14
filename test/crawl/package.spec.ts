@@ -5,7 +5,7 @@
  * folder (TMPDIR), nowhere near this repository's node_modules, `npm install -g --prefix <folder>/prefix <tarball> --ignore-scripts`
  * (npm 11) installs it, and the installed `ghostreach` alone, on a PATH holding only it, Node and the system, answers `--help`,
  * says in `doctor` whether Node.js and Chromium are ready (and the command that fixes a missing Chromium), and reviews the parent's
- * fixture site into `~/Ghostreach/<host>-<date>/` with its PDF. Chromium is the machine's (PLAYWRIGHT_BROWSERS_PATH, as the crawl
+ * fixture site into `~/Ghostreach/<host>-<date>/` with its PDF. No shipped file names where its code came from (J-053). Chromium is the machine's (PLAYWRIGHT_BROWSERS_PATH, as the crawl
  * specs use it); the salesperson runs `npx playwright@<version> install chromium` instead, which `doctor` names.
  *
  * On Windows (TODO 5.2, `.github/workflows/windows.yml`) the same steps run as npm lays them out there: `npm.cmd` and the installed
@@ -20,6 +20,7 @@ import { delimiter, dirname, join } from 'node:path';
 import { startFixtureSite, type FixtureSite } from '../fixture-site/server.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
 import { ADDRESS } from '../../src/leaf/words.js';
+import { leaks, unused } from '../support/lineage.js';
 
 const REPO = process.cwd();
 const NODE_BIN = dirname(process.execPath);
@@ -98,6 +99,10 @@ test('the tarball installs with one command and the installed ghostreach reviews
   // The installed copy holds nothing of this repository's but what was packed.
   const copy = WINDOWS ? join(prefix, 'node_modules', 'ghostreach') : join(prefix, 'lib', 'node_modules', 'ghostreach');
   expect(filesUnder(copy).filter((p) => !p.startsWith('node_modules/')).sort()).toEqual(shipped);
+  // Nothing shipped says where the code came from but the brand's own strings (J-053, test/support/lineage.ts).
+  const texts = shipped.map((path) => ({ path, text: readFileSync(join(copy, path), 'utf8') }));
+  expect(leaks(texts)).toEqual([]);
+  expect(unused(texts)).toEqual([]);
 
   const help = await installed(bin, ['--help'], env, scratch);
   expect(help.code).toBe(0);
@@ -109,7 +114,7 @@ test('the tarball installs with one command and the installed ghostreach reviews
   expect(doctor.lines[1]).toBe('Chromium, the browser the review drives: installed.');
   const version = (JSON.parse(readFileSync(join(copy, 'node_modules', 'playwright', 'package.json'), 'utf8')) as { version: string }).version;
   const bare = await installed(bin, ['doctor'], { ...env, PLAYWRIGHT_BROWSERS_PATH: join(scratch, 'no-browsers') }, scratch);
-  expect(bare.lines[1]).toBe(`Chromium, the browser the review drives: not installed. Run: npx playwright@${version} install chromium`);
+  expect(bare.lines[1]).toBe(`Chromium, the browser the review drives: not installed. Run: npx playwright@${version} install ${process.platform === 'linux' ? '--with-deps ' : ''}chromium`);
 
   site = await startFixtureSite();
   const reviewed = await installed(bin, [`${site.origin}/`], env, scratch);

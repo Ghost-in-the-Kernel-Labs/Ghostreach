@@ -55,3 +55,5 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-049 | The salesperson's guide (TODO 5.3): written against the program as built; its reader waits | feature | `J-000-099.md` |
 | J-050 | Windows and Linux, not the Mac | direction | `J-000-099.md` |
 | J-051 | The reputation check run for the four new dependencies | measurement | `J-000-099.md` |
+| J-052 | Ghost: a distributable that does not say how much was taken from Suite Builder | direction | `J-000-099.md` |
+| J-053 | The distributable names no source: comments dropped, a salesperson's README, a lineage check on the tarball | feature | `J-000-099.md` |

@@ -64,3 +64,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `README.md`, `src/cli/main.ts`, `src/project/page.ts`, `src/project/page-leads.ts`, `src/project/serve.ts`, `src/project/review.ts`, `src/project/queue.ts`, `src/leaf/words.ts`, `src/project/company.ts`, `src/project/keys.ts`, `src/project/ready.ts`, `test/fixture-site/server.ts`, `TODO.md`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md`.
 - **Complaints**: no routing row names the salesperson's documents (the README's install, this guide); walking the page by hand needed the fixture site started from its TypeScript source, which nothing documents outside the specs.
 - **Suggestions**: a row in `docs/paths/code.md` for "the salesperson's documents: README's Install, docs/SALES-GUIDE.md", read against `--help`, `doctor` and the page at each tune-up (ROADMAP §4 says so already).
+
+### 2026-11-14 · The distributable without lineage (J-052, J-053) · Opus
+
+- **Task**: Ghost's direction recorded; a tarball that names no source: `removeComments`, the in-page bundles, a salesperson's README, `package.json` read, a lineage check in the medium gate with a short allow-list, a planted leak; the marker counts before and after.
+- **Opened**: `docs/HANDOFF.md`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`, `package.json`, `tsconfig.build.json`, `test/crawl/package.spec.ts`, `README.md`, `src/leaf/report.ts`, `src/crawl/controls-script.ts`, `src/crawl/report-read.ts`, `test/unit/crawl-format.test.ts`, `docs/CUT.md`, `test/support/pin.ts`, `knip.json`, `stacks/typescript/README.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the bundles' header said "run npm run controls-script", a script Ghostreach does not have; only CUT.md's resync step says they are copied whole. Nothing said the root `README.md` is what `npm pack` ships, so a developer's paragraph there reached the salesperson.
+- **Suggestions**: none.

@@ -5,7 +5,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": false,
-    "declaration": false
+    "declaration": false,
+    "removeComments": true
   },
   "include": ["src"]
 }

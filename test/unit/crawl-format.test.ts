@@ -19,8 +19,8 @@ describe('the crawl report format', () => {
 
   it('refuses a newer version, something that isn\'t a report, and a broken file, saying why', () => {
     const newer = JSON.stringify({ tool: 'suite-builder', reportVersion: REPORT_VERSION + 1, pages: [], edges: [] });
-    expect(() => readCrawlReport(newer, 'x.crawl.json')).toThrow(`x.crawl.json was made by a newer Suite Builder (report version ${REPORT_VERSION + 1}; this one reads up to ${REPORT_VERSION}). Update Suite Builder`);
-    expect(() => readCrawlReport('{"kind":"templates"}', 'x.json')).toThrow('x.json is not a crawl report');
+    expect(() => readCrawlReport(newer, 'x.crawl.json')).toThrow(`x.crawl.json was made by a newer Suite Builder (report version ${REPORT_VERSION + 1}; this one reads up to ${REPORT_VERSION}). Update Suite Builder, or crawl the site again with this one.`);
+    expect(() => readCrawlReport('{"kind":"templates"}', 'x.json')).toThrow(/^x\.json is not a crawl report\.$/);
     expect(() => readCrawlReport('{', 'x.json')).toThrow('Could not read a crawl report from x.json');
   });
 });

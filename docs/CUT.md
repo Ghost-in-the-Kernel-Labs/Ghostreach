@@ -377,6 +377,11 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
   catalogue row says `not-timed` (a fourth value of `Ran`, `src/findings/check-catalogue.ts`, counted in `auditChecked`'s summary,
   `src/audit/audit-checked.ts`), and the page says `ALONGSIDE` (`src/leaf/words.ts`) under its heading. False, the default and
   every carried caller's, the page is the parent's (1.6's golden). The resync keeps it.
+- What the shipped package says of its source (J-053, Ghost's direction J-052): `src/crawl/controls-script.ts` and
+  `reading-script.ts` hold the parent's bundles with their comment lines dropped (each a source path or a decision id; the
+  build's `removeComments` cannot reach a string), nothing else changed: `tsc --removeComments` gives the same output for the
+  parent's bundle and this one. `readCrawlReport` (`src/crawl/report-read.ts`) loses two clauses naming the parent's commands:
+  "(crawl the site first: suite build <site>)" and "(git pull)"; deleted, not reworded. The resync keeps all three.
 
 ## The flags stripped
 
@@ -586,7 +591,8 @@ Over the parent's diff from the pin to the target, each changed file is one move
 3. `trimmed`: a copy that lost something at 1.2 to 1.4: each hunk said to apply to the local file, to be imports only, or to
    touch code the cut removed (read by hand: the row's losses and flags stay lost).
 4. `split`: a `(part)` row: the local file each hunk lands in, the one holding most of its lines.
-5. `whole`: a copy git reads as binary (the bundled `reading-script.ts`): the parent's file at the target.
+5. `whole`: a copy git reads as binary (the bundled `reading-script.ts`): the parent's file at the target, its comment lines
+   dropped again (J-053; `test/unit/lineage.test.ts` refuses one).
 6. `new` and `gone`: the target's closure (`scripts/cut_closure.py`, the block above) reaches a file not copied, which is copied
    with a row unless it is the suite side; or no longer reaches a listed one, which goes with its rows.
 7. `flag`: an option the parent added that a crawl or the audit reads (`shapesCrawl`, or an audit option, in its

@@ -104,11 +104,11 @@ export function readCrawlReport(text: string | (() => string), file: string): Cr
     throw new Error(`Could not read a crawl report from ${file}: ${e instanceof Error ? e.message : e}`);
   }
   if (report?.tool !== 'suite-builder' || !Array.isArray(report.pages) || !Array.isArray(report.edges)) {
-    throw new Error(`${file} is not a crawl report (crawl the site first: suite build <site>).`);
+    throw new Error(`${file} is not a crawl report.`);
   }
   if (typeof report.reportVersion !== 'number' || report.reportVersion > REPORT_VERSION) {
     throw new Error(
-      `${file} was made by a newer Suite Builder (report version ${report.reportVersion}; this one reads up to ${REPORT_VERSION}). Update Suite Builder (git pull), or crawl the site again with this one.`,
+      `${file} was made by a newer Suite Builder (report version ${report.reportVersion}; this one reads up to ${REPORT_VERSION}). Update Suite Builder, or crawl the site again with this one.`,
     );
   }
   // A crawl taken before a credential was marked still gives none to the suite built from it (TODO 89).
