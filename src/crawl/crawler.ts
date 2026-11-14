@@ -5,7 +5,7 @@
  *   - one origin only (external links are recorded, never followed)
  *   - a page limit (H.MAX_PAGES; the crawl stops sooner once pages stop teaching it anything) and a
  *     delay between page loads (H.DELAY_MS, longer if robots.txt asks for it with Crawl-delay)
- *   - robots.txt is obeyed for the SuiteBuilder token (RFC 9309), on every redirect hop too
+ *   - robots.txt is obeyed for the forecursor token and the one it went by before (RFC 9309, GR-017), on every redirect hop too
  *   - an honest User-Agent that names the tool
  *   - it stops after repeated failures, and at once on 429 Too Many Requests
  *   - images, media and fonts are not downloaded (the structure doesn't need them)

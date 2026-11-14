@@ -103,7 +103,7 @@ export function readCrawlReport(text: string | (() => string), file: string): Cr
   } catch (e) {
     throw new Error(`Could not read a crawl report from ${file}: ${e instanceof Error ? e.message : e}`);
   }
-  if (report?.tool !== 'suite-builder' || !Array.isArray(report.pages) || !Array.isArray(report.edges)) {
+  if ((report?.tool !== 'forecursor' && report?.tool !== 'suite-builder') || !Array.isArray(report.pages) || !Array.isArray(report.edges)) {
     throw new Error(`${file} is not a crawl report.`);
   }
   if (typeof report.reportVersion !== 'number' || report.reportVersion > REPORT_VERSION) {

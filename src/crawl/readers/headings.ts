@@ -32,7 +32,7 @@ function collectHeadings(): { headings: string[]; skipped: string[] } {
     return false;
   };
   // The one rule of what a visitor sees (G-737), from READING_SCRIPT: below the fold is seen; off to the side is not.
-  const visible = (globalThis as unknown as { __suiteBuilderSeen: (el: Element) => boolean }).__suiteBuilderSeen;
+  const visible = (globalThis as unknown as { __forecursorSeen: (el: Element) => boolean }).__forecursorSeen;
   // A label's own words, not the options of the dropdown inside it ("Industry", not "Industry All").
   const ownText = (el: Element) => {
     if (!el.querySelector('select, textarea, button, script, style')) return el.textContent || '';

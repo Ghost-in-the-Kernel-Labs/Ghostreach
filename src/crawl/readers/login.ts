@@ -9,7 +9,7 @@ import type { FoundLoginForm, LoginForm } from '../../leaf/report.js';
 
 export async function readLoginForms(page: Page): Promise<FoundLoginForm[]> {
   const forms = await page
-    .evaluate(`(() => { ${CONTROLS_SCRIPT}; return globalThis.__suiteBuilderLoginForms(); })()`)
+    .evaluate(`(() => { ${CONTROLS_SCRIPT}; return globalThis.__forecursorLoginForms(); })()`)
     .catch(() => [] as FoundLoginForm[]);
   return Array.isArray(forms) ? (forms as FoundLoginForm[]) : [];
 }

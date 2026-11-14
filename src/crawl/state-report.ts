@@ -32,7 +32,7 @@ export interface KnownToReport {
 export function crawlReport(startUrl: string, options: CrawlReport['options'], known: KnownToReport): CrawlReport {
   const { origin, robots, language, consent, stopReason, failed, site, discovery, notFound, addresses } = known;
   return {
-    tool: 'suite-builder',
+    tool: 'forecursor',
     reportVersion: REPORT_VERSION,
     startUrl,
     origin,

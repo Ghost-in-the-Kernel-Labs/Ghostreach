@@ -25,6 +25,6 @@ export interface ConsentBanner {
 /** The consent banner showing on the page, or null, read in it (consent-page.ts, in READING_SCRIPT). */
 // Decision: G-054
 export async function consentBannerOn(page: Page | Frame, known: string[]): Promise<ConsentBanner | null> {
-  return page.evaluate(`(() => { ${READING_SCRIPT}; return globalThis.__suiteBuilderConsent(${JSON.stringify(known)}); })()`) as Promise<ConsentBanner | null>;
+  return page.evaluate(`(() => { ${READING_SCRIPT}; return globalThis.__forecursorConsent(${JSON.stringify(known)}); })()`) as Promise<ConsentBanner | null>;
 }
 

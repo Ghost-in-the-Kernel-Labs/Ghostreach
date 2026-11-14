@@ -58,7 +58,7 @@ describe('a sign-in link opened to read its form', () => {
       goto: async () => ({ status: () => 200 }),
       title: async () => ` Admin sign in.  ${KEY} `,
       waitForLoadState: async () => undefined,
-      evaluate: async (script: unknown) => (typeof script === 'string' && script.includes('__suiteBuilderLoginForms') ? [form] : []),
+      evaluate: async (script: unknown) => (typeof script === 'string' && script.includes('__forecursorLoginForms') ? [form] : []),
     } as unknown as Page;
     await readSignInPage({ page, state, log: () => undefined, timeout: 1000, settleMs: 0 } as unknown as CrawlRun, `${ORIGIN}/staff`);
     expect(state.loginForms.map((f) => [f.role, f.evidence])).toEqual([['admin', ['words "Admin sign in. [credential removed]"']]]);

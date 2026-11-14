@@ -16,11 +16,11 @@ import { READING_SCRIPT } from '../reading-script.js';
  * page.evaluate().
  */
 function collectShownImages(): string[] {
-  const rule = globalThis as unknown as { __suiteBuilderSeen: (el: Element) => boolean; __suiteBuilderShown: (el: Element) => boolean };
-  const frameSeen = window === window.top || (window.frameElement ? rule.__suiteBuilderSeen(window.frameElement) : window.innerWidth > 1 && window.innerHeight > 1);
+  const rule = globalThis as unknown as { __forecursorSeen: (el: Element) => boolean; __forecursorShown: (el: Element) => boolean };
+  const frameSeen = window === window.top || (window.frameElement ? rule.__forecursorSeen(window.frameElement) : window.innerWidth > 1 && window.innerHeight > 1);
   if (!frameSeen) return [];
   // Drawn: displayed, not transparent, not visibility: hidden (unseen.ts `shown`, the first part of `seen`).
-  const drawn = rule.__suiteBuilderShown;
+  const drawn = rule.__forecursorShown;
   const pixel = (el: Element) => {
     const w = Number(el.getAttribute('width'));
     const h = Number(el.getAttribute('height'));

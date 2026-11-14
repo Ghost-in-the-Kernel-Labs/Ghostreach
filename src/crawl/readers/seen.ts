@@ -44,7 +44,7 @@ function locateNames(names: string[]): BrowserControl['where'][] {
     return words.map(plain).filter(Boolean);
   };
   // The reading script's banner test (links-page.ts), set by READING_SCRIPT before this runs.
-  const inBanner = (globalThis as unknown as { __suiteBuilderInBanner?: (el: Element) => boolean }).__suiteBuilderInBanner;
+  const inBanner = (globalThis as unknown as { __forecursorInBanner?: (el: Element) => boolean }).__forecursorInBanner;
   const all: { el: Element; host: string | null }[] = [];
   const walk = (root: Document | ShadowRoot, host: string | null) => {
     for (const el of root.querySelectorAll('*')) {

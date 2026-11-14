@@ -16,7 +16,7 @@ function browserShowing(headings: string[], again: PageControl[]): Browser {
     goto: async () => ({ status: () => 200 }),
     url: () => 'http://x.test/form',
     // The headings reader is a function, the controls and consent readers are scripts.
-    evaluate: async (script: unknown) => (typeof script === 'function' || (typeof script === 'string' && script.includes('collectHeadings')) ? { headings, skipped: [] } : String(script).includes('__suiteBuilderControls') ? again : null),
+    evaluate: async (script: unknown) => (typeof script === 'function' || (typeof script === 'string' && script.includes('collectHeadings')) ? { headings, skipped: [] } : String(script).includes('__forecursorControls') ? again : null),
     close: async () => undefined,
     context: () => context,
   };

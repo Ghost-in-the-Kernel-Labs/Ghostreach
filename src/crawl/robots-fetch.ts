@@ -8,7 +8,7 @@ import { firstLine } from './error-line.js';
 import { ALLOW_ALL, DISALLOW_ALL, parseRobots } from './robots.js';
 import type { RobotsAnswer } from './state.js';
 import { H as suiteH } from '../leaf/heuristics/suite.js';
-import { PRODUCT_TOKEN } from '../leaf/report.js';
+import { ROBOTS_TOKENS } from '../leaf/report.js';
 
 
 /**
@@ -69,7 +69,7 @@ async function askRelaxed(relaxed: Relaxed, origin: string, timeout: number, log
     // As the strict read: 2xx parsed, 4xx no rules; anything else (3xx at the redirect limit, 1xx, 429, 5xx) is no success, and the first error stands.
     const ok = status >= 200 && status < 300;
     if (!ok && !(status >= 400 && status < 500 && status !== 429)) return null;
-    const answer = ok ? { policy: parseRobots(await res.text(), PRODUCT_TOKEN), status } : { policy: ALLOW_ALL, status };
+    const answer = ok ? { policy: parseRobots(await res.text(), ROBOTS_TOKENS), status } : { policy: ALLOW_ALL, status };
     log(`As seen from this computer, the site's certificate chain is incomplete (${origin}: the server does not send its intermediate certificate), so robots.txt was read with relaxed checking. Browsers repair this but some tools do not. Another cause is a TLS-intercepting proxy or antivirus on this computer whose certificate authority the browser trusts but Node does not (NODE_EXTRA_CA_CERTS names the file that fixes that side). The relaxed read goes direct: an operating-system or PAC proxy is not detected, so a browser may reach the site through one that this read did not. The pages are still loaded with the browser's own checks; a man in the middle could have forged that robots.txt.`);
     return { ...answer, certificateChain: 'incomplete' };
   } catch (e) {
@@ -92,7 +92,7 @@ async function askRobots(request: Awaited<ReturnType<typeof guardedRequests>>, o
     res = await request.get(url, { timeout, maxRedirects: 5, failOnStatusCode: false });
   }
   const status = res.status();
-  if (status >= 200 && status < 300) return { policy: parseRobots(await res.text(), PRODUCT_TOKEN), status };
+  if (status >= 200 && status < 300) return { policy: parseRobots(await res.text(), ROBOTS_TOKENS), status };
   // RFC 9309: 4xx means there are no rules; 5xx means the site is unreachable, so crawl nothing.
   if (status >= 400 && status < 500) return { policy: ALLOW_ALL, status };
   log(`robots.txt answered ${status}; treating the whole site as disallowed`);

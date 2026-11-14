@@ -10,7 +10,7 @@ import type { PageControl } from '../../leaf/report.js';
 
 export async function readControls(page: Page | Frame): Promise<PageControl[]> {
   const controls = await page
-    .evaluate(`(() => { ${CONTROLS_SCRIPT}; return globalThis.__suiteBuilderControls(${JSON.stringify({})}); })()`)
+    .evaluate(`(() => { ${CONTROLS_SCRIPT}; return globalThis.__forecursorControls(${JSON.stringify({})}); })()`)
     .catch(() => [] as PageControl[]);
   // The page's own code can rewrite what the in-page half calls: each control is held again here, its guards dropped.
   return Array.isArray(controls) ? controls.map((c) => heldControl(c)).filter((c): c is PageControl => c !== null) : [];

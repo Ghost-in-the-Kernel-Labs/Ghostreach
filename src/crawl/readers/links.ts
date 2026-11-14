@@ -29,7 +29,7 @@ type RawAnchor = Pick<PageAnchor, 'id' | 'exists' | 'sameId' | 'top' | 'undrawn'
 
 /** Every link on the page, read in it (links-page.ts, in READING_SCRIPT). */
 export async function readLinks(page: Page | Frame): Promise<RawLink[]> {
-  const links = (await page.evaluate(`(() => { ${READING_SCRIPT}; return globalThis.__suiteBuilderLinks(); })()`)) as RawLink[];
+  const links = (await page.evaluate(`(() => { ${READING_SCRIPT}; return globalThis.__forecursorLinks(); })()`)) as RawLink[];
   return links.map((link) => withoutSessionIds(withoutCredentialWords(link)));
 }
 

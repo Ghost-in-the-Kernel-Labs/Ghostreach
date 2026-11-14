@@ -344,5 +344,5 @@ export function startUrlFromArg(arg: string): string {
 export function notFoundPath(origin: string): string {
   let hash = 0x811c9dc5;
   for (const c of new URL(origin).hostname) hash = Math.imul(hash ^ c.charCodeAt(0), 0x01000193) >>> 0;
-  return `/suite-builder-no-such-page-${hash.toString(16).padStart(8, '0')}`;
+  return `/forecursor-no-such-page-${hash.toString(16).padStart(8, '0')}`;
 }

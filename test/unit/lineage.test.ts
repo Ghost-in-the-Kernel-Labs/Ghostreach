@@ -20,11 +20,15 @@ describe('the lineage check', () => {
       "the parent's audit; as the parent does",
       'copied from it, cut from it, cut out of it',
       'run suite build <site>',
+      'User-agent: SuiteBuilder',
+      'globalThis.__suiteBuilderLinks()',
+      'process.env.SUITE_BUILDER',
     ];
     const found = leaks(planted.map((text, i) => ({ path: `dist/f${i}.js`, text })));
     expect(found.map((line) => line.split(':')[0])).toEqual([
       'dist/f0.js', ...Array(3).fill('dist/f1.js'), ...Array(2).fill('dist/f2.js'), 'dist/f3.js', 'dist/f4.js', 'dist/f5.js',
       ...Array(3).fill('dist/f6.js'), ...Array(2).fill('dist/f7.js'), ...Array(3).fill('dist/f8.js'), 'dist/f9.js',
+      'dist/f10.js', 'dist/f11.js', 'dist/f12.js',
     ]);
   });
 

@@ -611,3 +611,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **See also:** GR-015
 - **subject:** dependencies
 
+### GR-017: the crawler is forecursor: its user agent, robots.txt name, probe and crawl file
+- **Decision:** The crawler names itself forecursor, after the website (forecursor.com, GR-015): its user agent is `Mozilla/5.0 (compatible; forecursor/1.0; +https://forecursor.com)`, the standard bot form, its robots.txt product token `forecursor`, its not-found probe `/forecursor-no-such-page-<hash>`, its in-page globals `__forecursor*`, and the crawl files it writes say `tool: 'forecursor'`. It still obeys a robots.txt group written for `SuiteBuilder`, the name it went by before, beside its own (both groups' rules together; `*` only when neither is named), and still reads the parent's crawl files (`tool: 'suite-builder'`), which 1.5 and 1.6 hold it to.
+- **Why:** Ghost, 2026-11-14: "The crawler should set its agent to forecursor. That way ppl google and find it." A site's owner who reads the crawler's name in a log and searches it finds the website. Obeying the old name too is the agent's conservative choice (J-056): a site that wrote rules for the crawler under its old name is not crawled against them.
+- **Held by:** `src/leaf/report.ts` (`DEFAULT_USER_AGENT`, `ROBOTS_TOKENS`), `src/crawl/robots.ts`, `src/leaf/pages/url.ts` (`notFoundPath`), `src/crawl/report-read.ts`, `test/unit/crawler-name.test.ts`, `test/crawl/ghostreach.spec.ts`, `test/support/lineage.ts`.
+- **Source:** Ghost, in chat, 2026-11-14 (J-055).
+- **Status:** in force
+- **See also:** GR-003, GR-015
+- **subject:** crawl
+

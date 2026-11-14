@@ -109,7 +109,7 @@ module reads, and the page-address helpers the crawl, the findings and the audit
 
 - `audit.ts` → `crawl/report-read` and `project/text-file` (`auditedCrawl`): the function moves to `src/project/crawl.ts`;
   project reads the report and hands it to the audit.
-- `audit.ts` → `crawl/robots-fetch` (`PRODUCT_TOKEN`): the constant moves to `src/leaf/report.ts`; robots-fetch imports it back.
+- `audit.ts` → `crawl/robots-fetch` (`PRODUCT_TOKEN`): the constant moves to `src/leaf/report.ts`; robots-fetch imports it back (as `ROBOTS_TOKENS` since GR-017).
 
 No module is added and no `mayImport` changes. The alternative, `crawl` in audit's `mayImport` (the report and the pages in
 the crawl module), is a module change and waits on Ghost; it is listed under Questions.
@@ -382,6 +382,13 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
   build's `removeComments` cannot reach a string), nothing else changed: `tsc --removeComments` gives the same output for the
   parent's bundle and this one. `readCrawlReport` (`src/crawl/report-read.ts`) loses two clauses naming the parent's commands:
   "(crawl the site first: suite build <site>)" and "(git pull)"; deleted, not reworded. The resync keeps all three.
+- The crawler's name (GR-017, Ghost's word J-055, built J-056): forecursor where the parent says SuiteBuilder. The user agent
+  `Mozilla/5.0 (compatible; forecursor/1.0; +https://forecursor.com)` (`src/leaf/report.ts`); the robots.txt groups obeyed,
+  `ROBOTS_TOKENS`, forecursor's and the old `suitebuilder` together (`parseRobots` takes a list, or one token as the carried tests
+  pass); the probe `/forecursor-no-such-page-<hash>` (`src/leaf/pages/url.ts`); the in-page globals `__forecursor*` in both bundles
+  and their readers, a pure rename; the crawl file's `tool` written `forecursor`, read as `forecursor` or `suite-builder` (the
+  parent's golden crawls). Neither the page nor the findings name any of these, so 1.5's and 1.6's goldens are unchanged. The
+  resync keeps all of it: a bundle taken `whole` has its globals renamed again (step 5).
 
 ## The flags stripped
 
@@ -572,7 +579,7 @@ banned-words,made-up-keys,review-reports,secret-shapes-before-gate}.ts`; `test/g
 (the parent's `portable` crawls, origin rewritten: compare a crawl, never a page, 1.6); `test/data/address-reach.json`;
 `test/fixture-site/server.ts` and `test/fixture-site/pages/*.html`; `playwright.config.ts`. Written by the parent's code, not
 copied: `test/golden/fixture-site.findings.json` and `test/golden/fixture-site.AUDIT.html` (`scripts/parent-findings.mjs`).
-Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden,pdf}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
+Ghostreach's own: `test/unit/{cut,no-flags,main,audit-golden,pdf,crawler-name}.test.ts`, `test/unit/words.test.ts` (under a parent's name: the
 resync block's `own`), `test/support/{audit-golden,pin,pdf-text,pdf-syntax}.ts` and `test/crawl/ghostreach.spec.ts`.
 
 ## The resync recipe
@@ -592,7 +599,8 @@ Over the parent's diff from the pin to the target, each changed file is one move
    touch code the cut removed (read by hand: the row's losses and flags stay lost).
 4. `split`: a `(part)` row: the local file each hunk lands in, the one holding most of its lines.
 5. `whole`: a copy git reads as binary (the bundled `reading-script.ts`): the parent's file at the target, its comment lines
-   dropped again (J-053; `test/unit/lineage.test.ts` refuses one).
+   dropped again (J-053; `test/unit/lineage.test.ts` refuses one) and its `__suiteBuilder` globals renamed `__forecursor` again
+   (GR-017; `test/unit/crawler-name.test.ts` refuses one).
 6. `new` and `gone`: the target's closure (`scripts/cut_closure.py`, the block above) reaches a file not copied, which is copied
    with a row unless it is the suite side; or no longer reaches a listed one, which goes with its rows.
 7. `flag`: an option the parent added that a crawl or the audit reads (`shapesCrawl`, or an audit option, in its

@@ -43,9 +43,10 @@ interface Group {
 }
 
 /**
- * Parse robots.txt and return the rules that apply to `productToken` (e.g. "SuiteBuilder").
+ * Parse robots.txt and return the rules that apply to the crawler: every group naming one of `productTokens` (e.g.
+ * "forecursor"), or, when none does, the `*` group.
  */
-export function parseRobots(text: string, productToken: string): RobotsPolicy {
+export function parseRobots(text: string, productTokens: string | readonly string[]): RobotsPolicy {
   const groups: Group[] = [];
   let current: Group | null = null;
   // A user-agent line right after another user-agent line joins the same group.
@@ -87,8 +88,8 @@ export function parseRobots(text: string, productToken: string): RobotsPolicy {
     }
   }
 
-  const token = productToken.toLowerCase();
-  let chosen = groups.filter((g) => g.agents.includes(token));
+  const tokens = (typeof productTokens === 'string' ? [productTokens] : productTokens).map((t) => t.toLowerCase());
+  let chosen = groups.filter((g) => g.agents.some((agent) => tokens.includes(agent)));
   if (chosen.length === 0) chosen = groups.filter((g) => g.agents.includes('*'));
 
   const delays = chosen.map((g) => g.crawlDelay).filter((d): d is number => d !== null);

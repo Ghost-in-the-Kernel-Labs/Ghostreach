@@ -22,6 +22,7 @@ import { pdfPages, squeezed } from '../support/pdf-text.js';
 import { ADDRESS, BYLINE } from '../../src/leaf/words.js';
 import { auditChecked } from '../../src/audit/audit-checked.js';
 import { CHECKS } from '../../src/findings/check-catalogue.js';
+import { DEFAULT_USER_AGENT } from '../../src/leaf/report.js';
 
 /** The length of the parent's catalogue of checks at the pin (its src/group/check-catalogue.ts at a4c8045), SITE-36 among them. */
 const PARENT_CHECKS = 41;
@@ -106,6 +107,11 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   // The crawl file is not the parent's byte for byte (the suite's fields cut, the stripped flags' options, the settle the bare
   // defaults take): the page is what is compared. The page written is the crawl's, rendered on the day the crawl started.
   const crawlText = readFileSync(join(folder, '127.0.0.1.crawl.json'), 'utf8');
+  // GR-017: what the site's owner reads in its log: every request names forecursor, the not-found probe under its name too;
+  // and the crawl file says who wrote it.
+  expect([...new Set(site.requests.map((r) => r.userAgent))]).toEqual([DEFAULT_USER_AGENT]);
+  expect(site.requests.filter((r) => r.path.includes('no-such-page')).map((r) => r.path)).toEqual([expect.stringMatching(/^\/forecursor-no-such-page-[0-9a-f]{8}$/)]);
+  expect(JSON.parse(crawlText).tool).toBe('forecursor');
   const written = auditedCrawl(join(folder, '127.0.0.1.crawl.json'));
   expect(html).toBe(auditHtml(written, siteFindings(written), new Date(`${day}T12:00:00Z`)));
   const golden = join(data, 'fixture.test.crawl.json');

@@ -79,7 +79,7 @@ async function framesIn(parent: Frame, path: string[], origin: string, out: Page
   await parent.evaluate(`(() => { ${CONTROLS_SCRIPT} })()`).catch(() => {});
   for (const child of children) {
     const element = await child.frameElement().catch(() => null);
-    const facts = (await element?.evaluate((el) => (globalThis as unknown as { __suiteBuilderFrame: (frameElement: Element) => FrameFacts }).__suiteBuilderFrame(el as Element)).catch(() => null)) ?? null;
+    const facts = (await element?.evaluate((el) => (globalThis as unknown as { __forecursorFrame: (frameElement: Element) => FrameFacts }).__forecursorFrame(el as Element)).catch(() => null)) ?? null;
     if (!facts) continue;
     const record = frameRecord(facts, child.url(), parent.url(), [...path, facts.xpath], origin);
     out.push(record);

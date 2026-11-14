@@ -16,11 +16,23 @@ export type { BrowserControl, FoundLoginForm, LoginForm, MenuTrigger, PageAnchor
  */
 export const REPORT_VERSION = 6;
 
-/** The name a robots.txt addresses the crawler by (in its user agent too). */
-export const PRODUCT_TOKEN = 'SuiteBuilder';
+/** The name a robots.txt addresses the crawler by (in its user agent too): forecursor, the website's name, so a site's owner who searches it finds who crawled. */
+// Decision: GR-017
+const PRODUCT_TOKEN = 'forecursor';
 
-/** The user agent a crawl names itself by: the tool, by its product token (GR-003: never another; a constant, not a setting, J-017). */
-export const DEFAULT_USER_AGENT = `Mozilla/5.0 (compatible; ${PRODUCT_TOKEN}/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)`;
+/**
+ * Every name whose robots.txt group the crawl obeys: its own, and the name it went by before, so a site that wrote rules for
+ * that crawler is still read by them (GR-017). Lower case, as robots.txt groups are matched.
+ */
+// Decision: GR-017
+export const ROBOTS_TOKENS: readonly string[] = [PRODUCT_TOKEN, 'suitebuilder'];
+
+/**
+ * The user agent a crawl names itself by: the tool, by its product token and the website a search for it finds (GR-003: never
+ * another; a constant, not a setting, J-017). The standard bot form, `Mozilla/5.0 (compatible; <token>/<version>; +<address>)`.
+ */
+// Decision: GR-017
+export const DEFAULT_USER_AGENT = `Mozilla/5.0 (compatible; ${PRODUCT_TOKEN}/1.0; +https://forecursor.com)`;
 
 export type StopReason =
   /** Every reachable page was crawled. */
@@ -209,7 +221,8 @@ export interface LinkEdge {
 }
 
 export interface CrawlReport {
-  tool: 'suite-builder';
+  /** Who wrote the file: `forecursor` for this crawler's; `suite-builder` on the crawl files this one is held to (GR-017). */
+  tool: 'forecursor' | 'suite-builder';
   reportVersion: number;
   startUrl: string;
   origin: string;
