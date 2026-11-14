@@ -162,7 +162,7 @@ at their defaults). A dash: nothing.
 | `src/pages/url.ts` | `src/leaf/pages/url.ts` | 373 | `PAGE_EXTENSION`, `asRole`, `exactPattern`, `startUrlFromArg` (1.5 brings it back from `a4c8045` when the command calls it) | — |
 | `src/pages/viewport-zoom.ts` | `src/leaf/pages/viewport-zoom.ts` | 6 | — | — |
 | `src/pages/worded-headings.ts` | `src/leaf/pages/worded-headings.ts` | 16 | — | — |
-| `src/crawl/report.ts` | `src/leaf/report.ts` | 777 | the types of `declared`, `labels`, `roleForms*`, `snapshot`, `apiDocument` (`RoleProbe`, `ApiDocument`, `ApiOperation`, `ApiAnswer`, `ApiField`); gains `PRODUCT_TOKEN`; its page parts moved to `report-page.ts` (next row) | --all-languages, --exclude, --include, --login, --long, --offline, --sec, --short |
+| `src/crawl/report.ts` | `src/leaf/report.ts` | 777 | the types of `declared`, `labels`, `roleForms*`, `snapshot`, `apiDocument` (`RoleProbe`, `ApiDocument`, `ApiOperation`, `ApiAnswer`, `ApiField`); gains `PRODUCT_TOKEN`, and `DEFAULT_USER_AGENT` from `crawl/loop.ts` at 1.4 (J-017); its page parts moved to `report-page.ts` (next row) | --all-languages, --exclude, --include, --login, --long, --offline, --sec, --short |
 | `src/crawl/report.ts` | `src/leaf/report-page.ts` | (part) | its page parts (`PageLoad` to `PageAnchor`), moved unchanged and re-exported by `report.ts`: the 400-line target | — |
 | `src/crawl/abandoned.ts` | `src/crawl/abandoned.ts` | 16 | — | — |
 | `src/crawl/addresses.ts` | `src/crawl/addresses.ts` | 69 | — | — |
@@ -272,7 +272,11 @@ In 1.1's closure, not copied at 1.2: once the cut points were severed, nothing c
 ## Exports dropped at 1.2
 
 Exported in the parent for its own tests, used only inside their file here; `knip` refuses an export nothing imports. 1.4
-puts back the `export` of each name a carried test imports. 54 names:
+puts back the `export` of each name a carried test imports. 54 names. 1.4 put back 26 (J-017): `classesRan`, `joinedLookup`, `guardRequests`,
+`reachOf`, `refusal`, `resolveAll`, `sectionOf`, `spreadIndex`, `thrownFrom`, `FrameFacts`, `frameRecord`, `withoutSessionIds`,
+`linkAddress`, `MAX_REDIRECTS`, `relaxedAsker`, `relaxedRefusal`, `DESTINATION_PARAMS`, `deadAddresses`, `menuItemOf`,
+`CREDENTIAL_MARKER`, `joinOf`, `maskedHeadings`, `pathSuffixes`, `slugWords`, `SITE_TEXT_MAX`, `isTracking`; the other 28 stay
+unexported (no carried test reads them, `knip` green):
 
 - `src/audit/audit-checked.ts`: `classesRan`
 - `src/crawl/addresses.ts`: `joinedLookup`
@@ -311,6 +315,17 @@ puts back the `export` of each name a carried test imports. 54 names:
   with the status it answers, in the suite's expected-links block." It names a suite (GR-004) and a block Ghostreach has
   no way to fill. Deleted, not reworded (the ruling grade, J-013). It is the one allowed difference, beside the title line
   and the footer, between the parent's `AUDIT.html` and this program's (1.6's golden).
+
+## Where the copy differs from the parent's behaviour
+
+- `incompleteChain` (`src/crawl/relaxed-chain.ts`, G-609) at `a4c8045` anchors the error's phrase at the end of its first line.
+  Node 24, the stack's runtime, adds a hint after it ("; if the root CA is installed locally, try running Node.js with
+  --use-system-ca"), so under Node 24 an incomplete certificate chain was not recognised, the relaxed robots.txt read never ran
+  and SITE-37 could not fire. Found by the carried `robots-chain-tls.test.ts` (1.4, J-017); the pattern allows that hint and
+  nothing else. The resync (1.7) keeps it, or takes the parent's own fix if it has one.
+- `CrawlSettings.userAgent` folded into the constant `DEFAULT_USER_AGENT` (now in `src/leaf/report.ts`) at 1.4: no carried test
+  sets it (the ruling grade's condition on J-016's choice, J-017). The crawl, the second look and the relaxed client name the
+  same agent as before.
 
 ## The flags stripped
 
@@ -412,6 +427,57 @@ Not carried: 22 tests of the parent's own gate and scripts (`gated-commit*`, `ch
 `release*`, ...), 2 of its saved corpus (`real-sites`, `real-pages`), and the rest, which reach the suite side (kits, model,
 back ends), the grouping into page types, the parent's command line, the bench, `--md` or `--vulnsec`. 1.4 writes each
 dropped test's line here, under its own heading.
+
+1.4 done (J-017): 54 files under `test/unit/` (501 tests with Ghostreach's own four, about 6 s); five dropped whole, one carried
+as cases of `words.test.ts`, the rest re-pointed at Ghostreach's paths, trimmed where a case tested something cut. `test/unit/cut.test.ts`
+holds it: each test named above is a file under `test/unit/` or has its line below. Copied beside them, each from `a4c8045`:
+`test/golden/{fixture,frames,library}-site.crawl.json` (the parent's crawls of its made-up fixture sites: the catalogue's, the
+audit's and the format's saved crawls), `test/data/address-reach.json` (the destination guard's vectors), and the helpers
+`test/support/{audit-crawls,banned-words,made-up-keys,review-reports,secret-shapes-before-gate}.ts` and `test/unit/taint.ts`
+(trimmed to `ownVoice`). Not copied: `test/unit/hostile.ts` (only the dropped cases read it), `test/support/prospect-words.ts`
+(its pattern inlined), `test/unit/cypress-fixture.ts` and `test/unit/source-scan.ts` (the suite side; `ts5`). None needs a real
+browser or the network: each fakes the browser or serves on 127.0.0.1 (`robots-chain-tls.test.ts` runs `openssl` for its keys and
+skips without it), so all run in the `unit` project, and `integration` runs the same files; no `*.int.test.ts` was carried. The
+parent's crawl specs (`test/crawl/*.spec.ts`, Playwright Test) are not 1.4's: 1.5 brings `playwright.config.ts`, its own
+`test/crawl/ghostreach.spec.ts` and the fixture server, which the medium gate (`scripts/gate.sh --medium`) then runs, a
+Chromium installed first.
+
+## The parent's unit tests: dropped or trimmed at 1.4
+
+One line each, in name order: what went and why (cut at 1.2, stripped at 1.3, or never copied).
+
+- `after-crawl.test.ts`: trimmed: the offline halves of its five cases (`--offline`, 1.3); the online halves kept, a fake browser added, since the second look now always runs, and its settings' `userAgent` gone (a constant now, J-017).
+- `audit-checked.test.ts` (in part, as the roadmap names it): every case of AUDIT.html carried; not AUDIT.md's (`auditMarkdown`, `--md`), its half of each case comparing the two files, the two signed-in scope cases (`signIns`, `--login`), nor "a check that needs an option" (`Check.option`, the `requested` parameters, SITE-36, `--vulnsec`, `--sec`; 1.3).
+- `audit-items.test.ts`: trimmed: "the grouping's report keeps only the words" (`defectsOf`, the grouping's report, cut at 1.2).
+- `audit.test.ts` (in part, as the roadmap names it): `auditHtml`, `AUDIT_FOOTER`, the order and the banned words carried; not the Markdown audit (`auditMarkdown`, `--md`), KNOWN-ISSUES.md (`knownIssues`), the short audit (`shortView`, `shortSaid`, `--short`), `--fail-on` (`failsAudit`), nor `savedCrawl` (the parent's command line); SITE-36 out of the security-observation list (1.3); the fixture crawl read from test/golden/ (`cypress-fixture.ts`, the suite side, not copied); three fixture goldens, not four (api-site's is the API document's, the suite side).
+- `check-catalogue.test.ts`: trimmed: SITE-36's class and option (`Check.option`, `--vulnsec`, never copied), the `external.offline` and offline `twinAskable` cases (`--offline`, 1.3); `literals` (test/support/banned-words.ts) reads with a lexer, not `ts5`, checked equal to TypeScript 5's parser over every file of src/ (115 files).
+- `check-rules.test.ts`: dropped whole: it reads each rule's function span with the TypeScript 5 parser (`ts5`, through the parent's scripts/kernel-scan.mjs), which Ghostreach does not have; making it without would be a function-span reader written for two catalogue fields (`rule`, `file`) only an agent reads, whose `file` still names the parent's paths (src/group/).
+- `crawl-format.test.ts`: trimmed: "names every field of the report's types" and "has a line in its history" (docs/CRAWL-FORMAT.md, not copied); the older versions' reports (real sites' crawls, test/data and test/bench, never copied): it reads the three fixture goldens.
+- `crawl-state.test.ts`: re-pointed: the report's options lose `include` and `exclude` (`--include`, `--exclude`, 1.3).
+- `credential-marks.test.ts`: trimmed: the entry's `labels` (readers/labels, cut at 1.2) and "a saved page" (`savedPageWithoutCredentials`, readers/credentials.ts, never copied: no page is saved); `markCredentialsIn` from credentials-entry.ts.
+- `credential-visit.test.ts`: trimmed: "the saved page has the marker" and "what the crawler typed to sign in" (the saved page, `readers/snapshot`, and the typed account, never copied).
+- `discovery.test.ts`: trimmed: patience 0 never saturated (`--long`, cut at 1.3); "the crawl summary" (`budgetLines`, cut at 1.2; its `--exclude` and `--max-pages` hints, 1.3).
+- `external-unconfirmed.test.ts`: trimmed: "never in the short audit's top" (`shortView`, `--short`, 1.3) and the `external.offline` line (`--offline`, 1.3).
+- `findings-in-full.test.ts`: trimmed: "the broken links' list" (`defectsOf`, `brokenLinksOf`, the grouping's report, cut at 1.2).
+- `findings.test.ts` (in part, as the roadmap names it): the `siteFindings` cases carried (SITE-01 to SITE-06, SITE-03's signed-in redirect among them: the findings' role reading is kept, J-016); not the KNOWN-ISSUES.md cases (`knownIssues`, `apiNotTested`), the site's words quoted in a bug file (`planBugs`), `tagsAsCode` (the suite side), nor SITE-01's `defectsOf` line (the grouping's report, cut at 1.2).
+- `fingerprint.test.ts`: trimmed: `shapeSimilarity` cases (cut at 1.2).
+- `hubspot-tracking.test.ts`: re-pointed: "a check that did not run" reads an unreachable probe in place of an offline one (`--offline`, 1.3).
+- `load-other-site.test.ts`: trimmed: the short audit's top line (`shortView`, `--short`, 1.3); the order kept.
+- `menu-before-stop.test.ts`: re-pointed: `Checklist` takes the frontier alone (its recrawl options, `--fresh`, 1.3).
+- `near-copies.test.ts`: dropped whole: its subject, src/group/near-copies.ts, was not copied ("Traced, not copied").
+- `offline-crawl.test.ts`: trimmed to its case that holds without `--offline` (another host's request let go, nothing recorded); the offline case (`pageHosts`, `options.offline`) dropped (1.3).
+- `offline-probes.test.ts`: trimmed to its four cases that hold without `--offline` (images asked whatever their host; a Sitemap: line asked, the site's own on either scheme; with none, /sitemap.xml); its eight offline cases (`otherHosts`, `sitemap.notAsked`, the hostile Sitemap line kept as its address, an image on the site's host on another scheme) dropped (1.3).
+- `person-text.test.ts`: dropped whole: compares the saved page's greeting rule (readers/snapshot-person.ts, never copied) with the report's.
+- `reasons-wording.test.ts`: dropped whole: its subject, src/group/reasons.ts, was not copied ("Traced, not copied").
+- `robots-chain-tls.test.ts`: carried whole; it failed under Node 24, whose TLS error adds a hint after the phrase `incompleteChain` anchors on, so the relaxed robots.txt read (G-609, SITE-37) never ran: the parent's pattern at a4c8045, fixed in src/crawl/relaxed-chain.ts (the hint allowed, nothing else), a case each way added to robots-chain.test.ts.
+- `router.test.ts`: trimmed: another host's request noted offline (`pageHosts`, `--offline`, 1.3).
+- `run-readers.test.ts`: trimmed: `ReadContext.readerFailed` and its case "tells the context nothing" (read only by the role questions, cut at 1.2).
+- `secret-shapes-differential.test.ts`: trimmed: every comparison of findings (`findSecrets`, cut at 1.2) and "read by that shape alone"; the masked text still held to the frozen scanner on every case, the oversize path's taking read from the frozen copy.
+- `sections-unread.test.ts`: dropped whole: every case reads `budgetLines`, the parent's crawl summary (cut at 1.2).
+- `similarity.test.ts`: trimmed: the signed-in role mark's lines (`asRole`, cut at 1.2).
+- `site-text.test.ts`: trimmed: `withSiteTextNote` (cut at 1.2, with `SITE_TEXT_NOTE`).
+- `suite-words.test.ts` (in part, as the roadmap names it): its subject carried as cases of `words.test.ts` over AUDIT.html, the three fixture goldens rendered, read with the parent's own list (prospect-words.ts's pattern, inlined: the helper is not copied) and "scan"; not its suite documents, journeys, KNOWN-ISSUES.md, bug files or menus (the suite side).
+- `unread-reasons.test.ts`: trimmed: "a menu page left unread is said in the summary" (`budgetLines`, cut at 1.2).
 
 ## The fixture 1.5 needs
 

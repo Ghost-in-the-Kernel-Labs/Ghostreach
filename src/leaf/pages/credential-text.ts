@@ -38,7 +38,7 @@ function givesCredential(sentence: string): boolean {
  * `email@example.com` stands for an address (G-197): a placeholder that reads as what it replaced. It
  * gives no credential, so a text marked twice is the same text.
  */
-const CREDENTIAL_MARKER = '[credential removed]';
+export const CREDENTIAL_MARKER = '[credential removed]';
 
 /** A sentence and the space after it: the last one runs to the end of the text. */
 const SENTENCE = /[\s\S]+?(?:(?<=[.!?])\s+(?=[A-Z0-9])|$)/g;

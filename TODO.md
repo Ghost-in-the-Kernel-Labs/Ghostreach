@@ -16,19 +16,13 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.4 The parent's unit tests carried
-
-Check: `npx vitest run --project unit` green, under 30 s; each dropped test has a line in `docs/CUT.md`.
-
-From 1.2 (J-013): 54 exports only the parent's tests imported lost their `export` (`docs/CUT.md`, "Exports dropped at 1.2"); a carried test that imports one puts it back. A test of a function 1.2 cut (its row's "Loses at 1.2") or of a file not copied ("Traced, not copied") is dropped with its line.
-
-From 1.3 (J-016): every crawl option but the start address and the test seams is gone (`docs/CUT.md`, "The flags stripped" and "Cut at 1.3"). A carried test that passes a stripped option drops it, or the case, with its line: `crawl-state.test.ts` (`maxPages`, `include`, `exclude`, `userAgent` in `CrawlOptions`), `discovery.test.ts` (`exclude`), `session-links.test.ts` (`session`), `offline-crawl.test.ts` and `offline-probes.test.ts` (only cases that hold without `--offline`). `after-crawl.test.ts` passes `secondLook: false`: the second look is always on now, so its fake run needs a browser, or its cases end before the second look. `CrawlSettings` keeps `delayMs`, `settleMs` and `userAgent` (fixed values, not options), so `second-look-*.test.ts` keep theirs. The audit's `--short`, `--fail-on`, `auditFooter` and the signed-in `auditReadBy` cases are gone with what they tested.
-
 ### 1.5 One command: ghostreach <site>
 
 Check: `test/crawl/ghostreach.spec.ts` against the fixture server: the findings list, in order, equals the parent's for the same fixture; `AUDIT.html`, `findings.json` and `summary.json` written under `<data>/<host>-<date>/`.
 
 From 1.2 (J-013): `knip.json` names CUT.md's five entries as roots until `src/cli/main.ts` reaches them; drop each as it does. `startUrlFromArg` (the site as typed into a start address) was cut from `src/leaf/pages/url.ts` as unused; bring it back from `a4c8045` when the command calls it. `crawlToFile` now takes a required `out`; from 1.3 (J-016) `CrawlRequest` has no `limits`, and `parse` in `src/cli/main.ts` gives `{ site }`, `'help'` or null.
+
+From 1.4 (J-017): no carried test needs a real browser; the integration project runs the same files as `unit`. 1.5 brings the first crawl spec, so `playwright.config.ts` (the medium gate runs `npx playwright test` once it exists) and a Chromium for it: none is installed in the session (`~/.cache/ms-playwright` absent), and `npx playwright install chromium` downloads from Playwright's CDN, a host the session may need allowed. The three fixture crawls under `test/golden/` are the parent's own, recorded at `a4c8045`; 1.5's spec compares this program's findings for the fixture with the parent's, so `test/golden/fixture-site.crawl.json`'s findings (`siteFindings`) are one ready reference. `DEFAULT_USER_AGENT` now lives in `src/leaf/report.ts`.
 
 ### 1.6 The audit golden against the parent
 

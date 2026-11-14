@@ -17,7 +17,7 @@ function verdicts(report: CrawlReport, catalogue: readonly Check[]): { check: Ch
 export const checksRan = (report: CrawlReport, catalogue: readonly Check[] = CHECKS): number => verdicts(report, catalogue).filter((v) => v.ran === 'ran').length;
 
 /** The classes of the checks that ran: what the review did, and so what it may say it did. */
-function classesRan(report: CrawlReport, catalogue: readonly Check[] = CHECKS): Set<CheckClass> {
+export function classesRan(report: CrawlReport, catalogue: readonly Check[] = CHECKS): Set<CheckClass> {
   return new Set(verdicts(report, catalogue).filter((v) => v.ran === 'ran').map((v) => v.check.class));
 }
 

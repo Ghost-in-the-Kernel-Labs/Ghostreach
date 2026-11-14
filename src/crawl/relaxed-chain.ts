@@ -28,7 +28,8 @@ export class NotRelaxed extends Error {}
  * The two errors Node gives for a chain whose issuer it cannot find: UNABLE_TO_VERIFY_LEAF_SIGNATURE ("unable to verify the first
  * certificate") and UNABLE_TO_GET_ISSUER_CERT_LOCALLY ("unable to get local issuer certificate"). Decided by the error's code when it
  * has one; else by the FIRST LINE of its message only (Playwright's call log, and any address in it, are not read), the phrase
- * anchored whole after Playwright's own prefix. An expired, self-signed or wrong-name certificate, a refused connection, a name that
+ * anchored whole after Playwright's own prefix; Node 24 adds its own hint after the phrase ("; if the root CA is installed locally,
+ * try running Node.js with --use-system-ca"), which the parent at a4c8045 did not know (1.4, docs/CUT.md). An expired, self-signed or wrong-name certificate, a refused connection, a name that
  * does not resolve and "unable to get issuer certificate" (UNABLE_TO_GET_ISSUER_CERT) are not this.
  */
 // Decision: G-609
@@ -36,7 +37,7 @@ export function incompleteChain(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   const code = (error as { code?: unknown }).code;
   if (typeof code === 'string') return code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' || code === 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY';
-  return /^(?:apiRequestContext\.\w+: )?(?:UNABLE_TO_VERIFY_LEAF_SIGNATURE|UNABLE_TO_GET_ISSUER_CERT_LOCALLY|unable to verify the first certificate|unable to get local issuer certificate)\s*$/i.test(error.message.split('\n')[0]);
+  return /^(?:apiRequestContext\.\w+: )?(?:UNABLE_TO_VERIFY_LEAF_SIGNATURE|UNABLE_TO_GET_ISSUER_CERT_LOCALLY|unable to verify the first certificate|unable to get local issuer certificate)(?:; if the root CA is installed locally, try running Node\.js with --use-system-ca)?\s*$/i.test(error.message.split('\n')[0]);
 }
 
 /**
@@ -49,7 +50,7 @@ export function incompleteChain(error: unknown): boolean {
  * The crawl has no proxy option of its own (CrawlOptions, newCrawlContext and chromium.launch() carry none) to consult.
  */
 // Decision: G-609
-function relaxedRefusal(env: Record<string, string | undefined>, browserGiven: boolean): string | null {
+export function relaxedRefusal(env: Record<string, string | undefined>, browserGiven: boolean): string | null {
   if (['HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy'].some((name) => env[name])) return 'a proxy is set for this computer, and the relaxed request would not go through it';
   if (browserGiven) return 'the browser was given to the crawl and may use a proxy the relaxed request would not';
   return null;
@@ -63,7 +64,7 @@ function relaxedRefusal(env: Record<string, string | undefined>, browserGiven: b
  * further in than the site refused).
  */
 // Decision: G-609
-async function relaxedAsker(raw: Pick<BrowserContext['request'], 'get' | 'head'>, origin: string, resolve?: Resolve): Promise<Asker> {
+export async function relaxedAsker(raw: Pick<BrowserContext['request'], 'get' | 'head'>, origin: string, resolve?: Resolve): Promise<Asker> {
   const same = (url: string) => new URL(url).origin === new URL(origin).origin;
   const kept = (method: 'get' | 'head') => async (url: string, options?: Parameters<typeof raw.get>[1]) => {
     if (!same(url)) throw new NotAsked(`not asked: ${new URL(url).origin} is not the site's origin, and the relaxed check of robots.txt stays on it`);

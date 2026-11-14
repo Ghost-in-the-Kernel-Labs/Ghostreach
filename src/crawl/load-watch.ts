@@ -28,7 +28,7 @@ const HEADERS = ['strict-transport-security', 'content-security-policy', 'x-fram
 const watched = (r: Request) => WATCHED.includes(r.resourceType()) && !notFetched(r);
 /** Where an error was thrown: the first web address in its stack (the script's), or null when the stack names none (G-657). */
 // Decision: G-657
-function thrownFrom(stack: string | undefined): string | null {
+export function thrownFrom(stack: string | undefined): string | null {
   return /https?:\/\/[^\s):]+(?::\d+(?=\/))?[^\s):]*/.exec(stack ?? '')?.[0] ?? null;
 }
 /** A data request (not a script or a style sheet, which the page loads into itself) to another site's host. */

@@ -1,0 +1,3742 @@
+{
+  "tool": "suite-builder",
+  "reportVersion": 6,
+  "startUrl": "http://library.test/",
+  "origin": "http://library.test",
+  "options": {
+    "maxPages": 300,
+    "delayMs": 0,
+    "userAgent": "Mozilla/5.0 (compatible; SuiteBuilder/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)",
+    "maxConsecutiveErrors": 3,
+    "include": [],
+    "exclude": []
+  },
+  "adsBlocked": true,
+  "robots": {
+    "url": "http://library.test/robots.txt",
+    "status": 200,
+    "source": "parsed",
+    "crawlDelaySeconds": null
+  },
+  "notFound": {
+    "url": "http://library.test/suite-builder-no-such-page-08a3d11e",
+    "status": 404
+  },
+  "site": {
+    "sitemap": {
+      "url": "http://library.test/sitemap.xml",
+      "status": 404
+    },
+    "securityTxt": {
+      "url": "http://library.test/.well-known/security.txt",
+      "status": 404
+    }
+  },
+  "stopReason": "complete",
+  "discovery": {
+    "newAt": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "pages": [
+    {
+      "url": "http://library.test/",
+      "finalUrl": "http://library.test/",
+      "status": 200,
+      "redirects": [],
+      "title": "Home | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 0,
+      "fingerprint": {
+        "hash": "1a2402fe452084ed",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/ul",
+          "main/ul/li",
+          "main/ul/li/a"
+        ]
+      },
+      "headings": [
+        "Fixture Library",
+        "New on the shelves"
+      ],
+      "structure": {
+        "h1": [
+          "Fixture Library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Fixture Library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "New on the shelves",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "A Card Catalogue",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "url": "/books/the-quiet-shelf"
+        },
+        {
+          "role": "link",
+          "name": "Borrowed Time",
+          "url": "/books/borrowed-time"
+        },
+        {
+          "role": "link",
+          "name": "A Card Catalogue",
+          "url": "/books/a-card-catalogue"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/admin",
+      "finalUrl": "http://library.test/admin/login",
+      "status": 200,
+      "redirects": [
+        {
+          "url": "http://library.test/admin",
+          "status": 302
+        }
+      ],
+      "title": "Administrator sign in | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "1826ce7cbcdf8f38",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/form",
+          "main/form/button",
+          "main/form/input",
+          "main/form/label",
+          "main/h1"
+        ]
+      },
+      "headings": [
+        "Administrator sign in",
+        "Username",
+        "Password"
+      ],
+      "structure": {
+        "h1": [
+          "Administrator sign in"
+        ],
+        "main": true
+      },
+      "controls": [
+        {
+          "kind": "text field",
+          "words": [
+            "Username"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='username']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "password field",
+          "words": [
+            "Password"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='password']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "button",
+          "words": [
+            "Sign in"
+          ],
+          "region": "main",
+          "form": "a form",
+          "xpath": "//button[normalize-space()='Sign in']",
+          "stability": "OK"
+        }
+      ],
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Administrator sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Username",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Password",
+          "count": 0
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Username",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Password",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "button",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        },
+        {
+          "role": "textbox",
+          "name": "Username"
+        },
+        {
+          "role": "textbox",
+          "name": "Password"
+        },
+        {
+          "role": "button",
+          "name": "Sign in"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/a-card-catalogue",
+      "finalUrl": "http://library.test/books/a-card-catalogue",
+      "status": 200,
+      "redirects": [],
+      "title": "A Card Catalogue | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "A Card Catalogue",
+        "By D. Decimal"
+      ],
+      "structure": {
+        "h1": [
+          "A Card Catalogue"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "A Card Catalogue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By D. Decimal",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/about",
+      "finalUrl": "http://library.test/about",
+      "status": 200,
+      "redirects": [],
+      "title": "About | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "a339f6cb246151c7",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "About the library"
+      ],
+      "structure": {
+        "h1": [
+          "About the library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "About the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/join",
+      "finalUrl": "http://library.test/join",
+      "status": 200,
+      "redirects": [],
+      "title": "Join | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "1826ce7cbcdf8f38",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/form",
+          "main/form/button",
+          "main/form/input",
+          "main/form/label",
+          "main/h1"
+        ]
+      },
+      "headings": [
+        "Join the library",
+        "Your name",
+        "Email",
+        "Choose a password",
+        "Type it again"
+      ],
+      "structure": {
+        "h1": [
+          "Join the library"
+        ],
+        "main": true
+      },
+      "controls": [
+        {
+          "kind": "text field",
+          "words": [
+            "Your name",
+            "name"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='new-name']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "email field",
+          "words": [
+            "Email"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='new-email']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "password field",
+          "words": [
+            "Choose a password",
+            "password"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='new-password']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "password field",
+          "words": [
+            "Type it again",
+            "again"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='again']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "button",
+          "words": [
+            "Join"
+          ],
+          "region": "main",
+          "form": "a form",
+          "xpath": "//button[normalize-space()='Join']",
+          "stability": "OK"
+        }
+      ],
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Your name",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Email",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Choose a password",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type it again",
+          "count": 0
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Your name",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Email",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Choose a password",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Type it again",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "button",
+          "name": "Join",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        },
+        {
+          "role": "textbox",
+          "name": "Your name"
+        },
+        {
+          "role": "textbox",
+          "name": "Email"
+        },
+        {
+          "role": "textbox",
+          "name": "Choose a password"
+        },
+        {
+          "role": "textbox",
+          "name": "Type it again"
+        },
+        {
+          "role": "button",
+          "name": "Join"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/borrowed-time",
+      "finalUrl": "http://library.test/books/borrowed-time",
+      "status": 200,
+      "redirects": [],
+      "title": "Borrowed Time | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "Borrowed Time",
+        "By L. Overdue"
+      ],
+      "structure": {
+        "h1": [
+          "Borrowed Time"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By L. Overdue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/the-quiet-shelf",
+      "finalUrl": "http://library.test/books/the-quiet-shelf",
+      "status": 200,
+      "redirects": [],
+      "title": "The Quiet Shelf | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "The Quiet Shelf",
+        "By M. Index"
+      ],
+      "structure": {
+        "h1": [
+          "The Quiet Shelf"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By M. Index",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Join the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Sign in",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Staff",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Join the library",
+          "url": "/join"
+        },
+        {
+          "role": "link",
+          "name": "Sign in",
+          "url": "/login"
+        },
+        {
+          "role": "link",
+          "name": "Staff",
+          "url": "/admin"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/admin#as=admin",
+      "finalUrl": "http://library.test/admin#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "Library admin | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 0,
+      "fingerprint": {
+        "hash": "1a2402fe452084ed",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/ul",
+          "main/ul/li",
+          "main/ul/li/a"
+        ]
+      },
+      "headings": [
+        "Library admin",
+        "Signed in as [personal data removed]"
+      ],
+      "structure": {
+        "h1": [
+          "Library admin"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Signed in as [personal data removed]",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Members",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Reports",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/admin.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        },
+        {
+          "role": "link",
+          "name": "Members",
+          "url": "/admin/members"
+        },
+        {
+          "role": "link",
+          "name": "Reports",
+          "url": "/admin/reports"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/admin/reports#as=admin",
+      "finalUrl": "http://library.test/admin/reports#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "Reports | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "Reports",
+        "Loans this month"
+      ],
+      "structure": {
+        "h1": [
+          "Reports"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Reports",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Loans this month",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/admin/reports.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/about#as=admin",
+      "finalUrl": "http://library.test/about#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "About | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "a339f6cb246151c7",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "About the library"
+      ],
+      "structure": {
+        "h1": [
+          "About the library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "About the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/about.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/#as=admin",
+      "finalUrl": "http://library.test/#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "Home | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "1a2402fe452084ed",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/ul",
+          "main/ul/li",
+          "main/ul/li/a"
+        ]
+      },
+      "headings": [
+        "Fixture Library",
+        "New on the shelves"
+      ],
+      "structure": {
+        "h1": [
+          "Fixture Library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Fixture Library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "New on the shelves",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "A Card Catalogue",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/index.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        },
+        {
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "url": "/books/the-quiet-shelf"
+        },
+        {
+          "role": "link",
+          "name": "Borrowed Time",
+          "url": "/books/borrowed-time"
+        },
+        {
+          "role": "link",
+          "name": "A Card Catalogue",
+          "url": "/books/a-card-catalogue"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/a-card-catalogue#as=admin",
+      "finalUrl": "http://library.test/books/a-card-catalogue#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "A Card Catalogue | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "A Card Catalogue",
+        "By D. Decimal"
+      ],
+      "structure": {
+        "h1": [
+          "A Card Catalogue"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "A Card Catalogue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By D. Decimal",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/books/a-card-catalogue.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/borrowed-time#as=admin",
+      "finalUrl": "http://library.test/books/borrowed-time#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "Borrowed Time | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "Borrowed Time",
+        "By L. Overdue"
+      ],
+      "structure": {
+        "h1": [
+          "Borrowed Time"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By L. Overdue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/books/borrowed-time.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/the-quiet-shelf#as=admin",
+      "finalUrl": "http://library.test/books/the-quiet-shelf#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "The Quiet Shelf | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "The Quiet Shelf",
+        "By M. Index"
+      ],
+      "structure": {
+        "h1": [
+          "The Quiet Shelf"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By M. Index",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/books/the-quiet-shelf.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/admin/members#as=admin",
+      "finalUrl": "http://library.test/admin/members#as=admin",
+      "status": 200,
+      "redirects": [],
+      "title": "Members | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "84621526e3538fc7",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/table",
+          "main/table/tbody",
+          "main/table/tbody/tr",
+          "main/table/tbody/tr/td",
+          "main/table/tbody/tr/th"
+        ]
+      },
+      "headings": [
+        "Members",
+        "Name",
+        "Loans"
+      ],
+      "structure": {
+        "h1": [
+          "Members"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Members",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Name",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Loans",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Library admin",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=admin/admin/members.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Library admin",
+          "url": "/admin"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/account#as=user",
+      "finalUrl": "http://library.test/account#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "Your account | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 0,
+      "fingerprint": {
+        "hash": "1a2402fe452084ed",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/ul",
+          "main/ul/li",
+          "main/ul/li/a"
+        ]
+      },
+      "headings": [
+        "Your account",
+        "Signed in as [personal data removed]"
+      ],
+      "structure": {
+        "h1": [
+          "Your account"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Signed in as [personal data removed]",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your loans",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Settings",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/account.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        },
+        {
+          "role": "link",
+          "name": "Your loans",
+          "url": "/account/loans"
+        },
+        {
+          "role": "link",
+          "name": "Settings",
+          "url": "/account/settings"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/account/settings#as=user",
+      "finalUrl": "http://library.test/account/settings#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "Settings | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "d71d92567be736be",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p",
+          "main/p/a"
+        ]
+      },
+      "headings": [
+        "Settings",
+        "Your details"
+      ],
+      "structure": {
+        "h1": [
+          "Settings"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Settings",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Your details",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Delete my account",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/account/settings.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        },
+        {
+          "role": "link",
+          "name": "Delete my account",
+          "url": "/account/delete"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/about#as=user",
+      "finalUrl": "http://library.test/about#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "About | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "a339f6cb246151c7",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "About the library"
+      ],
+      "structure": {
+        "h1": [
+          "About the library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "About the library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/about.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/#as=user",
+      "finalUrl": "http://library.test/#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "Home | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "1a2402fe452084ed",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/ul",
+          "main/ul/li",
+          "main/ul/li/a"
+        ]
+      },
+      "headings": [
+        "Fixture Library",
+        "New on the shelves"
+      ],
+      "structure": {
+        "h1": [
+          "Fixture Library"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Fixture Library",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "New on the shelves",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "A Card Catalogue",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/index.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        },
+        {
+          "role": "link",
+          "name": "The Quiet Shelf",
+          "url": "/books/the-quiet-shelf"
+        },
+        {
+          "role": "link",
+          "name": "Borrowed Time",
+          "url": "/books/borrowed-time"
+        },
+        {
+          "role": "link",
+          "name": "A Card Catalogue",
+          "url": "/books/a-card-catalogue"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/a-card-catalogue#as=user",
+      "finalUrl": "http://library.test/books/a-card-catalogue#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "A Card Catalogue | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "A Card Catalogue",
+        "By D. Decimal"
+      ],
+      "structure": {
+        "h1": [
+          "A Card Catalogue"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "A Card Catalogue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By D. Decimal",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/books/a-card-catalogue.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/borrowed-time#as=user",
+      "finalUrl": "http://library.test/books/borrowed-time#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "Borrowed Time | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "Borrowed Time",
+        "By L. Overdue"
+      ],
+      "structure": {
+        "h1": [
+          "Borrowed Time"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Borrowed Time",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By L. Overdue",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/books/borrowed-time.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/books/the-quiet-shelf#as=user",
+      "finalUrl": "http://library.test/books/the-quiet-shelf#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "The Quiet Shelf | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "2217ceff001d781a",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "The Quiet Shelf",
+        "By M. Index"
+      ],
+      "structure": {
+        "h1": [
+          "The Quiet Shelf"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "The Quiet Shelf",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "By M. Index",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/books/the-quiet-shelf.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    },
+    {
+      "url": "http://library.test/account/loans#as=user",
+      "finalUrl": "http://library.test/account/loans#as=user",
+      "status": 200,
+      "redirects": [],
+      "title": "Your loans | Fixture Library",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "84621526e3538fc7",
+        "paths": [
+          "footer",
+          "footer/p",
+          "header",
+          "header/nav",
+          "header/nav/a",
+          "main",
+          "main/h1",
+          "main/table",
+          "main/table/tbody",
+          "main/table/tbody/tr",
+          "main/table/tbody/tr/td",
+          "main/table/tbody/tr/th"
+        ]
+      },
+      "headings": [
+        "Your loans",
+        "Book",
+        "Due"
+      ],
+      "structure": {
+        "h1": [
+          "Your loans"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Your loans",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Book",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Due",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Your account",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Log out",
+          "count": 1
+        }
+      ],
+      "snapshot": "pages/_as=user/account/loans.html",
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Your account",
+          "url": "/account"
+        },
+        {
+          "role": "link",
+          "name": "Log out",
+          "url": "/logout"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/books/the-quiet-shelf",
+      "href": "/books/the-quiet-shelf",
+      "text": "The Quiet Shelf",
+      "external": false
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/books/borrowed-time",
+      "href": "/books/borrowed-time",
+      "text": "Borrowed Time",
+      "external": false
+    },
+    {
+      "from": "http://library.test/",
+      "to": "http://library.test/books/a-card-catalogue",
+      "href": "/books/a-card-catalogue",
+      "text": "A Card Catalogue",
+      "external": false
+    },
+    {
+      "from": "http://library.test/admin/login",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/login",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/login",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/login",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/login",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/join",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/join",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/join",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/join",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/join",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf",
+      "to": "http://library.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf",
+      "to": "http://library.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf",
+      "to": "http://library.test/join",
+      "href": "/join",
+      "text": "Join the library",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf",
+      "to": "http://library.test/login",
+      "href": "/login",
+      "text": "Sign in",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf",
+      "to": "http://library.test/admin",
+      "href": "/admin",
+      "text": "Staff",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/admin/members#as=admin",
+      "href": "/admin/members",
+      "text": "Members",
+      "external": false
+    },
+    {
+      "from": "http://library.test/admin#as=admin",
+      "to": "http://library.test/admin/reports#as=admin",
+      "href": "/admin/reports",
+      "text": "Reports",
+      "external": false
+    },
+    {
+      "from": "http://library.test/admin/reports#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/reports#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/reports#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/reports#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/books/the-quiet-shelf#as=admin",
+      "href": "/books/the-quiet-shelf",
+      "text": "The Quiet Shelf",
+      "external": false
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/books/borrowed-time#as=admin",
+      "href": "/books/borrowed-time",
+      "text": "Borrowed Time",
+      "external": false
+    },
+    {
+      "from": "http://library.test/#as=admin",
+      "to": "http://library.test/books/a-card-catalogue#as=admin",
+      "href": "/books/a-card-catalogue",
+      "text": "A Card Catalogue",
+      "external": false
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/members#as=admin",
+      "to": "http://library.test/#as=admin",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/members#as=admin",
+      "to": "http://library.test/about#as=admin",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/members#as=admin",
+      "to": "http://library.test/admin#as=admin",
+      "href": "/admin",
+      "text": "Library admin",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/admin/members#as=admin",
+      "to": "http://library.test/logout#as=admin",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/account/loans#as=user",
+      "href": "/account/loans",
+      "text": "Your loans",
+      "external": false
+    },
+    {
+      "from": "http://library.test/account#as=user",
+      "to": "http://library.test/account/settings#as=user",
+      "href": "/account/settings",
+      "text": "Settings",
+      "external": false
+    },
+    {
+      "from": "http://library.test/account/settings#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/settings#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/settings#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/settings#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/settings#as=user",
+      "to": "http://library.test/account/delete#as=user",
+      "href": "/account/delete",
+      "text": "Delete my account",
+      "external": false
+    },
+    {
+      "from": "http://library.test/about#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/about#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/books/the-quiet-shelf#as=user",
+      "href": "/books/the-quiet-shelf",
+      "text": "The Quiet Shelf",
+      "external": false
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/books/borrowed-time#as=user",
+      "href": "/books/borrowed-time",
+      "text": "Borrowed Time",
+      "external": false
+    },
+    {
+      "from": "http://library.test/#as=user",
+      "to": "http://library.test/books/a-card-catalogue#as=user",
+      "href": "/books/a-card-catalogue",
+      "text": "A Card Catalogue",
+      "external": false
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/a-card-catalogue#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/borrowed-time#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/books/the-quiet-shelf#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/loans#as=user",
+      "to": "http://library.test/#as=user",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/loans#as=user",
+      "to": "http://library.test/about#as=user",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/loans#as=user",
+      "to": "http://library.test/account#as=user",
+      "href": "/account",
+      "text": "Your account",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://library.test/account/loans#as=user",
+      "to": "http://library.test/logout#as=user",
+      "href": "/logout",
+      "text": "Log out",
+      "external": false,
+      "region": "header"
+    }
+  ],
+  "notCrawled": [
+    {
+      "url": "http://library.test/login",
+      "reason": "sign-in"
+    },
+    {
+      "url": "http://library.test/logout#as=admin",
+      "reason": "sign-in"
+    },
+    {
+      "url": "http://library.test/logout#as=user",
+      "reason": "sign-in"
+    },
+    {
+      "url": "http://library.test/account/delete#as=user",
+      "reason": "sign-in"
+    }
+  ],
+  "loginForms": [
+    {
+      "url": "http://library.test/admin/login",
+      "via": "page",
+      "form": "a form",
+      "role": "admin",
+      "evidence": [
+        "address /admin/login",
+        "words \"Administrator sign in\"",
+        "words \"Administrator sign in | Fixture Library\""
+      ],
+      "username": {
+        "xpath": "//input[@id='username']",
+        "words": [
+          "Username"
+        ]
+      },
+      "password": {
+        "xpath": "//input[@id='password']",
+        "words": [
+          "Password"
+        ]
+      },
+      "submit": {
+        "xpath": "//button[normalize-space()='Sign in']",
+        "words": [
+          "Sign in"
+        ]
+      }
+    },
+    {
+      "url": "http://library.test/login",
+      "via": "sign-in-link",
+      "form": "a form",
+      "role": "user",
+      "evidence": [],
+      "username": {
+        "xpath": "//input[@id='username']",
+        "words": [
+          "Username"
+        ]
+      },
+      "password": {
+        "xpath": "//input[@id='password']",
+        "words": [
+          "Password"
+        ]
+      },
+      "submit": {
+        "xpath": "//button[normalize-space()='Sign in']",
+        "words": [
+          "Sign in"
+        ]
+      }
+    }
+  ],
+  "signIns": [
+    {
+      "role": "admin",
+      "url": "http://library.test/admin/login",
+      "ok": true
+    },
+    {
+      "role": "user",
+      "url": "http://library.test/login",
+      "ok": true
+    }
+  ]
+}

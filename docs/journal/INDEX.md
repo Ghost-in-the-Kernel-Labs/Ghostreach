@@ -20,3 +20,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-014 | `src/crawl/state.ts` split by what it does (TODO 1.2 finished); the ruling grade's answer on the largest-file metric | decision | `J-000-099.md` |
 | J-015 | The four new dependencies read by the read-only reviewer | measurement | `J-000-099.md` |
 | J-016 | The flags stripped (TODO 1.3) | feature | `J-000-099.md` |
+| J-017 | The parent's unit tests carried (TODO 1.4) | feature | `J-000-099.md` |

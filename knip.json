@@ -20,5 +20,8 @@
     "src/**/*.gen.ts",
     "test/fixtures/**"
   ],
-  "stryker": false
+  "stryker": false,
+  "ignoreBinaries": [
+    "openssl"
+  ]
 }

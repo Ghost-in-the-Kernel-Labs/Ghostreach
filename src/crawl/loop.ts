@@ -7,7 +7,7 @@ import { afterCrawl } from './after-crawl.js';
 import { guardedRequests } from './destination.js';
 import { openRelaxed } from './relaxed-chain.js';
 import { fetchRobots } from './robots-fetch.js';
-import { PRODUCT_TOKEN } from '../leaf/report.js';
+import { DEFAULT_USER_AGENT } from '../leaf/report.js';
 import { LoadWatch } from './load-watch.js';
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { Checklist } from './checklist.js';
@@ -22,8 +22,6 @@ import type { CrawlState } from './state.js';
 import { normalizeUrl, robotsPath } from '../leaf/pages/url.js';
 import { H as crawlH } from '../leaf/heuristics/crawl.js';
 
-/** The user agent a crawl names itself by: the tool, by its product token (GR-003: never another). */
-export const DEFAULT_USER_AGENT = `Mozilla/5.0 (compatible; ${PRODUCT_TOKEN}/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)`;
 /** Pages a crawl reads at most. A small site is read whole well before. */
 const DEFAULT_MAX_PAGES = crawlH.MAX_PAGES;
 
@@ -39,7 +37,6 @@ export interface CrawlSettings {
   startUrl: string;
   maxPages: number;
   delayMs: number;
-  userAgent: string;
   maxConsecutiveErrors: number;
   timeout: number;
   settleMs: number;
@@ -54,12 +51,12 @@ export function crawlSettings(options: CrawlOptions): CrawlSettings {
   const maxConsecutiveErrors = options.maxConsecutiveErrors ?? crawlH.MAX_CONSECUTIVE_ERRORS;
   const timeout = options.navigationTimeoutMs ?? crawlH.NAVIGATION_TIMEOUT_MS;
   const log = options.log ?? (() => {});
-  return { options, startUrl, maxPages: DEFAULT_MAX_PAGES, delayMs: crawlH.DELAY_MS, userAgent: DEFAULT_USER_AGENT, maxConsecutiveErrors, timeout, settleMs: crawlH.SETTLE_MS, log };
+  return { options, startUrl, maxPages: DEFAULT_MAX_PAGES, delayMs: crawlH.DELAY_MS, maxConsecutiveErrors, timeout, settleMs: crawlH.SETTLE_MS, log };
 }
 
 /** The settings a crawl's report says it was made with (CrawlReport.options). */
 function reportOptions(settings: CrawlSettings): CrawlReport['options'] {
-  return { maxPages: settings.maxPages, delayMs: settings.delayMs, userAgent: settings.userAgent, maxConsecutiveErrors: settings.maxConsecutiveErrors };
+  return { maxPages: settings.maxPages, delayMs: settings.delayMs, userAgent: DEFAULT_USER_AGENT, maxConsecutiveErrors: settings.maxConsecutiveErrors };
 }
 
 /**
@@ -82,7 +79,7 @@ export async function crawlLoop(page: Page, context: BrowserContext, browser: Br
  */
 async function startCrawl(page: Page, context: BrowserContext, state: CrawlState, settings: CrawlSettings): Promise<CrawlRun | null> {
   const { options, startUrl, maxPages, timeout, settleMs, maxConsecutiveErrors, log } = settings;
-  const [robots, addresses] = await Promise.all([fetchRobots(await guardedRequests(context, state.origin, options.resolve), state.origin, timeout, log, options.robotsRetryWaitMs, openRelaxed(settings.userAgent, state.origin, options.resolve, options.browser !== undefined)), probeAddresses(state.origin, options.lookup)]);
+  const [robots, addresses] = await Promise.all([fetchRobots(await guardedRequests(context, state.origin, options.resolve), state.origin, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, state.origin, options.resolve, options.browser !== undefined)), probeAddresses(state.origin, options.lookup)]);
   state.readRobots(robots);
   state.noteAddresses(addresses);
   if (state.robots.error !== undefined) return null;
@@ -95,7 +92,7 @@ async function startCrawl(page: Page, context: BrowserContext, state: CrawlState
     readDeadlineMs: options.readDeadlineMs ?? crawlH.READ_DEADLINE_MS,
     state,
     frontier,
-    robotsFor: async (site: string) => fetchRobots(await guardedRequests(context, site, options.resolve), site, timeout, log, options.robotsRetryWaitMs, openRelaxed(settings.userAgent, site, options.resolve, options.browser !== undefined)),
+    robotsFor: async (site: string) => fetchRobots(await guardedRequests(context, site, options.resolve), site, timeout, log, options.robotsRetryWaitMs, openRelaxed(DEFAULT_USER_AGENT, site, options.resolve, options.browser !== undefined)),
     log,
     timeout,
     settleMs,

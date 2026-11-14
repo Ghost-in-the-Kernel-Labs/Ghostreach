@@ -24,9 +24,9 @@ import { crawlLoop, crawlSettings } from './loop.js';
 import { CrawlState } from './state.js';
 import { routeCrawl } from './router.js';
 import { H } from '../leaf/heuristics/crawl.js';
-import type { CrawlReport } from '../leaf/report.js';
+import { DEFAULT_USER_AGENT, type CrawlReport } from '../leaf/report.js';
 
-export { DEFAULT_USER_AGENT } from './loop.js';
+export { DEFAULT_USER_AGENT };
 
 import type { CrawlOptions } from './options.js';
 export type { CrawlOptions } from './options.js';
@@ -40,7 +40,7 @@ export type { CrawlOptions } from './options.js';
 // Decision: G-010
 export async function crawl(options: CrawlOptions): Promise<CrawlReport> {
   const settings = crawlSettings(options);
-  const { startUrl, userAgent } = settings;
+  const { startUrl } = settings;
 
   // What the crawl knows as it goes, shared by the request router and the crawl loop (state.ts).
   const state = new CrawlState(startUrl, H.SATURATION_PAGES);
@@ -49,7 +49,7 @@ export async function crawl(options: CrawlOptions): Promise<CrawlReport> {
 
   const ownsBrowser = !options.browser;
   const browser = options.browser ?? (await chromium.launch());
-  const context = await newCrawlContext(browser, userAgent);
+  const context = await newCrawlContext(browser, DEFAULT_USER_AGENT);
   try {
     // Every request through the crawl's router: no images, media or fonts; page loads one hop at a time (router.ts).
     await routeCrawl(context, state);

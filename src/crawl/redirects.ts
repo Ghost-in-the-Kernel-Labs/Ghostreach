@@ -11,7 +11,7 @@ import { normalizeUrl, sameOrigin } from '../leaf/pages/url.js';
 import type { RedirectHop } from '../leaf/report.js';
 
 /** Browsers give up after about 20; a site needing more than 10 is broken. */
-const MAX_REDIRECTS = H.MAX_REDIRECTS;
+export const MAX_REDIRECTS = H.MAX_REDIRECTS;
 
 export type HopVerdict =
   /** Load `next`; when the start page moved, the site now lives at `movedTo` (an origin). */

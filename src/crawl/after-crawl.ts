@@ -10,7 +10,7 @@ import { H } from '../leaf/heuristics/crawl.js';
 import { notFoundPath, robotsPath, signInKind } from '../leaf/pages/url.js';
 import type { CrawlSettings } from './loop.js';
 import { readSignInPage, type CrawlRun } from './page-step.js';
-import type { CrawlReport, SiteProbe } from '../leaf/report.js';
+import { DEFAULT_USER_AGENT, type CrawlReport, type SiteProbe } from '../leaf/report.js';
 import { httpDowngrades } from './report-read.js';
 import { isAllowed } from './robots.js';
 import { secondLook } from './second-look.js';
@@ -22,7 +22,7 @@ export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
 
 /** What was left in the frontier; then, never once the site has asked the crawl to stop, the not-found probe and the second look. */
 export async function afterCrawl(run: CrawlRun, context: BrowserContext, browser: Browser, settings: CrawlSettings): Promise<void> {
-  const { options, delayMs, userAgent, settleMs, timeout, log } = settings;
+  const { options, delayMs, settleMs, timeout, log } = settings;
   const { state } = run;
   state.leaveOver(run.frontier.leftovers());
   const { stopReason, robots, pages } = state;
@@ -61,7 +61,7 @@ export async function afterCrawl(run: CrawlRun, context: BrowserContext, browser
   }
   // The second look, always (GR-003: a review is the full one).
   if (!stopped) {
-    const { differed } = await secondLook(browser, pages, { userAgent, delayMs: wait, settleMs, timeout, log, origin: state.origin, robots: robots.policy, readDeadlineMs: run.readDeadlineMs, ...(state.inward ? { inward: state.inward } : {}) });
+    const { differed } = await secondLook(browser, pages, { userAgent: DEFAULT_USER_AGENT, delayMs: wait, settleMs, timeout, log, origin: state.origin, robots: robots.policy, readDeadlineMs: run.readDeadlineMs, ...(state.inward ? { inward: state.inward } : {}) });
     if (differed) log(`  ${differed} page${differed === 1 ? '' : 's'} read differently the second time: ${differed === 1 ? 'its' : 'their'} changing headings won't be checks`);
   }
 }

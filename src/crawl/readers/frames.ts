@@ -18,7 +18,7 @@ import { readControls } from './controls.js';
 import { readLinks } from './links.js';
 
 /** What frameFacts() (controls-page.ts) says of a frame element. */
-type FrameFacts = { xpath: string; src: string | null; srcdoc: boolean; title: string | null; width: number; height: number; shown: boolean };
+export type FrameFacts = { xpath: string; src: string | null; srcdoc: boolean; title: string | null; width: number; height: number; shown: boolean };
 
 /** An address as written, made absolute against the document that holds it; as written when it cannot be. */
 const resolved = (href: string, base: string) => {
@@ -45,7 +45,7 @@ const isSameOrigin = (address: string, origin: string) => {
  * the browser shows an error page there); same-site for no address, about:, or the site's origin.
  */
 // Decision: G-089
-function frameRecord(facts: FrameFacts, loaded: string, holder: string, path: string[], origin: string): PageFrame {
+export function frameRecord(facts: FrameFacts, loaded: string, holder: string, path: string[], origin: string): PageFrame {
   const asked = facts.src ? resolved(facts.src, holder) : null;
   const url = facts.srcdoc || loaded === 'about:srcdoc' ? null : /^https?:/.test(loaded) ? loaded : (asked ?? (loaded || null));
   const sameSite = url === null || url.startsWith('about:') || isSameOrigin(url, origin);

@@ -92,7 +92,7 @@ function reach6(g: number[]): Reach {
  * not an address, or not positively public, leads nowhere a page should.
  */
 // Decision: G-265
-function reachOf(ip: string): Reach {
+export function reachOf(ip: string): Reach {
   const four = v4Number(ip);
   if (four !== null) return reach4(four);
   const groups = v6Groups(ip);
@@ -106,7 +106,7 @@ const furthest = (reaches: Reach[]) => reaches.reduce<Reach>((a, b) => (DEPTH[b]
 
 /** Looks a name up: every address it has, or none when this computer cannot (a proxy's network resolves it). */
 export type Resolve = (host: string) => Promise<string[]>;
-const resolveAll: Resolve = async (host) => {
+export const resolveAll: Resolve = async (host) => {
   try {
     return (await lookup(host, { all: true, verbatim: true })).map((a) => a.address);
   } catch {
@@ -135,7 +135,7 @@ const SAID: Record<Exclude<Reach, 'public'>, string> = {
 
 /** Why a request is not sent: its destination leads further in than the site under test; null when it may go. */
 // Decision: G-243
-function refusal(to: { reach: Reach; address: string }, site: Reach): string | null {
+export function refusal(to: { reach: Reach; address: string }, site: Reach): string | null {
   if (to.reach === 'never' || DEPTH[to.reach] > DEPTH[site]) return `not asked: it leads to ${SAID[to.reach as Exclude<Reach, 'public'>]} (${to.address}), further in than the site under test`;
   return null;
 }
@@ -179,7 +179,7 @@ export type Asker = { get(url: string, options?: Options): Promise<Answer>; head
  * is stopped at the redirect. A refused hop throws NotAsked. What remains (G-243): the client looks the name
  * up again when it connects, so a name whose owner changes its address between the two lookups is not seen.
  */
-function guardRequests(request: Pick<BrowserContext['request'], 'get' | 'head'>, site: Reach, resolve: Resolve = resolveAll): Asker {
+export function guardRequests(request: Pick<BrowserContext['request'], 'get' | 'head'>, site: Reach, resolve: Resolve = resolveAll): Asker {
   const send = async (method: 'get' | 'head', first: string, options: Options = {}): Promise<Answer> => {
     const most = options.maxRedirects ?? 20; // not a heuristic: Playwright's own default, kept so a request reads as it would unguarded
     let url = first;

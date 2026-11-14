@@ -129,7 +129,7 @@ export function withoutSession(text: string): string {
   return path + (kept.length ? `?${kept.join('&')}` : '') + tail;
 }
 
-function isTracking(name: string): boolean {
+export function isTracking(name: string): boolean {
   const n = name.toLowerCase();
   return n.startsWith('utm_') || TRACKING.has(n);
 }

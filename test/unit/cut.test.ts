@@ -64,7 +64,22 @@ function flagsNamed(stripped: string[], texts: Record<string, string>): string[]
   );
 }
 
+/**
+ * The parent's unit tests 1.4 carries (TODO 1.4): each named in its section (a backquoted `*.test.ts`) that is not a file under
+ * test/unit/ has a line under "dropped or trimmed at 1.4"; a line that says "dropped whole" names a file that is not there.
+ */
+function testsUnaccounted(text: string, present: string[]): string[] {
+  const named = [...new Set(section(text, "The parent's unit tests 1.4 carries").join('\n').match(/`[\w-]+\.test\.ts`/g) ?? [])].map(unquote);
+  const lines = section(text, "The parent's unit tests: dropped or trimmed at 1.4").filter((l) => l.startsWith('- `'));
+  const lineOf = (name: string) => lines.find((l) => l.startsWith(`- \`${name}\``));
+  return [
+    ...named.filter((n) => !present.includes(n) && !lineOf(n)).map((n) => `${n} is neither carried nor given a line`),
+    ...named.filter((n) => present.includes(n) && lineOf(n)?.includes('dropped whole')).map((n) => `${n} is said dropped whole but is there`),
+  ];
+}
+
 const cut = parseCut(read('docs/CUT.md'));
+const unitTests = fs.readdirSync(new URL('test/unit/', ROOT)).filter((f) => f.endsWith('.test.ts'));
 const modules = Object.values((JSON.parse(read('docs/modules.json')) as { modules: Record<string, { folder: string }> }).modules).map((m) => `${m.folder}/`);
 const sources = fs.readdirSync(new URL('src/', ROOT), { recursive: true, encoding: 'utf8' }).map((f) => `src/${f.replace(/\\/g, '/')}`).filter((f) => /\.(ts|mts|js|mjs)$/.test(f));
 
@@ -88,6 +103,8 @@ describe('docs/CUT.md (GR-002)', () => {
   });
   it('every listed file is copied', () => {
     expect(cut.files.filter((f) => !fs.existsSync(new URL(f.here, ROOT))).map((f) => f.here)).toEqual([]);
+  });  it("each of the parent's unit tests it names is carried, or has its line (1.4)", () => {
+    expect(testsUnaccounted(read('docs/CUT.md'), unitTests)).toEqual([]);
   });
 });
 
@@ -120,6 +137,10 @@ describe('the checks catch what they are for (planted breaks)', () => {
   });
   it('names a file under src/ that no row lists', () => {
     expect(unlisted(planted, ['src/cli/main.ts', 'src/findings/findings.ts', 'src/crawl/extra.ts'])).toEqual(['src/crawl/extra.ts']);
+  });
+  it('names a carried test that is neither there nor given a line, and one said dropped that is there', () => {
+    const text = ["## The parent's unit tests 1.4 carries", '`a.test.ts`, `b.test.ts`, `c.test.ts`, `d.test.ts`', "## The parent's unit tests: dropped or trimmed at 1.4", '- `b.test.ts`: dropped whole: x.', '- `c.test.ts`: trimmed: y.'].join('\n');
+    expect(testsUnaccounted(text, ['a.test.ts', 'b.test.ts'])).toEqual(['d.test.ts is neither carried nor given a line', 'b.test.ts is said dropped whole but is there']);
   });
   it('finds a stripped flag as a whole word, in code or comment, and only a stripped one', () => {
     expect(flagsNamed(planted.stripped, { 'src/a.ts': "// --short: the free scan\nconst x = '--sec';", 'src/b.ts': 'the --shortcut key' })).toEqual(['src/a.ts names --short']);

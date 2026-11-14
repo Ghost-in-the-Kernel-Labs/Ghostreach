@@ -64,7 +64,7 @@ function locateNames(names: string[]): BrowserControl['where'][] {
 }
 
 /** A link's address, from the line under it in the snapshot ("- /url: mailto:x"), without a session id (G-305); undefined for any other line. */
-function linkAddress(line: string): string | undefined {
+export function linkAddress(line: string): string | undefined {
   const written = /^\s*- \/url: (.+)/.exec(line)?.[1]?.trim();
   return written ? withoutSession(written) : undefined;
 }

@@ -8,7 +8,7 @@
  */
 
 /** The longest a site's text is quoted in Markdown: past it, cut, and "..." says so. */
-const SITE_TEXT_MAX = 160; // not a heuristic: a quotation's room on a line
+export const SITE_TEXT_MAX = 160; // not a heuristic: a quotation's room on a line
 
 /**
  * A site's string as an inline code span: every run of white space (a line break, a line or paragraph separator, NEL)

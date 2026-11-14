@@ -14,7 +14,7 @@ const listed = (paths: string[]) => `${paths.slice(0, 5).join(', ')}${paths.leng
 
 /** A menu link's name, "Product → Know Your Agent"; a header link by its own text; null for a link that is not in a menu, or has no text. */
 // Decision: G-658
-function menuItemOf(e: LinkEdge): string | null {
+export function menuItemOf(e: LinkEdge): string | null {
   // A report is data: a link without its text (an older or hand-made report) is no menu item.
   if (!e.text?.trim()) return null;
   if (e.region !== 'header' && !(e.hidden && e.trigger)) return null;

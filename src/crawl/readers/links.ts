@@ -40,7 +40,7 @@ function withoutCredentialWords(link: RawLink): RawLink {
 }
 
 /** The link as written by a page without the session id in its addresses (G-305): the one a suite finds it by. */
-function withoutSessionIds(link: RawLink): RawLink {
+export function withoutSessionIds(link: RawLink): RawLink {
   const trigger = (t: MenuTrigger): MenuTrigger => ('href' in t ? { ...t, href: withoutSession(t.href) } : t);
   return { ...link, href: withoutSession(link.href), trigger: link.trigger && trigger(link.trigger), innerTriggers: link.innerTriggers.map(trigger) };
 }

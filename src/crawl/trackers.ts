@@ -19,7 +19,7 @@ export const TRACKERS: readonly Tracker[] = Object.freeze([
 ]);
 
 /** The parameters a tracker's destination is read from, in this order: the common shapes. */
-const DESTINATION_PARAMS = Object.freeze(['url', 'u', 'redirect', 'dest'] as const);
+export const DESTINATION_PARAMS = Object.freeze(['url', 'u', 'redirect', 'dest'] as const);
 
 /** Where a link through a listed tracker leads: an absolute http(s) address in one of DESTINATION_PARAMS; null otherwise. */
 // Decision: G-656

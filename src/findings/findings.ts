@@ -48,7 +48,7 @@ const path = (url: string) => new URL(url).pathname;
  * behind a proxy that refuses direct connections, sees every address of a kind fail, and that is
  * its own network, not the site's.
  */
-function deadAddresses(addresses: CrawlReport['addresses']): NonNullable<CrawlReport['addresses']> {
+export function deadAddresses(addresses: CrawlReport['addresses']): NonNullable<CrawlReport['addresses']> {
   const list = addresses ?? [];
   return list.filter((a) => !a.answered && list.some((b) => b.answered && b.family === a.family));
 }

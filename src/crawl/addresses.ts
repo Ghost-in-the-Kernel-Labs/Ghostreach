@@ -23,7 +23,7 @@ export type Lookup = (host: string) => Promise<{ address: string; family: number
  * the same computer, was handed the dead 192.64.119.6. Asking the DNS server for every record as well
  * sees the whole set, whichever address the cache holds at the time.
  */
-function joinedLookup(...lookups: Lookup[]): Lookup {
+export function joinedLookup(...lookups: Lookup[]): Lookup {
   return async (host) => {
     const found = (await Promise.all(lookups.map((l) => l(host).catch(() => [])))).flat();
     if (!found.length) throw new Error(`${host} does not resolve`);

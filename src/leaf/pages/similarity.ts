@@ -55,7 +55,7 @@ function jaccard<T>(a: Iterable<T>, b: Iterable<T>): number {
 }
 
 /** Element paths cut to their last `steps` steps, each once. */
-function pathSuffixes(paths: string[], steps = 3): Set<string> {
+export function pathSuffixes(paths: string[], steps = 3): Set<string> {
   return new Set(paths.map((p) => p.split('/').slice(-steps).join('/')));
 }
 
@@ -92,7 +92,7 @@ function slugOf(url: string): string {
 }
 
 /** Words of the URL's name segment that can name the page (3+ letters). */
-function slugWords(url: string): string[] {
+export function slugWords(url: string): string[] {
   return slugOf(url)
     .split(/[-+_. ]+/)
     .filter((w) => w.length >= 3 && !FUNCTION_WORDS.has(w));
@@ -110,7 +110,7 @@ const FUNCTION_WORDS = new Set(
  * practice.expandtesting.com's two-word exercises matched its one-word ones on their banner heading ("{name}
  * page for Automation Testing Practice"), 7 more pairs wrongly merged (2026-10-16).
  */
-function maskedHeadings(sample: PageSample): Set<string> {
+export function maskedHeadings(sample: PageSample): Set<string> {
   const slug = slugOf(sample.url);
   const words = slugWords(sample.url);
   const spellings = /[-+_. ]/.test(slug) ? [slug, ...words] : words;
@@ -207,7 +207,7 @@ export function sameType(a: PageSample, b: PageSample, site?: SiteContext): bool
 
 /** Whether two pages are one kind of page, and if so the rule that says so; null when none does. */
 // Decision: G-032
-function joinOf(a: PageSample, b: PageSample, site?: SiteContext): Join | null {
+export function joinOf(a: PageSample, b: PageSample, site?: SiteContext): Join | null {
   if (site?.uniformShapes) {
     // Shape says nothing here (see siteContext): a URL family below the top level, or the page's own headings.
     const pattern = urlPattern(a.url);

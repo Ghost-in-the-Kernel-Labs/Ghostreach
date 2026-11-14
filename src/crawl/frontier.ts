@@ -88,7 +88,7 @@ function inMenu(linkedFrom: number, pagesRead: number): boolean {
  * The section of the site a pattern belongs to: its first path segment when it has more than one
  * (/pokebase/rmt/tag/* -> pokebase), or "/" for the home page and top-level pages (/about).
  */
-function sectionOf(patternKey: string): string {
+export function sectionOf(patternKey: string): string {
   const segments = patternKey.split('?')[0].split('/').filter(Boolean);
   return segments.length > 1 ? segments[0] : '/';
 }
@@ -98,7 +98,7 @@ function sectionOf(patternKey: string): string {
  * Which queued URL of a pattern to take for its n-th pick (0-based): the first, then the last,
  * then points spread evenly between (1/2, 1/4, 3/4, 1/8, ...) of the list as it is at that moment.
  */
-function spreadIndex(pick: number, length: number): number {
+export function spreadIndex(pick: number, length: number): number {
   if (length <= 1 || pick === 0) return 0;
   if (pick === 1) return length - 1;
   // Van der Corput sequence in base 2: 1/2, 1/4, 3/4, 1/8, 5/8, 3/8, 7/8, ...

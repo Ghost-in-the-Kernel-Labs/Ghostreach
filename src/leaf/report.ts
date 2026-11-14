@@ -19,6 +19,9 @@ export const REPORT_VERSION = 6;
 /** The name a robots.txt addresses the crawler by (in its user agent too). */
 export const PRODUCT_TOKEN = 'SuiteBuilder';
 
+/** The user agent a crawl names itself by: the tool, by its product token (GR-003: never another; a constant, not a setting, J-017). */
+export const DEFAULT_USER_AGENT = `Mozilla/5.0 (compatible; ${PRODUCT_TOKEN}/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)`;
+
 export type StopReason =
   /** Every reachable page was crawled. */
   | 'complete'
