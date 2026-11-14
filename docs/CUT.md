@@ -258,7 +258,8 @@ Files under `src/` that are not copies; every other file there is a row above. A
 the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5, REV-06) is one review, from the site to
 `<data>/<host>-<date>/`, naming only the PDF's path to the salesperson (2.5). `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter, "What this review checked" moved last and opened in print (2.6); `src/pdf/brand.ts`
 (2.4, GR-012) is the PDF's cover and running footer, added only in print, so the page stays 1.6's. `src/project/serve.ts`
-(3.2) is the salesperson's local page on 127.0.0.1, the reviews with a PDF each linking it.
+(3.2) is the salesperson's local page on 127.0.0.1, the reviews with a PDF each linking it; `src/project/queue.ts` (3.3) the
+sites pasted there, kept in `queue.json` with a state each and reviewed one at a time.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
@@ -266,6 +267,7 @@ the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5
 - `src/pdf/pdf.ts`
 - `src/pdf/brand.ts`
 - `src/project/serve.ts`
+- `src/project/queue.ts`
 
 ## Traced, not copied: left unused by the cut
 

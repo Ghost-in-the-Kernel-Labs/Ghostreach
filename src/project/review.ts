@@ -64,6 +64,12 @@ function refused(report: CrawlReport): { code: number; why: string } | null {
   return null;
 }
 
+/** The address a review starts at for a site as typed ("www.example.com" made https://), or null when it is not a web address. */
+export function startUrl(site: string): string | null {
+  const url = startUrlFromArg(site);
+  return /^https?:\/\/[^/?#\s]/i.test(url) && URL.canParse(url) ? url : null;
+}
+
 export interface ReviewRequest {
   /** The site as typed. */
   site: string;
@@ -78,8 +84,8 @@ export interface ReviewRequest {
  */
 // Invariant: REV-06
 export async function review(request: ReviewRequest): Promise<{ code: number; folder?: string }> {
-  const url = startUrlFromArg(request.site);
-  if (!/^https?:\/\/[^/?#\s]/i.test(url) || !URL.canParse(url)) {
+  const url = startUrl(request.site);
+  if (!url) {
     request.say(`"${request.site}" is not a web address. Name a site like www.example.com.`);
     return { code: 1 };
   }

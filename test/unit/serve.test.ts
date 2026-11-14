@@ -9,6 +9,7 @@ import { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
+import { readQueue, type ReviewRun } from '../../src/project/queue.js';
 import { pdfName } from '../../src/project/review.js';
 import { LOOPBACK, listReviews, opener, servePage, type ServedPage } from '../../src/project/serve.js';
 
@@ -29,17 +30,22 @@ function review(folder: string, host: string, withPdf = true): void {
 }
 
 /** A raw request, the path sent as written (fetch would resolve `..` before sending it). */
-function raw(url: string, path: string, options: { method?: string; host?: string; address?: string } = {}): Promise<{ status: number; headers: Record<string, unknown>; body: string }> {
+function raw(
+  url: string,
+  path: string,
+  options: { method?: string; host?: string; address?: string; headers?: Record<string, string>; body?: string } = {},
+): Promise<{ status: number; headers: Record<string, unknown>; body: string }> {
   const { port } = new URL(url);
   return new Promise((done, fail) => {
-    const req = request({ host: options.address ?? LOOPBACK, port, path, method: options.method ?? 'GET', headers: { host: options.host ?? `${LOOPBACK}:${port}` } }, (res) => {
+    const headers = { host: options.host ?? `${LOOPBACK}:${port}`, ...options.headers };
+    const req = request({ host: options.address ?? LOOPBACK, port, path, method: options.method ?? 'GET', headers }, (res) => {
       let body = '';
       res.setEncoding('latin1');
       res.on('data', (c: string) => (body += c));
       res.on('end', () => done({ status: res.statusCode ?? 0, headers: res.headers, body }));
     });
     req.on('error', fail);
-    req.end();
+    req.end(options.body);
   });
 }
 
@@ -69,7 +75,8 @@ describe('ghostreach serve: the local page (TODO 3.2)', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
     const html = await res.text();
-    const links = [...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
+    // Every link but the page's own reload link (3.3).
+    const links = [...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1]).filter((l) => l !== '/');
     expect(links).toEqual([
       '/reviews/example.com-2026-11-14-2/example.com%20site%20review.pdf',
       '/reviews/example.com-2026-11-14/example.com%20site%20review.pdf',
@@ -182,5 +189,95 @@ describe('the command word and the opener', () => {
     expect(opener('darwin', url)).toEqual({ command: 'open', args: [url] });
     expect(opener('win32', url)).toEqual({ command: 'explorer.exe', args: [url] });
     expect(opener('linux', url)).toEqual({ command: 'xdg-open', args: [url] });
+  });
+});
+
+describe('the queue on the page (TODO 3.3)', () => {
+  /** A form posted as the page's own browser posts it: its origin, a form body. */
+  const form = (fields: Record<string, string>, origin?: string): { method: string; headers: Record<string, string>; body: string } => ({
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', ...(origin === undefined ? {} : { origin }) },
+    body: new URLSearchParams(fields).toString(),
+  });
+  const own = (): string => new URL(page!.url).origin;
+  /** A fake review: records each site, fails the ones named. */
+  const ran: string[] = [];
+  const fakeRun = (fail: string[] = []): ReviewRun => async (site) => {
+    ran.push(site);
+    return fail.includes(site) ? 'No review was written: the start page answered 503.' : null;
+  };
+  const states = (): string[] => readQueue(data).map((e) => `${e.site} ${e.state}`);
+  beforeEach(() => void (ran.length = 0));
+
+  it('queues the pasted sites from its own form, shows each refused line back, and reviews them in order', async () => {
+    page = await servePage(data, fakeRun(['b.example']));
+    const html = await (await fetch(page.url)).text();
+    expect(html).toContain('<form method="post" action="/queue">');
+    expect(html).toContain('<textarea id="sites" name="sites"');
+    const res = await raw(page.url, '/queue', form({ sites: 'a.example\nnot a site\nb.example\na.example' }, own()));
+    expect(res.status).toBe(200);
+    expect(res.body).toContain('2 sites queued.');
+    expect(res.body).toContain('Refused: not a site (not a web address)');
+    expect(res.body).toContain('Refused: a.example (already in the queue)');
+    await vi.waitFor(() => expect(states()).toEqual(['a.example done', 'b.example failed']));
+    expect(ran).toEqual(['a.example', 'b.example']);
+    const after = await (await fetch(page.url)).text();
+    expect(after).toContain('No review was written: the start page answered 503.');
+    expect(after).not.toContain('http-equiv="refresh"');
+    const id = readQueue(data)[1].id;
+    expect(after).toContain(`<input type="hidden" name="id" value="${id}">`);
+    // The salesperson's retry: back to waiting, reviewed again.
+    const retried = await raw(page.url, '/queue/retry', form({ id: String(id) }, own()));
+    expect(retried.status).toBe(303);
+    expect(retried.headers.location).toBe('/');
+    await vi.waitFor(() => expect(ran).toEqual(['a.example', 'b.example', 'b.example']));
+  });
+
+  it('reloads itself while a site waits or runs: a meta refresh, no script', async () => {
+    let finish = (): void => {};
+    page = await servePage(data, () => new Promise((done) => (finish = () => done(null))));
+    await raw(page.url, '/queue', form({ sites: 'a.example' }, own()));
+    const html = await (await fetch(page.url)).text();
+    expect(html).toContain('<meta http-equiv="refresh" content="5; url=/">');
+    expect(html).toMatch(/a\.example <span class="state">running<\/span>/);
+    expect(html).not.toMatch(/<script/i);
+    finish();
+    await vi.waitFor(() => expect(states()).toEqual(['a.example done']));
+  });
+
+  it("refuses a post from another origin, from none, or not a form; the queue unchanged", async () => {
+    page = await servePage(data, fakeRun());
+    const port = new URL(page.url).port;
+    for (const origin of [undefined, 'null', 'http://evil.example', `http://127.0.0.1:${Number(port) + 1}`, `https://127.0.0.1:${port}`]) {
+      expect((await raw(page.url, '/queue', form({ sites: 'a.example' }, origin))).status).toBe(403);
+    }
+    // Origin must be the host the request came by, not merely one of the two names.
+    expect((await raw(page.url, '/queue', form({ sites: 'a.example' }, `http://localhost:${port}`))).status).toBe(403);
+    const json = { method: 'POST', headers: { origin: own(), 'content-type': 'application/json' }, body: '{"sites":"a.example"}' };
+    expect((await raw(page.url, '/queue', json)).status).toBe(415);
+    expect((await raw(page.url, '/queue', form({ sites: 'a.example' }, own()))).status).toBe(200);
+    expect((await raw(page.url, '/queue', { ...form({ sites: 'b.example' }, own()), host: `rebound.example:${port}` })).status).toBe(421);
+    expect((await raw(page.url, '/queue', form({ sites: 'x'.repeat(70_000) }, own()))).status).toBe(413);
+    expect((await raw(page.url, '/queue')).status).toBe(404);
+    expect((await raw(page.url, '/reviews', form({ sites: 'b.example' }, own()))).status).toBe(405);
+    await vi.waitFor(() => expect(states()).toEqual(['a.example done']));
+  });
+
+  it('writes a pasted line as text, never as markup (P-16)', async () => {
+    page = await servePage(data, fakeRun(['example.com/<img src=x onerror=alert(1)>']));
+    const res = await raw(page.url, '/queue', form({ sites: '<script>alert(1)</script>\nexample.com/<img src=x onerror=alert(1)>' }, own()));
+    expect(res.body).not.toContain('<script>alert');
+    expect(res.body).toContain('Refused: &lt;script&gt;alert(1)&lt;/script&gt;');
+    await vi.waitFor(() => expect(states()).toEqual(['example.com/<img src=x onerror=alert(1)> failed']));
+    const html = await (await fetch(page.url)).text();
+    expect(html).not.toContain('<img');
+    expect(html).toContain('example.com/&lt;img src=x onerror=alert(1)&gt;');
+  });
+
+  it('a restart finds the entry a stop left running and reviews it again', async () => {
+    writeFileSync(join(data, 'queue.json'), JSON.stringify({ sites: [{ id: 1, site: 'a.example', host: 'a.example', state: 'running' }] }));
+    page = await servePage(data, fakeRun());
+    await vi.waitFor(() => expect(states()).toEqual(['a.example done']));
+    expect(ran).toEqual(['a.example']);
   });
 });

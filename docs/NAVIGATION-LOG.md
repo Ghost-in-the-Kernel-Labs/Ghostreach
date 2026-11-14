@@ -35,3 +35,11 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/modules.json`, `src/cli/main.ts`, `test/unit/no-flags.test.ts`, `theGhost.md`, `docs/journal/J-000-099.md`, `src/project/review.ts`, `vitest.config.ts`, `knip.json`, `test/unit/main.test.ts`, `docs/CONTRACT.md`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`, `test/crawl/ghostreach.spec.ts`, `docs/CUT.md`, `docs/DONE.md`.
 - **Complaints**: three texts (GR-003's title, REV-05, the cli module's purpose) say "a site and nothing else" while the roadmap plans two command words; no row says whether a word is an option. The roadmap lists a `serve` module and `docs/modules.json` gives no way to add one without stopping, so the item's own plan and the module rule disagree until Ghost answers. No row routes "a new file of Ghostreach's own" to `docs/CUT.md`'s list; `test/unit/cut.test.ts` would have found it.
 - **Suggestions**: GR-003's text names command words explicitly; the cut's own-files list named in the process row.
+
+### 2026-11-14 · TODO 3.3, the queue · Opus
+
+- **Task**: the queue on the local page: paste sites, `queue.json` with a state each, one review at a time, a failed site retried only by the salesperson.
+- **Opened**: `docs/HANDOFF.md`, `TODO.md`, `docs/ROADMAP.md`, `docs/when/handoff.md`, `src/project/serve.ts`, `src/project/review.ts`, `src/cli/main.ts`, `test/unit/serve.test.ts`, `src/leaf/pages/url.ts`, `docs/modules.json`, `docs/journal/J-000-099.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`, `docs/CUT.md`, `knip.json`, `stacks/typescript/gate.sh`.
+- **Complaints**: `scripts/gate.sh --fast` refused at "the typescript stack's fast checks" without the stack's output in the log: running `stacks/typescript/gate.sh --fast` by hand was needed to see which check (cut.test.ts, then knip). 3.2's debrief already asked for the own-files list of `docs/CUT.md` to be named in a routing row; met again.
+- **Suggestions**: `scripts/gate.sh` prints the failing stack check's last lines, or names where its output went.
+
