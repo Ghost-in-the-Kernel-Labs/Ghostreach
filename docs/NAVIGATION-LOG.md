@@ -64,3 +64,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `docs/ROADMAP.md` (§2, §3, §4, §5, §6 Phase 4), `TODO.md`, `test/unit/cut.test.ts` (at dfed425, the `it.fails` precedent), `docs/modules.json`, `src/crawl/router.ts`, `src/crawl/after-crawl.ts`, `src/project/serve.ts`, `src/project/crawl.ts`, `test/unit/no-flags.test.ts`, `vitest.config.ts`, `docs/CONTRACT.md`, `theGhost.md` (GR-005), `docs/when/handoff.md`, `docs/JOURNAL.md`, `docs/journal/J-000-099.md`, `docs/DONE.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: REV-09 said "every fetch" while GR-005 said "every fetch of the lead finder"; the crawl's own reach (external links, the browser download) is written nowhere a Phase 4 agent would look. Several providers' pages answer 403 to a cloud session, so "unverified" there is the environment's, not the provider's.
 - **Suggestions**: none beyond what SOURCES.md now states.
+
+### 2026-11-14 · TODO 4.4, keys in code · Opus
+
+- **Task**: one environment variable per keyed source, never printed; the local page shows key present or absent; a source without its key skipped and said so.
+- **Opened**: `docs/HANDOFF.md`, `docs/ROADMAP.md`, `TODO.md`, `docs/SOURCES.md`, `docs/journal/J-000-099.md`, `docs/modules.json`, `docs/when/handoff.md`, `test/unit/hosts.test.ts`, `test/unit/sources.test.ts`, `src/project/serve.ts`, `test/support/made-up-keys.ts`, `scripts/checks/secrets.py`, `test/support/secret-shapes-before-gate.ts`, `knip.json`, `docs/CUT.md`, `docs/DONE.md`, `docs/JOURNAL.md`.
+- **Complaints**: where Phase 4's code lives is settled nowhere but in a precedent (3.2, 3.3) and the brief; `test/unit/sources.test.ts` already names `src/leads/sources.ts`, a folder the module rules do not admit. The live secret shapes are cut from `src/`, and their frozen copy sits under `test/support/` with a name (`before-gate`) that does not say it is the one a test should reach for.
+- **Suggestions**: a routing row for "the lead finder's code: where it lives until the `leads` module is ruled"; a one-line note in `test/support/made-up-keys.ts` pointing at `findSecrets`.

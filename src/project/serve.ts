@@ -5,7 +5,8 @@
  * of the folder. Every name it shows comes from the data folder or the salesperson's paste and is written as text, never as
  * markup (P-16). The queue (3.3, `queue.ts`): a form posts the sites to `/queue`, a failed one's retry to `/queue/retry`; the
  * only two routes that take a POST, each from this page's own origin alone. No script runs in the page: while a site waits or
- * runs, the page reloads itself every few seconds (a meta refresh) and carries a reload link. The ranking (3.6) comes later.
+ * runs, the page reloads itself every few seconds (a meta refresh) and carries a reload link. The lead sources' keys (4.4, `keys.ts`):
+ * each keyed source "key present" or "key absent", never a key. The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
@@ -16,6 +17,7 @@ import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type Adde
 import { pdfName } from './review.js';
 import { sharedBrowser } from './crawl.js';
 import { readSettings, type Settings } from './settings.js';
+import { keyStates } from './keys.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -91,7 +93,18 @@ function queueList(sites: readonly QueueEntry[]): string {
   return `<ol>\n${rows.join('\n')}\n</ol>`;
 }
 
-/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF. The salesperson's own screen, not the prospect's (REV-04). */
+/**
+ * The lead finder's keyed sources (TODO 4.4), each "key present" or "key absent": whether its variables are set, asked at each
+ * request, never a key's value, which the page never reads.
+ */
+function keysList(): string {
+  const rows = keyStates().map((k) => k.present
+    ? `<li>${esc(k.source)} <span class="state">key present</span></li>`
+    : `<li>${esc(k.source)} <span class="state">key absent</span> <span class="error">skipped until ${esc(k.variables.join(' and '))} ${k.variables.length === 1 ? 'is' : 'are'} set</span></li>`);
+  return `<ul>\n${rows.join('\n')}\n</ul>`;
+}
+
+/** The page: the form and the queue, then the reviews in the data folder, each a link to its PDF, then the lead sources' keys. The salesperson's own screen, not the prospect's (REV-04). */
 function reviewsPage(reviews: readonly ListedReview[], sites: readonly QueueEntry[], settings: Settings, added?: Added): string {
   const rows = reviews.map((r) => `<li><a href="${esc(r.href)}">${esc(r.host)}</a> <span class="day">${esc(r.date)}</span></li>`).join('\n');
   const body = reviews.length ? `<ul>\n${rows}\n</ul>` : '<p>No review yet. Queue a site above and its PDF appears here.</p>';
@@ -128,6 +141,9 @@ ${queueList(sites)}
 <h2>Done</h2>
 <p>Each site reviewed, newest first. Open a review to read or send its PDF.</p>
 ${body}
+<h2>Lead sources</h2>
+<p>Each source that needs a key, and whether its key is set.</p>
+${keysList()}
 </body>
 </html>
 `;

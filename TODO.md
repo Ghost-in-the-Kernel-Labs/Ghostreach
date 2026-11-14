@@ -22,10 +22,6 @@ Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase 4: the lead finder
 
-### 4.4 Keys in code
-
-Check: `scripts/checks/secrets.py` on the tree; a test that the UI's HTML contains no key-shaped string; a source without its key is skipped and said so.
-
 ### 4.5 One fetch function
 
 From 4.3 (J-034): Adzuna is `excluded` in `docs/SOURCES.md` (its terms), so its 250 a day may never be read; the bucket's check stands as written (a cap of 250 a day), or takes Jooble's 100 a day, the cap its documentation states: the ruling grade's, or Ghost's, choice. Jooble's key rides in the URL's path (`POST /api/{key}`), so the function never logs or shows a URL.
