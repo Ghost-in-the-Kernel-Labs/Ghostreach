@@ -14,12 +14,6 @@ whose every item waits takes its tune-up pass with it (the pass's `Waits on:` na
 phase needs no pass of its own. When what it waits on arrives, Ghost moves the item back into the chain. An open
 question a later item depends on is copied into that item's text, so the item reads whole where it stands.
 
-## Phase 0: founding
-
-### 0.6 Tune-up pass 0
-
-Check: `docs/when/tune-up.md` followed in full; the metrics table written; the navigation log's "Last review" set.
-
 ## Phase 1: the audit, cut from the parent
 
 ### 1.1 docs/CUT.md written before the copy
@@ -179,6 +173,12 @@ Check: 1.5 and 1.6 green after the resync by 1.7's recipe.
 Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase W: waiting on Ghost
+
+### 0.6 Tune-up pass 0
+
+Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
+Moved: from Phase 0
+Check: `docs/when/tune-up.md` followed in full; the metrics table written; the navigation log's "Last review" set.
 
 ### 2.1 Page size: Letter or A4 (GR-006)
 

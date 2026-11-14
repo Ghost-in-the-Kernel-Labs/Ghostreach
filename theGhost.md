@@ -524,7 +524,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** A site's score is `major × 3 + minor × 1` over its summary's counts, shown beside the pages read; ties break by findings per page. Provisional until ten real audits are read (TODO 5.4).
 - **Why:** The parent grades each finding major or minor already (RF-04); a second scale would be a second opinion. The weights are a first guess, to be checked against what sold.
 - **Held by:** `src/rank/` (TODO 3.6).
-- **Source:** drafted by an agent, 2026-11-13; awaiting Ghost (TODO 0.5, settled at 5.4).
+- **Source:** drafted by an agent, 2026-11-13; awaiting Ghost (settled at TODO 5.4).
 - **Status:** proposed
 - **See also:** GR-008
 - **subject:** ranking
