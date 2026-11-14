@@ -10,3 +10,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-004 | The contract and the leaf module (TODO 0.4) | feature | `J-000-099.md` |
 | J-005 | Three kinds of gate, as Suite Builder's (GR-010) | decision | `J-000-099.md` |
 | J-006 | Tune-up commit 1, at eight commits after the stamp | measurement | `J-000-099.md` |
+| J-007 | The stamp's loose ends fixed, on Ghost's word | contradiction | `J-000-099.md` |

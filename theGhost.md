@@ -533,7 +533,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** The queue runs up to N reviews at once, N set once in the settings file, default 3, ceiling 5; one Chromium shared as N contexts (RF-09); never two reviews of one host together. SITE-22 (slow pages) under concurrency is guarded, either against a reference timing or withheld above N=1 with a sentence in the PDF; which one waits on Ghost (TODO 3.1).
 - **Why:** Ghost, 2026-11-13: five separate audits of five separate websites at once, so the salespeople get reviews in volume. A loaded laptop can manufacture a slow-page finding (RF-10), and a wrong finding in a prospect's hands loses the sale.
 - **Held by:** `test/unit/queue.test.ts`, `test/crawl/concurrent.spec.ts` (TODO 3.4, 3.5), `docs/CONTRACT.md` REV-03.
-- **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard are the agent's, awaiting Ghost.
+- **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard drafted by the agent, confirmed by Ghost in chat 2026-11-14; which guard is still Ghost's choice (TODO 3.1).
 - **Status:** in force
 - **See also:** GR-003, GR-007
 - **subject:** concurrency
@@ -542,7 +542,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** `vitest` (the fast loop and the integration project), `typescript` (the types), `knip` (nothing floats: no unused export, file or dependency), `@stryker-mutator/core` (mutation with the command runner); Playwright `~1.63.0` arrives at TODO 1.2 as the one runtime dependency, the parent's. Each pinned exactly; each update by `docs/DEPENDENCY-REVIEW.md`.
 - **Why:** The TypeScript starter's four (`stacks/typescript/README.md`); the stamp recipe asks for each with its reason here.
 - **Held by:** `package.json`, `package-lock.json`, `docs/REVIEWED-VERSIONS.md`.
-- **Source:** Ghost, by the stamp recipe, 2026-11-13.
+- **Source:** Ghost, by the stamp recipe, 2026-11-13; confirmed by Ghost in chat, 2026-11-14.
 - **Status:** in force
 - **See also:** Core C-035
 - **subject:** dependencies

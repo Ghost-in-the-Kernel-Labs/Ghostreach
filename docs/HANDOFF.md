@@ -2,7 +2,7 @@
 
 Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.md` is what is finished.
 
-## Where the project stands (2026-11-13)
+## Where the project stands (2026-11-14)
 
 Stamped from Ghost-Core today; 0.1 (the ghost) and 0.2 (the stack) landed through the gate (J-002). The leaf
 holds the prospect-visible vocabulary (`src/leaf/words.ts`) and the CLI its one command; nothing crawls yet.
@@ -95,4 +95,3 @@ F-001 to F-006 in `docs/FINDINGS.md` are faults of the template met on a clean s
 ## What to distrust
 
 - `docs/AGENT.md`'s Fast loop and Gate cells are Ghost-Core's numbers until Tune-up pass 0 re-measures them here (the gate of 2026-11-13 measured 22.2 s and 0.65 min).
-- `docs/AGENT.md`'s Fast loop and Gate cells are Ghost-Core's numbers until Tune-up pass 0 re-measures them here.
