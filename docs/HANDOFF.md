@@ -6,17 +6,20 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 Stamped from Ghost-Core today; 0.1 (the ghost) and 0.2 (the stack) landed through the gate (J-002). The leaf
 holds the prospect-visible vocabulary (`src/leaf/words.ts`) and the CLI its one command; nothing crawls yet.
-Next: 0.3, the roadmap and TODO (the draft is at Ghost's side; it becomes `docs/ROADMAP.md`).
+0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. Next: 0.4, the contract and the modules.
 
 ## For Ghost: waiting on you
 
-1. Write the roadmap's §1 to §6 and Phase 1's items in `TODO.md` (TODO 0.3).
-2. Write the first invariants of the contract and set `docs/modules.json` (TODO 0.4).
-3. Write the founding decisions in `theGhost.md`, a decision for each core decision this project refuses among them (TODO 0.5): agents cannot author them.
+1. Write the first invariants of the contract and set `docs/modules.json` (TODO 0.4).
+2. Write the founding decisions in `theGhost.md`, a decision for each core decision this project refuses among them (TODO 0.5): agents cannot author them.
 
 ## Trials: questions settled by a run, not an argument
 
 (none yet)
+
+## Phase W: the questions waiting on Ghost (TODO.md)
+
+2.1 page size (Letter or A4, GR-006); 2.2 the GitHub address on the PDF; 3.1 SITE-22 under load (GR-008); 4.1 the lead-finder keys and Adzuna's licence; 4.2 paid aggregators of closed job sites; 6.1 hosting a shared queue. Each unblocks the item that builds it.
 
 ## Cooldown overrides: remove at a tune-up once past the cooldown (stack README, Cooldown)
 
@@ -86,7 +89,7 @@ Two more overrides are not cooldown pins and stay until Core's check reads the p
 
 ## For Ghost-Core: findings to report upstream
 
-F-001 to F-005 in `docs/FINDINGS.md` are faults of the template met on a clean stamp (tsconfig compiles the fixtures; Stryker under TypeScript 7; knip's Stryker plugin against Core's own test; the record refusing a package held at two versions; the glossary governing a record of package names). Each is fixed here; Core has them to fix for the next stamp.
+F-001 to F-006 in `docs/FINDINGS.md` are faults of the template met on a clean stamp (tsconfig compiles the fixtures; Stryker under TypeScript 7; knip's Stryker plugin against Core's own test; the record refusing a package held at two versions; the glossary governing a record of package names; `ship.sh` not executable). Each is fixed here; Core has them to fix for the next stamp.
 
 ## What to distrust
 
