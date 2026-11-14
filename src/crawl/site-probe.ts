@@ -48,7 +48,7 @@ function readCertificate(host: string, port: number, timeout: number): Promise<S
  * H.IMAGES_ASKED in all; a server that refuses HEAD is asked with GET. The broken ones, with a page each.
  */
 // Decision: G-203
-export async function askImages(request: Asker, origin: string, images: Map<string, string>, timeout: number, wait: () => Promise<void>, offline = false): Promise<SiteProbe['images']> {
+export async function askImages(request: Asker, origin: string, images: Map<string, string>, timeout: number, wait: () => Promise<void>): Promise<SiteProbe['images']> {
   if (!images.size) return undefined;
   const own = (u: string) => {
     try {
@@ -58,10 +58,7 @@ export async function askImages(request: Asker, origin: string, images: Map<stri
     }
   };
   const order = [...images.keys()].sort((a, b) => Number(own(b)) - Number(own(a)));
-  // Offline (G-335): another host's images are counted, never asked. A host is its name: the site's other scheme or port is the site.
-  const sameHost = (u: string) => !elsewhereThan(u, new URL(origin).hostname);
-  const otherHosts = offline ? order.filter((u) => !sameHost(u)).length : 0;
-  const asked = (offline ? order.filter(sameHost) : order).slice(0, H.IMAGES_ASKED);
+  const asked = order.slice(0, H.IMAGES_ASKED);
   const broken: { url: string; status: number | null; page: string }[] = [];
   for (const url of asked) {
     if (own(url)) await wait();
@@ -75,7 +72,7 @@ export async function askImages(request: Asker, origin: string, images: Map<stri
     }
     if (status === null || status >= 400) broken.push({ url, status, page: images.get(url) ?? origin });
   }
-  return { asked: asked.length, seen: images.size, ...(otherHosts ? { otherHosts } : {}), ...(broken.length ? { broken } : {}) };
+  return { asked: asked.length, seen: images.size, ...(broken.length ? { broken } : {}) };
 }
 
 /**
@@ -157,11 +154,8 @@ export async function askExternal(
   sleep: (ms: number) => Promise<void>,
   now: () => number = Date.now,
   control: string = CONTROL,
-  offline = false,
 ): Promise<SiteProbe['external']> {
   if (!links.length) return undefined;
-  // Offline (G-333): counted, never asked; neither is the control.
-  if (offline) return { seen: links.length, answers: [], offline: true };
   const order = [...links].sort((a, b) => b.count - a.count).slice(0, H.EXTERNAL_LINKS_ASKED);
   const lastAt = new Map<string, number>();
   const ask = async (url: string): Promise<Omit<ExternalAnswer, 'url'>> => {
@@ -189,39 +183,19 @@ export async function askExternal(
   return { seen: links.length, answers, ...(unreachable ? { unreachable: true as const } : {}) };
 }
 
-/** A Sitemap: line as the report keeps it: the address it parses to (never the raw text, which may hold terminal controls), else a fixed words. */
-function sitemapNamed(line: string): string {
-  try {
-    return new URL(line).href;
-  } catch {
-    return 'a Sitemap line that is no address';
-  }
-}
-
-/** Whether an address is on a host other than this one (any scheme or port); one that is no address is. */
-function elsewhereThan(url: string, hostname: string): boolean {
-  try {
-    return new URL(url).hostname !== hostname;
-  } catch {
-    return true;
-  }
-}
-
 /** A GET of the site's, the polite delay before it: its status, its Location, and its text when it is under 300; never thrown. */
 type Ask = (url: string, maxRedirects?: number) => Promise<{ status: number | null; location: string | undefined; text: string }>;
 
 /** What the site's own conventions say, asked once each, the polite delay before each. */
 // Decision: G-202
-export async function probeSite(request: Asker, origin: string, sitemaps: string[], pages: readonly CrawledPage[], timeout: number, wait: () => Promise<void>, offline = false): Promise<SiteProbe> {
+export async function probeSite(request: Asker, origin: string, sitemaps: string[], pages: readonly CrawledPage[], timeout: number, wait: () => Promise<void>): Promise<SiteProbe> {
   const probe: SiteProbe = {};
   const ask = askerOf(request, timeout, wait);
   const site = new URL(origin);
   if (site.protocol === 'https:') await askHttps(probe, site, ask, timeout);
   // Its other name, www or not (a domain name only, never an address or localhost): one page at two names splits it.
-  const host = site.hostname;
-  // Offline (G-333) it is not asked: it is a host other than the site's.
-  if (twinAskable(host, offline)) await askTwin(probe, site, ask);
-  probe.sitemap = await askSitemap(ask, origin, sitemaps, pages, offline);
+  if (twinAskable(site.hostname)) await askTwin(probe, site, ask);
+  probe.sitemap = await askSitemap(ask, origin, sitemaps, pages);
   probe.securityTxt = await askSecurityTxt(ask, origin);
   return probe;
 }
@@ -258,12 +232,8 @@ async function askTwin(probe: SiteProbe, site: URL, ask: Ask): Promise<void> {
 }
 
 /** The site's sitemap, robots.txt's first Sitemap: line or /sitemap.xml: how many addresses it lists, and those the crawl found broken or moved. */
-async function askSitemap(ask: Ask, origin: string, sitemaps: string[], pages: readonly CrawledPage[], offline: boolean): Promise<SiteProbe['sitemap']> {
-  const site = new URL(origin);
-  // Offline (G-335) a Sitemap: line naming another host is not asked: the site's own /sitemap.xml is, and the line is recorded.
-  const named = sitemaps[0];
-  const elsewhere = offline && named !== undefined && elsewhereThan(named, site.hostname);
-  const sitemapUrl = (elsewhere ? undefined : named) ?? `${origin}/sitemap.xml`;
+async function askSitemap(ask: Ask, origin: string, sitemaps: string[], pages: readonly CrawledPage[]): Promise<SiteProbe['sitemap']> {
+  const sitemapUrl = sitemaps[0] ?? `${origin}/sitemap.xml`;
   const sitemap = await ask(sitemapUrl);
   const locs = [...sitemap.text.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => m[1].replace(/&amp;/g, '&'));
   const index = /<sitemapindex\b/i.test(sitemap.text);
@@ -271,7 +241,6 @@ async function askSitemap(ask: Ask, origin: string, sitemaps: string[], pages: r
   return {
     url: sitemapUrl,
     status: sitemap.status,
-    ...(elsewhere ? { notAsked: { url: sitemapNamed(named), why: 'another host, --offline' } } : {}),
     ...(sitemap.status !== null && sitemap.status < 300 ? { listed: locs.length, ...(index ? { index: true as const } : {}) } : {}),
     ...(broken.length ? { broken: broken.slice(0, H.MARKUP_SAMPLE) } : {}),
     ...(moved.length ? { moved: moved.slice(0, H.MARKUP_SAMPLE) } : {}),

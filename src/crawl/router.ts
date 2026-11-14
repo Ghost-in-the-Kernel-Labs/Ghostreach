@@ -70,8 +70,6 @@ async function verdictOf(request: Request, state: CrawlState): Promise<'abort' |
   // A frame deeper than the crawl reads (crawlH.FRAME_DEPTH) is not loaded: frames nested without end kept a page from ever
   // finishing its load, said as no answer after two waits (item 52, step 4).
   if (request.isNavigationRequest() && frameDepth(request) > crawlH.FRAME_DEPTH) return 'blocked';
-  // Offline (G-335): what the page itself asks of another host is let go, and recorded for the audit to name.
-  state.noteOtherHost(request.url(), request.resourceType(), state.current?.key ?? state.origin);
   if (!request.isNavigationRequest() || request.frame().parentFrame()) return 'continue';
   return undefined;
 }

@@ -16,7 +16,7 @@ export class Discovery {
   readonly newAt: number[] = [];
   private quiet = 0;
 
-  /** `patience`: pages in a row with nothing new before the crawl is saturated; 0 never is (--long). */
+  /** `patience`: pages in a row with nothing new before the crawl is saturated. */
   constructor(private readonly patience: number) {}
 
   /** Records the page read as number `n`; true when it taught something new. */
@@ -38,6 +38,6 @@ export class Discovery {
   }
 
   get saturated(): boolean {
-    return this.patience > 0 && this.quiet >= this.patience;
+    return this.quiet >= this.patience;
   }
 }

@@ -59,10 +59,12 @@ cut src/pages/portable-name.ts
 | From the five entries, uncut | 372 | 41,745 |
 | From the five entries, at the cut points (1.1's list) | 111 | 11,707 |
 | Copied at 1.2, cut inside (this list) | 114 | 10,357 |
+| After 1.3, the flags stripped | 113 | 9,879 |
 
-The third row counts whole files; the last is what 1.2 left: four files the cut left unused were not copied ("Traced, not
+The third row counts whole files; the fourth is what 1.2 left: four files the cut left unused were not copied ("Traced, not
 copied"), two were split by a pure move and one by what it does (`state.ts`, J-014), and each file lost what its row says. By module after 1.2: crawl 60 files (5,287
-lines), leaf 27 (2,439), findings 21 (2,110), audit 4 (427), project 2 (94). The flags come off at 1.3.
+lines), leaf 27 (2,439), findings 21 (2,110), audit 4 (427), project 2 (94). The flags came off at 1.3 (J-016): by module after it, crawl 59 files (5,010 lines), leaf 27 (2,340), findings 21 (2,103),
+audit 4 (336), project 2 (90).
 
 ## The cut points: each import severed, and what replaces it
 
@@ -214,10 +216,9 @@ at their defaults). A dash: nothing.
 | `src/crawl/second-look.ts` | `src/crawl/second-look.ts` | 145 | `markCredentialsIn` from `credentials-entry.ts` | --delay, --quick, --settle, --user-agent, session (`--login`) |
 | `src/crawl/settle.ts` | `src/crawl/settle.ts` | 89 | — | — |
 | `src/crawl/site-probe.ts` | `src/crawl/site-probe.ts` | 297 | — | --offline |
-| `src/crawl/state.ts` | `src/crawl/state.ts` | 521 | `snapshotNames` and `#snapshotFiles` (no page is saved); five parts of its class moved to sibling files it delegates to, its public surface unchanged (next five rows; J-014) | --offline |
+| `src/crawl/state.ts` | `src/crawl/state.ts` | 521 | `snapshotNames` and `#snapshotFiles` (no page is saved); five parts of its class moved to sibling files it delegates to, its public surface unchanged (next four rows, the fifth cut at 1.3; J-014) | --offline |
 | `src/crawl/state.ts` | `src/crawl/language-folders.ts` | (part) | its other languages (`#otherLocales`, `#localeFolders`, `#folderDecided`; the language-folder methods), bodies moved, the site's language passed in: the 400-line target (C-022, J-014) | --all-languages |
 | `src/crawl/state.ts` | `src/crawl/not-crawled.ts` | (part) | its addresses not crawled (`#notCrawled*`, `skip`, `leaveOver`), bodies moved, why the crawl stopped and the pages read passed in: the 400-line target | — |
-| `src/crawl/state.ts` | `src/crawl/other-hosts.ts` | (part) | its other hosts (`#pageHosts`, `#pageHostsLeft`, `noteOtherHost`'s body), the origin passed in; `offline` stays in `state.ts`: the 400-line target | — |
 | `src/crawl/state.ts` | `src/crawl/sign-ins.ts` | (part) | its sign-ins (`#loginForms`, `#providerSignIns`, `#providerStarts`, `addLoginForm`, `addProviderSignIns`), bodies moved: the 400-line target | — |
 | `src/crawl/state.ts` | `src/crawl/state-report.ts` | (part) | `report()`'s assembly, the fields in the parent's order, what it read of the class passed in: the 400-line target | — |
 | `src/crawl/trackers.ts` | `src/crawl/trackers.ts` | 45 | — | — |
@@ -302,6 +303,10 @@ puts back the `export` of each name a carried test imports. 54 names:
 
 ## Named losses: what a prospect reads differently
 
+- SITE-35's why (`src/findings/load-findings.ts`), when no failed host's name was looked up (each was an address given as
+  numbers): "The names were not looked up (--offline, or a crawl from before the lookup), so ..." loses its parenthesis, which
+  names a stripped flag (1.3, J-016). Deleted, not reworded, as `LOOK_INTRO`'s sentence was. The fixture never reaches it.
+
 - `LOOK_INTRO` (`src/audit/links-to-look.ts`) loses its last sentence, "A link leaves this list only when the team lists it,
   with the status it answers, in the suite's expected-links block." It names a suite (GR-004) and a block Ghostreach has
   no way to fill. Deleted, not reworded (the ruling grade, J-013). It is the one allowed difference, beside the title line
@@ -309,31 +314,70 @@ puts back the `export` of each name a carried test imports. 54 names:
 
 ## The flags stripped
 
-The parent's audit and crawl options, all stripped at 1.3 (P-15, GR-003). Once a row says `stripped`, no file under `src/`
-may name the flag, in code or comment (`test/unit/cut.test.ts`). 1.3 sets each row to `stripped` as it goes.
+The parent's audit and crawl options, all stripped at 1.3 (P-15, GR-003; J-016): each fixed at what a bare `suite audit <site>`
+uses, the full audit, or absent. The parent's `Values` collapsed to `{ site: string }` (`src/cli/main.ts`, `parse`), which
+takes the site and `--help` and refuses every other option (`test/unit/no-flags.test.ts`). Once a row says `stripped`, no file
+under `src/` may name the flag, in code or comment (`test/unit/cut.test.ts`). "Fixed at" is what the review does now.
 
-| Flag | What it set | Status |
-| --- | --- | --- |
-| `--short` | the short audit, `FREE_SCAN_LIMIT`, `shortView`, `H.SHORT_FINDINGS` | at 1.3 |
-| `--fail-on` | `FAIL_ON`, `failsAudit`, exit 3 | at 1.3 |
-| `--md` | the Markdown audit (`audit-md.ts`, never copied) | at 1.3 |
-| `--vulnsec` | the public lists and SITE-36 (never copied; the catalogue's SITE-36 row goes) | at 1.3 |
-| `--demo` | the parent's demo build | at 1.3 |
-| `--offline` | `options.offline`: no host but the site asked | at 1.3 |
-| `--sec` | `options.sec`: the page's guards and forms | at 1.3 |
-| `--max-pages` | `options.maxPages` | at 1.3 |
-| `--delay` | `options.delayMs` | at 1.3 |
-| `--settle` | `options.settleMs` | at 1.3 |
-| `--user-agent` | `options.userAgent` | at 1.3 |
-| `--include` | `options.include` | at 1.3 |
-| `--exclude` | `options.exclude` | at 1.3 |
-| `--all-languages` | `options.allLanguages` | at 1.3 |
-| `--long` | no page limit, `saturationPages` 0 | at 1.3 |
-| `--quick` | `QUICK_MAX_PAGES`, `secondLook` off | at 1.3 |
-| `--login` | `options.session` as user | at 1.3 |
-| `--admin-login` | `options.session` as admin | at 1.3 |
-| `--out` | where the report goes | at 1.3 |
-| `--fresh` | `options.previous`: a recrawl beside the last | at 1.3 |
+| Flag | What it set | Status | Fixed at |
+| --- | --- | --- | --- |
+| `--short` | the short audit, `FREE_SCAN_LIMIT`, `shortView`, `shortSaid`, `H.SHORT_FINDINGS`, `options.stopWhen` (`found-enough`) | stripped | absent: the full audit, every finding |
+| `--fail-on` | `FAIL_ON`, `failsAudit`, exit 3 | stripped | absent: no exit code says a finding |
+| `--md` | the Markdown audit (`audit-md.ts`, never copied); the `Say` pair of writers | stripped | absent: AUDIT.html alone |
+| `--vulnsec` | the public lists and SITE-36 (never copied); the catalogue's SITE-36 row and `Check.option` | stripped | absent, not off (RF-05); `load.software` is still recorded, as the parent's bare crawl does |
+| `--demo` | the parent's demo build | stripped | absent: nothing of it was copied |
+| `--offline` | `options.offline`: no host but the site asked; `other-hosts.ts`, `pageHosts`, `external.offline`, the sitemap's and images' offline halves | stripped | off: other sites' links, the www twin and failed hosts asked |
+| `--sec` | `options.sec`: the page's guards and forms (`GuardForm`, a control's `limits`, `pattern`, `autocomplete`, `inputMode`, `requiredAria`) | stripped | off: never read, a page's own guard keys dropped |
+| `--max-pages` | `options.maxPages` | stripped | `H.MAX_PAGES` |
+| `--delay` | `options.delayMs` | stripped | `H.DELAY_MS`, or robots.txt's Crawl-delay when longer |
+| `--settle` | `options.settleMs` | stripped | `H.SETTLE_MS` |
+| `--user-agent` | `options.userAgent`; the footer naming another one | stripped | `DEFAULT_USER_AGENT`; `AUDIT_FOOTER` always |
+| `--include` | `options.include`, `inScope`, `out-of-scope` | stripped | absent: every same-site path |
+| `--exclude` | `options.exclude`, `inScope`, `out-of-scope` | stripped | absent: every same-site path |
+| `--all-languages` | `options.allLanguages` | stripped | off: the start page's language only |
+| `--long` | no page limit, `saturationPages` 0 | stripped | the page limit and `H.SATURATION_PAGES` |
+| `--quick` | `QUICK_MAX_PAGES`, `secondLook` off | stripped | the second look always on |
+| `--login` | `options.session` as user; `CrawlSession`, the session in the context and the second look, `session-lost`, `signIns` | stripped | off: logged out, as a first-time visitor |
+| `--admin-login` | `options.session` as admin; the admin area followed when signed in | stripped | off: no admin area followed |
+| `--out` | where the report goes | stripped | the review's folder (1.5); `crawlToFile` takes `out` |
+| `--fresh` | `options.previous`: a recrawl beside the last; the checklist's previous pages | stripped | absent: never a recrawl |
+
+Kept on purpose, though only a signed-in crawl writes them: the findings' reading of a role's page (`roleOf`, `withoutRole` in
+`src/findings/` and `report-scrub.ts`). They read the report's format, and `src/findings/` is the resync's surface (1.7); with no
+session no page carries a role, so each is the identity. Listed under 1.3's Questions (J-016).
+
+## Cut at 1.3
+
+- `src/crawl/other-hosts.ts` (a part of the parent's `state.ts`, J-014): the other hosts an offline crawl's pages asked;
+  nothing else wrote or read it. Its row is gone from "The files".
+
+What else each file lost at 1.3, beside the flags' own words (`tsc --noUnusedLocals` and `knip` clean after):
+
+- `src/crawl/options.ts`: every option but the start address and the seams a test fills (`externalControl`,
+  `maxConsecutiveErrors`, `robotsRetryWaitMs`, `readDeadlineMs`, `navigationTimeoutMs`, `browser`, `log`, `lookup`, `hostLookup`,
+  `resolve`); `onRobots` (only the cut login crawl read it).
+- `src/crawl/loop.ts`: `CrawlSettings.include`, `exclude`, `inScope`; the scope test; the session's role and sign-in page.
+- `src/crawl/checklist.ts`: the previous crawl's queue and its constructor options; it wraps the frontier alone.
+- `src/crawl/read-pages.ts`: the `finish` parameter (only `stopWhen` read it).
+- `src/crawl/refusals.ts`: the `out-of-scope` row and the signed-in admin exception to `sign-in`.
+- `src/crawl/context.ts`: `CrawlSession` and the session's storage state.
+- `src/crawl/page-step.ts`: `CrawlRun.inScope`, `allLanguages`, `role`, `signInPage`; the lost-session stop.
+- `src/crawl/state.ts`: `#offline`, `offline`, `pageHosts`, `noteOtherHost`; `configure` sets the browser guard only.
+- `src/crawl/redirects.ts`: the offline refusal of the start page's move (`fatal`, `movedOfflineMessage`).
+- `src/crawl/destination.ts`: `stayOn`.
+- `src/crawl/site-probe.ts`: the offline halves of `askImages`, `askExternal`, `probeSite`, `askSitemap`; `sitemapNamed`, `elsewhereThan`.
+- `src/leaf/report.ts`: `options.include`, `exclude`, `allLanguages`, `offline`, `sec` (`maxPages` is a number, never null);
+  `StopReason`'s `found-enough` and `session-lost`; `NotCrawledReason`'s `out-of-scope`; a page's `forms`; `signIns`, `asPublic`;
+  the site probe's `pageHosts`, `pageHostsLeft`, `images.otherHosts`, `sitemap.notAsked`, `external.offline`.
+- `src/leaf/report-page.ts`: a control's `limits`, `pattern`, `patternLong`, `autocomplete`, `inputMode`, `requiredAria`; `GuardLimits`, `GuardForm`.
+- `src/leaf/pages/twin-name.ts`: `twinAskable`'s `offline` parameter. `src/leaf/pages/url.ts`: `underPath`.
+- `src/leaf/heuristics/`: `SHORT_FINDINGS` (java-suite), `OTHER_HOSTS_MAX` (suite).
+- `src/audit/audit.ts`: `FREE_SCAN_LIMIT`, `shortView`, `shortSaid`, `unconfirmedSaid`, `FAIL_ON`, `failsAudit`, `auditFooter`, `Say`;
+  `auditReadBy`'s signed-in sentences; the `short` parameters.
+- `src/audit/audit-checked.ts`: the `requested` parameters; the signed-in scope sentence.
+- `src/audit/links-to-look.ts`: `counting` (only `shortView` read it). `src/findings/finding-order.ts`: `issuesIn`'s `export`.
+- `src/findings/check-catalogue.ts`: SITE-36's row, `Check.option`, `ONLY.listed`; the offline half of the external-links check.
+- `src/project/crawl.ts`: `CrawlLimits` and `CrawlRequest.limits`.
 
 ## The parent's unit tests 1.4 carries
 

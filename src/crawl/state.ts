@@ -14,7 +14,6 @@ import { ALLOW_ALL, type RobotsPolicy } from './robots.js';
 import type { CrawledPage, CrawlReport, FoundLoginForm, LinkEdge, LoginForm, NotCrawledReason, ProviderSignIn, StopReason } from '../leaf/report.js';
 import type { FoundSignInLink } from './providers.js';
 import { LanguageFolders } from './language-folders.js';
-import { OtherHosts } from './other-hosts.js';
 import { SignIns } from './sign-ins.js';
 import { crawlReport } from './state-report.js';
 
@@ -48,7 +47,7 @@ export interface Navigation {
 /**
  * Every field is private: read through a getter (a collection as a read-only view), written only through a named
  * method below, which says what it records. Ghost, 2026-11-09: "Lets go with the full version". Its other languages, the
- * other hosts, the addresses not crawled, the sign-ins and the report's assembly live in sibling files it delegates to (C-022, J-014).
+ * addresses not crawled, the sign-ins and the report's assembly live in sibling files it delegates to (C-022, J-014).
  */
 // Decision: G-686
 export class CrawlState {
@@ -62,10 +61,6 @@ export class CrawlState {
   readonly #refusedInBrowser = new Map<string, string>();
   /** The images the pages showed a visitor (noteShownImages). */
   readonly #shownImages = new Set<string>();
-  /** Ask no host but the site (--offline, G-333, G-335): the start page's move to another host fails the crawl, and the pages' requests to other hosts are recorded. */
-  #offline = false;
-  /** Offline, the other hosts the pages asked while rendered (other-hosts.ts). */
-  readonly #otherHosts = new OtherHosts();
   /** The page load under way: what the router saw of it, for the crawl loop (Fable's review, suggestion 6). */
   #current: Navigation | null = null;
   /** Pages already read (pageKey): a page's script moving the browser to one isn't sent to the site again. */
@@ -125,12 +120,6 @@ export class CrawlState {
   get refusedInBrowser(): ReadonlyMap<string, string> {
     return this.#refusedInBrowser;
   }
-  get offline(): boolean {
-    return this.#offline;
-  }
-  get pageHosts(): ReadonlyMap<string, Readonly<{ types: readonly string[]; count: number; page: string }>> {
-    return this.#otherHosts.pageHosts;
-  }
   get current(): Navigation | null {
     return this.#current;
   }
@@ -188,10 +177,9 @@ export class CrawlState {
     return this.#signIns.providerStarts;
   }
 
-  /** How the crawl was asked to look, set before it starts: offline (G-333, G-335) and the browser's guard (G-270); a setting not given stays as it was. */
-  configure(settings: { offline?: boolean; inward?: (url: string) => Promise<string | null> }): void {
-    if (settings.offline !== undefined) this.#offline = settings.offline;
-    if (settings.inward !== undefined) this.#inward = settings.inward;
+  /** The browser's guard (G-270), set before the crawl starts. */
+  configure(settings: { inward: (url: string) => Promise<string | null> }): void {
+    this.#inward = settings.inward;
   }
 
   /** The site lives where the start page landed: the crawl's origin from now on (its robots.txt is read next, `readRobots`). */
@@ -331,11 +319,6 @@ export class CrawlState {
     this.#site = { ...this.#site, ...facts };
   }
 
-  /** Offline (G-335): a request a page made to a host other than the site's, kept and let go (other-hosts.ts); online, nothing. */
-  noteOtherHost(url: string, type: string, page: string): void {
-    if (this.#offline) this.#otherHosts.note(this.#origin, url, type, page);
-  }
-
   /** Records an address not crawled, and why, once (not-crawled.ts). */
   skip(url: string, reason: NotCrawledReason): void {
     this.#notCrawled.skip(url, reason);
@@ -382,7 +365,7 @@ export class CrawlState {
   report(startUrl: string, options: CrawlReport['options']): CrawlReport {
     const { origin, robots, language, consent, stopReason, failed, site } = this;
     return crawlReport(startUrl, options, {
-      origin, robots, language, consent, stopReason, failed, site, otherHosts: this.#otherHosts, otherLanguages: this.#folders.others,
+      origin, robots, language, consent, stopReason, failed, site, otherLanguages: this.#folders.others,
       notFound: this.#notFound, addresses: this.#addresses, discovery: this.#discovery, pages: this.#pages, edges: this.#edges,
       notCrawled: this.#notCrawled, loginForms: this.#signIns.loginForms, providerSignIns: this.#signIns.providerSignIns,
     });

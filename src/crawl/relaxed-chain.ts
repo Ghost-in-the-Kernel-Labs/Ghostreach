@@ -43,7 +43,7 @@ export function incompleteChain(error: unknown): boolean {
  * Why the relaxed client must not be made, or null. It is a fresh client: it carries none of the browser context's own settings
  * (a proxy, which a TLS-intercepting proxy is the other cause of this very error; cookies, and so a signed-in session, which is
  * the safer way). A proxy in the environment, or a browser the caller gave (it may carry a proxy this code cannot see), could not be
- * carried over, so there the retry is refused. `--offline` needs nothing carried: the relaxed client stays on the site's origin.
+ * carried over, so there the retry is refused.
  * NOT detected: an operating-system or PAC proxy, which a browser the crawler launches itself may use (Node does not): there the
  * relaxed read may go direct (the log says so). NO_PROXY is ignored: a site exempt from the proxy is still refused, the safe side.
  * The crawl has no proxy option of its own (CrawlOptions, newCrawlContext and chromium.launch() carry none) to consult.

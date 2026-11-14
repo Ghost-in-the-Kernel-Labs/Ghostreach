@@ -32,19 +32,12 @@ export interface CrawlRun {
   page: Page;
   state: CrawlState;
   frontier: Checklist;
-  /** The include and exclude paths, as one test. */
-  inScope: (url: string) => boolean;
   /** robots.txt for an origin the site moved to. */
   robotsFor: (origin: string) => Promise<RobotsAnswer>;
   log: (message: string) => void;
   timeout: number;
   settleMs: number;
   maxConsecutiveErrors: number;
-  allLanguages?: boolean;
-  /** A signed-in crawl's role (G-157): its account areas are read, never another sign-in page, logout or delete. */
-  role?: string;
-  /** The page it signed in on: landing there again, the session is lost and the crawl stops. */
-  signInPage?: string;
   /** What each page's load shows beyond the page (G-201); none, nothing watched. */
   watch?: LoadWatch;
   /** How long a loaded page's reading may take before its tab is given up (deadline.ts, G-268). */
@@ -173,12 +166,11 @@ async function readPage(run: CrawlRun, item: FrontierItem, entry: CrawledPage): 
   // A page with links without end is read to a bound; the rest are counted, never a clean page (Fable's review, C2).
   const links = ctx.links.slice(0, H.LINKS_PER_PAGE_MAX);
   if (ctx.links.length > links.length) entry.linksLeft = ctx.links.length - links.length;
-  if (state.pages[0] === entry && !run.allLanguages) {
+  // The crawl stays in the start page's language (GR-003: never every language).
+  if (state.pages[0] === entry) {
     const language = decideLanguage(entry.finalUrl, state.origin, await readLanguage(page), links.map((l) => l.resolved));
     state.decideLanguage(language);
-    if (language) {
-      log(`  language: ${language.prefix ? `/${language.prefix}/` : language.lang}; other languages are left out (--all-languages to include them)`);
-    }
+    if (language) log(`  language: ${language.prefix ? `/${language.prefix}/` : language.lang}; other languages are left out`);
   }
   frontier.recordLinks(entry.finalUrl, queueLinks(run, entry.finalUrl, links, item.depth + 1));
 }
@@ -196,7 +188,7 @@ async function leftOutAsLanguage(run: CrawlRun, entry: CrawledPage): Promise<boo
   // A reading given up at its deadline runs on (G-501): the crawl has moved on, and the last page is no longer this one.
   if (isAbandoned(entry) || run.state.pages.at(-1) !== entry || !run.state.confirmLanguageFolder(folder, lang)) return false;
   run.state.unread(entry.url, 'other-language');
-  run.log(`  /${folder}/ is the site in another language: left out (--all-languages to include it)`);
+  run.log(`  /${folder}/ is the site in another language: left out`);
   return true;
 }
 
@@ -220,7 +212,7 @@ export async function readSignInPage(run: CrawlRun, url: string): Promise<void> 
   const { state, page } = run;
   const nav = state.navigate(pageKey(documentUrl(url)));
   // A timeout is tried once more, as the start page is: the-internet's /login answered the second visit
-  // (Ghost's run, 2026-10-04: 30 s without an answer, so no form, no account file, no --login).
+  // (Ghost's run, 2026-10-04: 30 s without an answer, so no form).
   for (let tries = 1; ; tries++) {
     try {
       await openPage(page, url, run.timeout, tries > 1);
@@ -228,7 +220,7 @@ export async function readSignInPage(run: CrawlRun, url: string): Promise<void> 
     } catch (error) {
       if (tries === 1 && triedAgain(run, true, firstLine(error))) continue;
       run.log(`  could not open ${url} to read its sign-in form: ${firstLine(error)}`);
-      run.log('  its sign-in form is not recorded: crawl again to read it (--login needs it)');
+      run.log('  its sign-in form is not recorded');
       return;
     } finally {
       state.responded();
@@ -281,13 +273,6 @@ export async function visit(run: CrawlRun, item: FrontierItem): Promise<'stop' |
   if (!loaded) return 'next';
   run.state.addPage(loaded.entry);
   run.state.responded();
-  // Signed in, a page that led back to the sign-in form: the session is lost, and the crawl stops (G-157).
-  if (run.signInPage && pageKey(loaded.entry.finalUrl) === pageKey(run.signInPage)) {
-    loaded.entry.error = 'led back to the sign-in form: the session was lost';
-    run.state.stop('session-lost');
-    run.log(`  the session was lost (${item.url} led back to the sign-in form): the crawl stops`);
-    return 'stop';
-  }
   const verdict = answer(run, loaded);
   if (verdict !== 'read') return verdict;
   // A part of a page its script loads (G-377): not a page, and its link to the next part is not followed. Never the start

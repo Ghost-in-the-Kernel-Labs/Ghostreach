@@ -7,7 +7,7 @@
  * the order links were found.
  */
 import type { Fingerprint } from './pages/fingerprint.js';
-import type { BrowserControl, GuardForm, LoginForm, MenuTrigger, PageAnchor, PageControl, PageFrame, PageLoad, PageMarkup, ProviderSignIn } from './report-page.js';
+import type { BrowserControl, LoginForm, MenuTrigger, PageAnchor, PageControl, PageFrame, PageLoad, PageMarkup, ProviderSignIn } from './report-page.js';
 export type { BrowserControl, FoundLoginForm, LoginForm, MenuTrigger, PageAnchor, PageControl, PageFrame, PageLoad, PageMarkup, ProviderSignIn, Sample, SoftwareWords } from './report-page.js';
 
 /**
@@ -29,17 +29,11 @@ export type StopReason =
   /** The site answered 429 Too Many Requests. */
   | 'rate-limited'
   /** Pages in a row taught nothing new (a new shape or address pattern): the rest is more of the same. */
-  | 'saturated'
-  /** A short audit (suite audit --short, G-142) found what it looked for: the first few things wrong. */
-  | 'found-enough'
-  /** A signed-in crawl was led back to its sign-in form: the site ended the session (G-157). */
-  | 'session-lost';
+  | 'saturated';
 
 export type NotCrawledReason =
   /** robots.txt disallows it for this crawler. */
   | 'robots'
-  /** Outside the --include paths, or inside an --exclude path. */
-  | 'out-of-scope'
   /** The same path as a page already found, with a different query string (?show=2, ?page=3). */
   | 'query-variant'
   /** A file type that is downloaded, not browsed (PDF, image, archive). */
@@ -107,8 +101,6 @@ export interface CrawledPage {
    * calls them by and a locator checked to match exactly that one element here. Absent when none.
    */
   controls?: PageControl[];
-  /** Under --sec only (item 107): the page's forms that hold a recorded control, where and how each sends (`GuardForm`). Absent when none, or not asked. */
-  forms?: GuardForm[];
   /**
    * The page's links and controls as the browser itself lists them (readers/seen.ts), each role and name
    * once, at most 300: what the crawl's readers are checked against, so what they did not read is said
@@ -218,20 +210,12 @@ export interface CrawlReport {
   reportVersion: number;
   startUrl: string;
   origin: string;
+  /** How far and how politely the crawl went: fixed, never asked (GR-003). */
   options: {
-    /** null: no limit (--long). */
-    maxPages: number | null;
+    maxPages: number;
     delayMs: number;
     userAgent: string;
     maxConsecutiveErrors: number;
-    include: string[];
-    exclude: string[];
-    /** True when --all-languages turned off staying in the start page's language. */
-    allLanguages?: boolean;
-    /** True when --offline kept the crawl to the site under test (G-333); a build that did not ask for it does not reuse such a crawl. */
-    offline?: true;
-    /** True when --sec read the page's own guards (item 107, G-733): a page's `forms` and a field's `limits`, `pattern`, `autocomplete`, `inputMode`. Absent: never read, so an absent one says nothing of the site. */
-    sec?: true;
   };
   /** Which build of the tool crawled (src/version.ts); absent when it ran from its source. */
   build?: { commit: string; branch: string; dirty?: true };
@@ -296,18 +280,6 @@ export interface CrawlReport {
   loginForms?: LoginForm[];
   /** The sign-ins by another site found (G-261), never followed. Absent when there were none. */
   providerSignIns?: ProviderSignIn[];
-  /**
-   * Each sign-in tried for a crawl behind a login (`suite crawl --login`, G-157): the role, the form's
-   * page, whether it worked, and why not. Never what was typed. Absent when none was tried. `session` (optional):
-   * signed in by a saved session (G-264), the provider it was made with; `url` is then where it landed.
-   */
-  signIns?: { role: string; url: string; ok: boolean; why?: string; session?: string }[];
-  /**
-   * The pages a role read just as a visitor does, marked with the role (/tips#as=user): dropped from
-   * `pages`, kept once as public (G-161), and said here so a rebuild knows they were read (G-179).
-   * Absent when there were none.
-   */
-  asPublic?: string[];
 }
 
 /** What the site says of itself, asked once after the crawl (src/crawl/site-probe.ts, G-202). */
@@ -319,7 +291,7 @@ export interface SiteProbe {
   /** Its other name, www or not, asked without following, when it answers at all: its status, and where it sends a visitor (G-204). */
   twin?: { url: string; status: number | null; to?: string };
   /** Its sitemap (robots.txt's Sitemap line, else /sitemap.xml): its status, how many addresses it lists (an index lists sitemaps), and the first it lists that the crawl found broken or moved. */
-  sitemap?: { url: string; status: number | null; listed?: number; index?: true; broken?: string[]; moved?: string[]; notAsked?: { url: string; why: string } };
+  sitemap?: { url: string; status: number | null; listed?: number; index?: true; broken?: string[]; moved?: string[] };
   /** /.well-known/security.txt: its status, and noContact when it answers without a Contact line. */
   securityTxt?: { url: string; status: number | null; noContact?: true };
   /**
@@ -327,15 +299,7 @@ export interface SiteProbe {
    * 2026-11-11, requested), how many asked, and the broken ones with a page that shows each. `notOnPage`: images requested that no
    * page showed (a script's beacon, a hidden frame's pixel), counted and never asked (G-737); absent in reports before 2026-11-11.
    */
-  images?: { seen: number; asked: number; otherHosts?: number; notOnPage?: number; broken?: { url: string; status: number | null; page: string }[] };
-  /**
-   * Offline only (--offline, G-335): the hosts other than the site's that the pages themselves asked while the crawl's browser
-   * rendered them, allowed and recorded, not blocked: each host, the resource types asked of it in the order first seen, how
-   * many requests, and the first page (its address) that asked. At most H.OTHER_HOSTS_MAX hosts.
-   */
-  pageHosts?: { host: string; types: string[]; count: number; page: string }[];
-  /** Requests to hosts past that cap, counted and not listed (a host past the cap asked twice counts twice). */
-  pageHostsLeft?: number;
+  images?: { seen: number; asked: number; notOnPage?: number; broken?: { url: string; status: number | null; page: string }[] };
   /**
    * The http:// addresses a redirect sent the site's links to (G-240), each asked once after the crawl: how many
    * there were, and each one asked (H.DOWNGRADES_ASKED at most) with its status, null when it gave no answer.
@@ -347,11 +311,9 @@ export interface SiteProbe {
    * took it (`to`), or why it gave none (`failed`: the name does not resolve, the connection was refused, it timed
    * out, or another error), and `again` when a server error or a timeout was asked a second time. `unreachable`:
    * an address failed to resolve or connect, and so did the control (example.com): this computer reaches no other
-   * site (a proxy, a firewall), so none of them is called gone. `offline`: the build was told (--offline) to ask no
-   * host but the site (G-333): the links are counted in `seen` and none was asked, so none is gone and the suite
-   * carries no test of them.
+   * site (a proxy, a firewall), so none of them is called gone.
    */
-  external?: { seen: number; answers: ExternalAnswer[]; unreachable?: true; offline?: true };
+  external?: { seen: number; answers: ExternalAnswer[]; unreachable?: true };
   /** Whether the names of the hosts whose requests failed resolve from here (G-380, docs/CRAWL-FORMAT.md). */
   failedHosts?: { host: string; resolves: boolean | null }[];
 }

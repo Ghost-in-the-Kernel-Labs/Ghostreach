@@ -6,7 +6,6 @@
 import { REPORT_VERSION, type CrawledPage, type CrawlReport, type LinkEdge, type LoginForm, type ProviderSignIn, type StopReason } from '../leaf/report.js';
 import type { Discovery } from './discovery.js';
 import type { NotCrawled } from './not-crawled.js';
-import type { OtherHosts } from './other-hosts.js';
 import type { RobotsAnswer } from './state.js';
 
 /** What CrawlState knows, as the report reads it. */
@@ -15,7 +14,6 @@ export interface KnownToReport {
   robots: Readonly<RobotsAnswer>;
   notFound: CrawlReport['notFound'];
   site: Readonly<CrawlReport['site']>;
-  otherHosts: OtherHosts;
   addresses: CrawlReport['addresses'];
   language: CrawlReport['language'];
   otherLanguages: string[];
@@ -33,7 +31,6 @@ export interface KnownToReport {
 /** The crawl report of what the crawl knows: `options`, how it was asked to look. */
 export function crawlReport(startUrl: string, options: CrawlReport['options'], known: KnownToReport): CrawlReport {
   const { origin, robots, language, consent, stopReason, failed, site, discovery, notFound, addresses } = known;
-  const { pageHosts, pageHostsLeft } = known.otherHosts;
   return {
     tool: 'suite-builder',
     reportVersion: REPORT_VERSION,
@@ -50,7 +47,7 @@ export function crawlReport(startUrl: string, options: CrawlReport['options'], k
       ...(robots.certificateChain ? { certificateChain: robots.certificateChain } : {}),
     },
     ...(notFound ? { notFound } : {}),
-    ...(site || pageHosts.size || pageHostsLeft ? { site: { ...site, ...(pageHosts.size ? { pageHosts: [...pageHosts].map(([host, h]) => ({ host, ...h })).sort((a, b) => b.count - a.count) } : {}), ...(pageHostsLeft ? { pageHostsLeft } : {}) } } : {}),
+    ...(site ? { site: { ...site } } : {}),
     ...(addresses ? { addresses } : {}),
     ...(language ? { language: { ...language, others: known.otherLanguages } } : {}),
     ...(consent ? { consent } : {}),

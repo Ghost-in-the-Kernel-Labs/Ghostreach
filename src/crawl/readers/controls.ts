@@ -16,7 +16,7 @@ export async function readControls(page: Page | Frame): Promise<PageControl[]> {
   return Array.isArray(controls) ? controls.map((c) => heldControl(c)).filter((c): c is PageControl => c !== null) : [];
 }
 
-/** The fields a guards reading keeps on a control, all of them: the keys a reading not asking for guards never keeps. */
+/** The fields the parent's guards reading kept on a control: never kept here (the guards are never read, GR-003), whatever a page writes. */
 const GUARD_KEYS = ['limits', 'pattern', 'patternLong', 'autocomplete', 'inputMode', 'requiredAria'] as const;
 
 /** The flags a check reads off a control: each kept only when exactly true, as the in-page code writes it. */
@@ -33,7 +33,7 @@ function heldControl(c: unknown): PageControl | null {
   const seen = c as Record<string, unknown>;
   if (typeof seen.kind !== 'string' || typeof seen.xpath !== 'string') return null;
   const control = { ...(c as PageControl) };
-  for (const key of GUARD_KEYS) delete control[key];
+  for (const key of GUARD_KEYS) delete (control as Record<string, unknown>)[key];
   for (const flag of FLAGS) {
     if (seen[flag] === true) control[flag] = true;
     else delete control[flag];

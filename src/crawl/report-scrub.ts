@@ -1,7 +1,7 @@
 /**
  * The crawl report as it is written (G-480, TODO 92's stage 1a): what stage 0 (G-410) took out of the saved pages, taken
  * out of the report too, since it is committed beside them and every suite file is made from it. Every text of the report,
- * whatever its field (an address in `url`, `finalUrl`, `to`, `href`, a redirect, `notCrawled`, `asPublic`, `signIns`, the
+ * whatever its field (an address in `url`, `finalUrl`, `to`, `href`, a redirect, `notCrawled`, the
  * site's probes; a locator; a sample of failed requests; a heading), read as the pages are: a key of a known shape, a
  * token-like parameter's value and a name and password in an address are the marker (saved-secrets.ts); what was typed to
  * sign in is the marker; and, on a page read signed in (and a link on one), the person after a greeting is

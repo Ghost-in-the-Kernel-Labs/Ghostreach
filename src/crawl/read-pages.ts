@@ -5,7 +5,6 @@
 import { sleep } from './after-crawl.js';
 import type { CrawlSettings } from './loop.js';
 import { visit, type CrawlRun } from './page-step.js';
-import type { CrawlReport } from '../leaf/report.js';
 import { pageKey } from '../leaf/pages/url.js';
 
 /**
@@ -19,11 +18,11 @@ function stopReasonOf(pagesRead: number, maxPages: number, saturated: boolean): 
 
 /**
  * Takes the next address from the frontier until it is empty or a stop reason holds (page limit,
- * nothing new for SATURATION_PAGES pages, too many errors in a row, the site asking us to slow down,
- * enough found); for each page: wait the polite delay, then load, judge and read it (page-step.ts).
+ * nothing new for SATURATION_PAGES pages, too many errors in a row, the site asking us to slow down);
+ * for each page: wait the polite delay, then load, judge and read it (page-step.ts).
  */
-export async function readPages(run: CrawlRun, settings: CrawlSettings, finish: () => CrawlReport): Promise<void> {
-  const { options, maxPages, delayMs, log } = settings;
+export async function readPages(run: CrawlRun, settings: CrawlSettings): Promise<void> {
+  const { maxPages, delayMs, log } = settings;
   const { state, frontier } = run;
   const { pages, crawledFinal } = state;
   while (frontier.size > 0) {
@@ -44,11 +43,7 @@ export async function readPages(run: CrawlRun, settings: CrawlSettings, finish: 
     // then), so time spent rendering and settling that page counts toward it.
     const wait = Math.max(delayMs, (state.robots.policy.crawlDelaySeconds ?? 0) * 1000);
     if (pages.length > 0) await sleep(Math.max(0, wait - (Date.now() - state.lastResponseAt)));
-    log(`[${pages.length + 1}${Number.isFinite(maxPages) ? `/${maxPages}` : ''}] ${item.url}`);
+    log(`[${pages.length + 1}/${maxPages}] ${item.url}`);
     if ((await visit(run, item)) === 'stop') break;
-    if (options.stopWhen?.(finish())) {
-      state.stop('found-enough');
-      break;
-    }
   }
 }

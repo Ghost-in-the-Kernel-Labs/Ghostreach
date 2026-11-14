@@ -85,7 +85,7 @@ const goneItem = (a: ExternalAnswer, from: string[]) => ({ at: 'address' as cons
 /** SITE-33: links to other sites that lead nowhere; those reached only from closed parts of the page apart, minor (G-737, G-742 (1)). */
 function goneExternalFinding(report: CrawlReport): SiteFinding[] {
   // Links to other sites that are gone (G-241): a 404, a name that no longer resolves, nothing taking the connection (a timeout or a server error twice is SITE-39, G-655).
-  // Not when this computer reached no other site at all (a proxy, a firewall): then none is known gone; nor offline (G-333), when none was asked.
+  // Not when this computer reached no other site at all (a proxy, a firewall): then none is known gone.
   const gone = externalAsked(report).filter((a) => externalGone(a) && !isRefused(report, a));
   const [shown, closed] = splitClosed(gone, (a) => onlyHidden(report, a.url));
   return [...goneOf(report, shown, false), ...goneOf(report, closed, true)];
@@ -118,10 +118,10 @@ function refusedSaid(report: CrawlReport, a: ExternalAnswer): string {
   return `answered ${a.status}, as did every address of ${host} asked (${asked}), its index too: the host may refuse automated requests`;
 }
 
-/** The answers of other sites' addresses, none when this computer reached no other site (a proxy, a firewall) or none was asked (offline, G-333). */
+/** The answers of other sites' addresses, none when this computer reached no other site (a proxy, a firewall). */
 function externalAsked(report: CrawlReport) {
   const ext = report.site?.external;
-  return ext?.unreachable || ext?.offline ? [] : (ext?.answers ?? []);
+  return ext?.unreachable ? [] : (ext?.answers ?? []);
 }
 
 /** "; linked from /, /news" for another site's address: the first five pages, and how many more. */

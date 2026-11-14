@@ -118,11 +118,9 @@ async function followRedirect(run: CrawlRun, entry: CrawledPage, redirect: { sta
   const { state, log } = run;
   entry.redirects.push({ url: current, status: redirect.status });
   entry.finalUrl = normalizeUrl(redirect.location) ?? redirect.location;
-  const verdict = judgeRedirect(entry.redirects, redirect.location, state.origin, isStart, state.offline);
+  const verdict = judgeRedirect(entry.redirects, redirect.location, state.origin, isStart);
   if ('error' in verdict) {
     entry.error = verdict.error;
-    // The start page's move offline: no crawl to build from, as when the start page gives no answer (G-335).
-    if (verdict.fatal) state.fail(verdict.error);
     return { end: 'ended' };
   }
   if ('offSite' in verdict) {

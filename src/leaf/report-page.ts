@@ -206,49 +206,6 @@ export interface PageControl {
    * unstable family (TODO 38). Absent for a control in the document, and in reports before 2026-10-11.
    */
   shadow?: { component: string; inside: string[] };
-  /**
-   * Under --sec only (item 107, G-728 part 2, G-733): the limits the page writes on a field, as written (`min` and `max` as
-   * text, a date's being text); absent when it has none, or the crawl was not asked --sec (`options.sec`).
-   */
-  limits?: GuardLimits;
-  /** Under --sec only: the `pattern` attribute's text, when at most H.GUARD_PATTERN_CHARS_MAX characters; a longer one is not kept and `patternLong` says so. */
-  pattern?: string;
-  patternLong?: true;
-  /** Under --sec only: the `autocomplete` attribute, lower case, at most 60 characters. */
-  autocomplete?: string;
-  /** Under --sec only: the `inputmode` attribute, lower case, at most 20 characters (for the report and --mobile; no test of it). */
-  inputMode?: string;
-  /**
-   * Under --sec only, beside `required`: the page marks the field required by `aria-required` alone, or on an element that
-   * is no form field, so the browser does not enforce it (a finding, never a check; G-728 part 5, GRD-07).
-   */
-  requiredAria?: true;
-}
-
-/** A field's limits as the page writes them (`PageControl.limits`; a length over 1,000,000 is not kept). */
-interface GuardLimits {
-  maxLength?: number;
-  minLength?: number;
-  min?: string;
-  max?: string;
-  step?: string;
-}
-
-/**
- * A `<form>` holding a control the crawl recorded, as --sec reads it (item 107, G-728 part 2): where and how it sends, never
- * what. `form` is the same string as its controls' `form`. `action`: the address the browser would send to, resolved,
- * scheme, host and path only, each segment's `;` parameters left out, at most H.GUARD_ACTION_CHARS_MAX characters (`actionQuery`: it had a query, never kept); another scheme than http or https, the scheme alone (`javascript:`). `hidden`: its hidden fields' names, at most
- * H.GUARD_HIDDEN_NAMES_MAX, each up to 60 characters; never a value. Which name reads as an anti-forgery token is src/sec/'s
- * decision, so the rule can change without a recrawl.
- */
-export interface GuardForm {
-  form: string;
-  action: string;
-  actionQuery?: true;
-  method: 'get' | 'post' | 'dialog';
-  hidden?: string[];
-  /** True when the form has more hidden fields than H.GUARD_HIDDEN_NAMES_MAX: a name not kept may be its token. */
-  hiddenMore?: true;
 }
 
 /** A link or control as the browser lists it for a visitor (its accessibility tree): its ARIA role and its accessible name. */

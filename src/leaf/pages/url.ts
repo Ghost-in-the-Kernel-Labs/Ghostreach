@@ -228,16 +228,6 @@ export function looksLikeSignIn(url: string): boolean {
   return signInKind(url) !== null;
 }
 
-/**
- * True when the URL's path is `prefix` or lies under it: /careers matches /careers and
- * /careers/jobs/42, but not /careers-old.
- */
-export function underPath(url: string, prefix: string): boolean {
-  const path = new URL(url).pathname;
-  const p = `/${prefix.replace(/^\/+|\/+$/g, '')}`;
-  return p === '/' || path === p || path.startsWith(`${p}/`);
-}
-
 /** A page's address as a person reads it on its own site: the path and its query (/p and /p?page=2 are two pages). */
 export function shownPath(url: string): string {
   return openPath(url);

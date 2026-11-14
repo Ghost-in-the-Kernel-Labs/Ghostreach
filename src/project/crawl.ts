@@ -7,15 +7,12 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { crawl, type CrawlOptions } from '../crawl/crawler.js';
+import { crawl } from '../crawl/crawler.js';
 import type { CrawlReport } from '../leaf/report.js';
 import { readCrawlReport } from '../crawl/report-read.js';
 import { scrubbedReport } from '../crawl/report-scrub.js';
 import { readText } from './text-file.js';
 import { withoutSecrets } from '../leaf/pages/saved-secrets.js';
-
-/** How far and how carefully to crawl: what the command line's options asked for. */
-export type CrawlLimits = Pick<CrawlOptions, 'maxPages' | 'delayMs' | 'settleMs' | 'saturationPages' | 'include' | 'exclude' | 'allLanguages' | 'offline' | 'sec' | 'secondLook' | 'userAgent' | 'previous' | 'stopWhen'>;
 
 export interface CrawlRequest {
   /** The address as typed (a bare domain, or one with its scheme), and the start address made of it. */
@@ -23,7 +20,6 @@ export interface CrawlRequest {
   url: string;
   /** The report's file. */
   out: string;
-  limits: CrawlLimits;
   /** Each page as the crawl goes; the steps around it (a download, a second address). */
   log: (line: string) => void;
   say: (line: string) => void;
@@ -41,7 +37,7 @@ function installBrowser(): boolean {
 async function crawlSite(request: CrawlRequest): Promise<CrawlReport | null> {
   // What the crawl prints as it goes names each address read: its token masked, as the report writes them (G-480).
   const log = (line: string) => request.log(withoutSecrets(line));
-  const crawlOnce = (startUrl = request.url) => crawl({ ...request.limits, startUrl, log });
+  const crawlOnce = (startUrl = request.url) => crawl({ startUrl, log });
   let report: CrawlReport;
   try {
     report = await crawlOnce();

@@ -16,8 +16,8 @@ const MAX_REDIRECTS = H.MAX_REDIRECTS;
 export type HopVerdict =
   /** Load `next`; when the start page moved, the site now lives at `movedTo` (an origin). */
   | { follow: string; movedTo?: string }
-  /** Stop here: the page failed, for this reason; `fatal`: the whole crawl fails with it (the start page would not be followed offline). */
-  | { error: string; fatal?: true }
+  /** Stop here: the page failed, for this reason. */
+  | { error: string }
   /** Stop here: it leads off the site, which is never requested. */
   | { offSite: true };
 
@@ -26,7 +26,7 @@ export type HopVerdict =
  * `location`: where this one points. `origin`: the site being crawled.
  */
 // Decision: G-021
-export function judgeRedirect(hops: RedirectHop[], location: string, origin: string, isStart: boolean, offline = false): HopVerdict {
+export function judgeRedirect(hops: RedirectHop[], location: string, origin: string, isStart: boolean): HopVerdict {
   const next = normalizeUrl(location);
   if (!next) return { error: `redirects to a non-web URL: ${location}` };
   if (hops.some((hop) => hop.url === next)) return { error: 'redirect loop' };
@@ -34,13 +34,5 @@ export function judgeRedirect(hops: RedirectHop[], location: string, origin: str
   if (sameOrigin(next, origin)) return { follow: next };
   // Another site: not ours, unless it's the start page moving, which says where the site lives.
   if (!isStart) return { offSite: true };
-  const movedTo = new URL(next).origin;
-  // Offline (--offline, G-335) the crawl follows no other host, the start page's move included: it fails, saying where to build instead.
-  if (offline && new URL(next).hostname !== new URL(origin).hostname) return { error: movedOfflineMessage(movedTo), fatal: true };
-  return { follow: next, movedTo };
-}
-
-/** What an offline crawl says when the start page moved to another host (G-335); `movedOffline` knows it again. */
-function movedOfflineMessage(origin: string): string {
-  return `the site moved to ${origin}; --offline follows no other host: build ${origin} instead`;
+  return { follow: next, movedTo: new URL(next).origin };
 }

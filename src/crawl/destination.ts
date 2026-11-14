@@ -178,15 +178,12 @@ export type Asker = { get(url: string, options?: Options): Promise<Answer>; head
  * (Playwright's default, 20, when none is given), so a public address that redirects into a private network
  * is stopped at the redirect. A refused hop throws NotAsked. What remains (G-243): the client looks the name
  * up again when it connects, so a name whose owner changes its address between the two lookups is not seen.
- * `stayOn`: a host name every hop must be on (offline, the site's), else NotAsked.
  */
-function guardRequests(request: Pick<BrowserContext['request'], 'get' | 'head'>, site: Reach, resolve: Resolve = resolveAll, stayOn?: string): Asker {
+function guardRequests(request: Pick<BrowserContext['request'], 'get' | 'head'>, site: Reach, resolve: Resolve = resolveAll): Asker {
   const send = async (method: 'get' | 'head', first: string, options: Options = {}): Promise<Answer> => {
     const most = options.maxRedirects ?? 20; // not a heuristic: Playwright's own default, kept so a request reads as it would unguarded
     let url = first;
     for (let hop = 0; ; hop++) {
-      // Offline (--offline, G-335) the client stays on the site's host: a hop to any other host name is not sent.
-      if (stayOn !== undefined && new URL(url).hostname !== stayOn) throw new NotAsked(`not asked: ${new URL(url).hostname} is another host than the site's, and --offline asks none`);
       const why = refusal(await reachOfUrl(url, resolve), site);
       if (why) throw new NotAsked(why);
       const res = await request[method](url, { ...options, maxRedirects: 0 });
@@ -203,6 +200,6 @@ function guardRequests(request: Pick<BrowserContext['request'], 'get' | 'head'>,
 
 /** The browser context's request client, each request kept from leading further in than the site at `origin`. */
 // Decision: G-243
-export async function guardedRequests(context: Pick<BrowserContext, 'request'>, origin: string, resolve?: Resolve, stayOn?: string): Promise<Asker> {
-  return guardRequests(context.request, (await reachOfUrl(origin, resolve)).reach, resolve, stayOn);
+export async function guardedRequests(context: Pick<BrowserContext, 'request'>, origin: string, resolve?: Resolve): Promise<Asker> {
+  return guardRequests(context.request, (await reachOfUrl(origin, resolve)).reach, resolve);
 }

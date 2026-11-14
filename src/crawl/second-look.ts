@@ -27,7 +27,7 @@ import { markCredentials } from '../leaf/pages/credential-text.js';
 import { markCredentialsIn } from './credentials-entry.js';
 import { markChangingValues } from './values.js';
 import { settlePage } from './settle.js';
-import { pageKey, withoutRole } from '../leaf/pages/url.js';
+import { pageKey } from '../leaf/pages/url.js';
 
 export interface SecondLookOptions {
   userAgent: string;
@@ -35,8 +35,6 @@ export interface SecondLookOptions {
   settleMs: number;
   timeout: number;
   log: (message: string) => void;
-  /** The crawl's session, so the second look reads as the first did (G-146). */
-  session?: import('./context.js').CrawlSession;
   /** The site and its robots.txt: a frame of an address it disallows is not asked for the second time either. */
   origin: string;
   robots: RobotsPolicy;
@@ -74,8 +72,8 @@ export async function secondLook(browser: Browser, pages: readonly CrawledPage[]
   const chosen = secondLookPages(pages);
   if (!chosen.length) return { looked: 0, differed: 0 };
   options.log('');
-  options.log(`Second look at ${chosen.length} page${chosen.length === 1 ? '' : 's'}, in a fresh browser, for what changes between visits (--quick skips it):`);
-  const context = await newCrawlContext(browser, options.userAgent, options.session);
+  options.log(`Second look at ${chosen.length} page${chosen.length === 1 ? '' : 's'}, in a fresh browser, for what changes between visits:`);
+  const context = await newCrawlContext(browser, options.userAgent);
   let differed = 0;
   try {
     await context.route('**/*', async (route) => {
@@ -105,8 +103,7 @@ export async function secondLook(browser: Browser, pages: readonly CrawledPage[]
 /** One page looked at again: true when it read differently, its second reading set on it; false otherwise, or when unreachable. */
 async function lookAgain(page: Page, entry: CrawledPage, options: SecondLookOptions): Promise<boolean> {
   try {
-    // A role's page (/account#as=user) is opened at its address; the session makes it the role's.
-    const address = withoutRole(entry.finalUrl);
+    const address = entry.finalUrl;
     const response = await openPage(page, address, options.timeout);
     if (!response || response.status() >= 400 || pageKey(page.url()) !== pageKey(address)) return false;
     // Scrolled through as the first read was (G-747): a section drawn only when scrolled to is not gone the second time.
@@ -114,7 +111,7 @@ async function lookAgain(page: Page, entry: CrawledPage, options: SecondLookOpti
     const { headings, skipped } = await collectHeadingsOf(page);
     // A field that holds another value this time (a token, a time) is marked: a test does not check its value (G-322).
     if (entry.controls) markChangingValues(entry.controls, await readControls(page));
-    // Not watched when the crawl was told not to wait for pages (settleMs 0).
+    // Not watched when no settle is given (settleMs 0: a test's).
     const late = options.settleMs > 0 ? await readLate(page, entry) : null;
     if (late) entry.late = late;
     // Before anything is said of what it read: the log is a file someone keeps (TODO 71).

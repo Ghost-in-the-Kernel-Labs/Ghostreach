@@ -43,20 +43,19 @@ export async function crawl(options: CrawlOptions): Promise<CrawlReport> {
   const { startUrl, userAgent } = settings;
 
   // What the crawl knows as it goes, shared by the request router and the crawl loop (state.ts).
-  const state = new CrawlState(startUrl, options.saturationPages ?? H.SATURATION_PAGES);
-  state.configure({ offline: options.offline === true });
+  const state = new CrawlState(startUrl, H.SATURATION_PAGES);
   // The browser's own requests no further in than the site is (G-270), as the crawl's own are (G-243).
   state.configure({ inward: browserGuard((await reachOfUrl(state.origin, options.resolve)).reach, options.resolve) });
 
   const ownsBrowser = !options.browser;
   const browser = options.browser ?? (await chromium.launch());
-  const context = await newCrawlContext(browser, userAgent, options.session);
+  const context = await newCrawlContext(browser, userAgent);
   try {
     // Every request through the crawl's router: no images, media or fonts; page loads one hop at a time (router.ts).
     await routeCrawl(context, state);
     const report = await crawlLoop(await context.newPage(), context, browser, state, settings);
-    // The other sites' hosts whose data requests failed (G-380): do their names resolve from here? Never offline: no host but the site is asked.
-    const failedHosts = options.offline || !report.site ? undefined : await checkFailedHosts(report, options.hostLookup);
+    // The other sites' hosts whose data requests failed (G-380): do their names resolve from here?
+    const failedHosts = report.site ? await checkFailedHosts(report, options.hostLookup) : undefined;
     if (failedHosts && report.site) report.site.failedHosts = failedHosts;
     const refused = [...state.refusedInBrowser];
     if (refused.length) settings.log(`The pages asked for ${refused.length} address${refused.length === 1 ? '' : 'es'} further in than the site; none was sent (${refused.slice(0, 3).map(([url, why]) => `${url}: ${why}`).join('; ')}${refused.length > 3 ? '; ...' : ''})`);

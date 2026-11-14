@@ -32,17 +32,17 @@ export async function afterCrawl(run: CrawlRun, context: BrowserContext, browser
   if (!stopped && pages.length > 0) {
     await sleep(Math.max(0, wait - (Date.now() - state.lastResponseAt)));
     // Every request from here on outside the browser, each redirect of it checked: none leads further in than the site (G-243).
-    const request = await guardedRequests(context, state.origin, options.resolve, options.offline ? new URL(state.origin).hostname : undefined);
+    const request = await guardedRequests(context, state.origin, options.resolve);
     state.noteNotFound(await askNotFound(request, state.origin, robots, timeout));
     // What the site says of itself (G-202): a few requests, each the polite delay apart.
     const polite = () => sleep(wait);
-    state.noteSite(await probeSite(request, state.origin, robots.policy.sitemaps ?? [], pages, timeout, polite, options.offline));
-    const images = run.watch ? await askShownImages(run.watch.imagesSeen(), state.shownImages(), (shown) => askImages(request, state.origin, shown, timeout, polite, options.offline)) : undefined;
+    state.noteSite(await probeSite(request, state.origin, robots.policy.sitemaps ?? [], pages, timeout, polite));
+    const images = run.watch ? await askShownImages(run.watch.imagesSeen(), state.shownImages(), (shown) => askImages(request, state.origin, shown, timeout, polite)) : undefined;
     if (images) state.noteSite({ images });
     const downgrades = await askDowngrades(request, httpDowngrades({ pages, origin: state.origin }).map((p) => p.finalUrl), timeout, polite);
     if (downgrades) state.noteSite({ downgrades });
     // Every other site the pages link to, each address asked once (G-241): a link gone dark is a finding.
-    const external = await askExternal(request, externalLinks(state.edges), timeout, wait, sleep, Date.now, options.externalControl, options.offline);
+    const external = await askExternal(request, externalLinks(state.edges), timeout, wait, sleep, Date.now, options.externalControl);
     if (external) state.noteSite({ external });
   }
   // Each sign-in link's page, opened once to read its form (G-155): the polite delay first, robots.txt asked.
@@ -59,8 +59,9 @@ export async function afterCrawl(run: CrawlRun, context: BrowserContext, browser
       }
     }
   }
-  if (options.secondLook && !stopped) {
-    const { differed } = await secondLook(browser, pages, { userAgent, delayMs: wait, settleMs, timeout, log, session: options.session, origin: state.origin, robots: robots.policy, readDeadlineMs: run.readDeadlineMs, ...(state.inward ? { inward: state.inward } : {}) });
+  // The second look, always (GR-003: a review is the full one).
+  if (!stopped) {
+    const { differed } = await secondLook(browser, pages, { userAgent, delayMs: wait, settleMs, timeout, log, origin: state.origin, robots: robots.policy, readDeadlineMs: run.readDeadlineMs, ...(state.inward ? { inward: state.inward } : {}) });
     if (differed) log(`  ${differed} page${differed === 1 ? '' : 's'} read differently the second time: ${differed === 1 ? 'its' : 'their'} changing headings won't be checks`);
   }
 }

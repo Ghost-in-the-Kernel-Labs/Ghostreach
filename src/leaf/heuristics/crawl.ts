@@ -87,7 +87,7 @@ const CRAWL_HEURISTICS = {
     pinnedBy: 'test/crawl/crawler.spec.ts',
   },
   SECTION_SHARE: {
-    value: 0.25, unit: 'share of --max-pages', kind: 'tool', where: 'src/crawl/loop.ts',
+    value: 0.25, unit: 'share of the page limit', kind: 'tool', where: 'src/crawl/loop.ts',
     pinnedBy: 'test/crawl/crawler.spec.ts',
   },
   SECTION_MIN: {

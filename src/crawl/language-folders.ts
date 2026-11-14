@@ -39,7 +39,7 @@ export class LanguageFolders {
 
   /**
    * The folder below the top level this address may put in another language (/blog/de/post -> blog/de), for a page of it
-   * to decide (confirmLanguageFolder); null when there is nothing to ask: the site is in one language (or --all-languages),
+   * to decide (confirmLanguageFolder); null when there is nothing to ask: the site is in one language,
    * the address is in no such folder, its folder has no sibling named as a locale among the addresses found (/products/id/12
    * alone is an id, not Indonesian), or a page of it has decided already (G-754).
    */

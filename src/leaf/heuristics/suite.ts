@@ -30,10 +30,6 @@ const SUITE_HEURISTICS = {
     value: 60, unit: 'images', kind: 'tool', where: 'src/crawl/site-probe.ts',
     pinnedBy: 'test/crawl/site-probe.spec.ts',
   },
-  OTHER_HOSTS_MAX: {
-    value: 100, unit: 'hosts', kind: 'tool', where: 'src/crawl/state.ts',
-    pinnedBy: 'test/unit/offline-closed.test.ts',
-  },
   EXTERNAL_LINKS_ASKED: {
     value: 100, unit: 'addresses', kind: 'tool', where: 'src/crawl/site-probe.ts',
     pinnedBy: 'test/unit/external-links.test.ts',

@@ -7,13 +7,11 @@
  * site's own security guards as a visitor's browser is shown them: the response headers a site sends or leaves out (SITE-24), the
  * server software it announces (SITE-25), and the contact it publishes for security reports (SITE-29), whose findings say, in their
  * own why, that an attacker uses what they name (Ghost, 2026-11-07: a review that looks at the site's own guards is blue-team
- * security observation, and says so). `--vulnsec` adds SITE-36 (G-701): the versions the site announces, as public lists name them; `--sec`
- * (item 107, not built) adds more. The class decides which words the audit
- * may use (test/support/banned-words.ts) and what its scope sentence says (src/project/audit-checked.ts).
+ * security observation, and says so). The class decides which words the audit may use (test/support/banned-words.ts) and what
+ * its scope sentence says (src/project/audit-checked.ts).
  *
- * `option`: the flag a check needs to be requested at all (SITE-36 alone: `vulnsec`; every other runs in a default review). An entry whose option this
- * crawl did not request is neither listed nor counted, so a later `--sec` check neither inflates a default review's "did not run" nor
- * advertises itself in it.
+ * Every check runs in every review: none is asked for apart (GR-003: no flag). The parent's SITE-36, the versions the site
+ * announces as public lists name them, needed one and is absent here, not off (RF-05); its code is not reused.
  *
  * `ran` is three-valued, because a report says less than it seems to. A rule whose input the crawl did not record DID NOT RUN
  * (no markup read, no site probe, a host not asked). A rule whose evidence is recorded only when it fires, or only when a page
@@ -46,8 +44,6 @@ export interface Check {
    */
   rule: string;
   file: `src/group/${string}.ts`;
-  /** The option a review must have been asked for to make this check; absent for every check of a default review. */
-  option?: string;
   /** What the check looks at, in words a CTO reads: a short noun phrase. */
   name: string;
   group: CheckGroup;
@@ -80,7 +76,6 @@ const ONLY = {
   slow: { only: "a measured slowness is no pass or fail: one run's machine and network decide it" },
   onPurpose: { only: 'an error answered on purpose: there is nothing to fix' },
   otherHosts: { only: "another site's hosts, as one machine's network sees them" },
-  listed: { only: 'hiding a version number is not patching it, and the public lists a suite may not ask decide it' },
   chain: { only: 'the certificate chain as one machine sees it: a proxy or antivirus gives the same' },
   unfinished: { only: 'a load that did not finish, its cause not found' },
   unconfirmed: { only: 'unconfirmed by construction: the other site did not answer the crawler' },
@@ -104,12 +99,12 @@ const evidence = (found: (r: CrawlReport) => boolean) => (r: CrawlReport): Ran =
 const asked = (field: 'certificate' | 'http' | 'sitemap' | 'securityTxt') => (r: CrawlReport): Ran => yes(r.site?.[field] !== undefined);
 
 /** The other name is asked after a probe, by the one condition the probe asks by (src/pages/twin-name.ts). */
-const twinAsked = (r: CrawlReport) => r.site !== undefined && twinAskable(new URL(r.origin).hostname, r.options?.offline === true);
+const twinAsked = (r: CrawlReport) => r.site !== undefined && twinAskable(new URL(r.origin).hostname);
 
-/** The check of links to other sites: asked, or not asked (offline, no other site reached), or recorded only when there were links. */
+/** The check of links to other sites: asked, or not asked (no other site reached), or recorded only when there were links. */
 function externalLinks(r: CrawlReport): Ran {
   const e = r.site?.external;
-  if (e) return yes(!e.offline && !e.unreachable);
+  if (e) return yes(!e.unreachable);
   return r.site ? 'unknown' : 'not-run';
 }
 
@@ -132,7 +127,7 @@ const partOf = (asked: number, seen: number, what: string, order = '') => (asked
 /** The outside links asked (one never asked, as a private address, is not counted), of those seen: the most linked are asked first. */
 const outsideCovered = (r: CrawlReport) => {
   const e = r.site?.external;
-  return e && !e.offline && !e.unreachable ? partOf(e.answers.filter((a) => !a.notAsked).length, e.seen, 'addresses', ', the most linked first') : undefined;
+  return e && !e.unreachable ? partOf(e.answers.filter((a) => !a.notAsked).length, e.seen, 'addresses', ', the most linked first') : undefined;
 };
 /** The images asked, of those the pages showed. */
 const imagesCovered = (r: CrawlReport) => (r.site?.images ? partOf(r.site.images.asked, r.site.images.seen, 'images', ", the site's own first") : undefined);
@@ -174,8 +169,6 @@ export const CHECKS = [
   { code: 'SITE-33', rule: 'goneOf', file: 'src/group/findings.ts', name: 'Links to other sites that lead nowhere', group: 'links', class: 'reading', audit: softer('http'), ran: externalLinks, covered: outsideCovered },
   { code: 'SITE-34', rule: 'brokenLinkFindings', file: 'src/group/link-findings.ts', name: 'Links that answer an error on purpose', group: 'links', class: 'reading', audit: ONLY.onPurpose, ran: onPages },
   { code: 'SITE-35', rule: 'failedElsewhereFinding', file: 'src/group/load-findings.ts', name: "Requests to other sites' hosts that fail", group: 'loading', class: 'reading', audit: ONLY.otherHosts, ran: evidence((r) => r.site?.failedHosts !== undefined || visitorPages(r).some((p) => p.load?.failedElsewhere)) },
-  // Requested only by suite audit --vulnsec, and only when at least one list was read (src/cli/commands/audit.ts): asked for, it read the versions the pages announce.
-  { code: 'SITE-36', rule: 'listedVersionFinding', file: 'src/group/listed-versions.ts', option: 'vulnsec', name: 'Announced versions that public lists name', group: 'site', class: 'security-observation', audit: ONLY.listed, ran: onPages },
   { code: 'SITE-37', rule: 'chainFinding', file: 'src/group/probe-findings.ts', name: "The certificate chain, as the crawler's machine sees it", group: 'site', class: 'reading', audit: ONLY.chain, ran: chainChecked },
   { code: 'SITE-38', rule: 'unfinishedFinding', file: 'src/group/load-findings.ts', name: 'Pages that did not finish loading', group: 'loading', class: 'reading', audit: ONLY.unfinished, ran: evidence((r) => visitorPages(r).some((p) => p.load?.unfinished)) },
   { code: 'SITE-39', rule: 'unansweredExternalFinding', file: 'src/group/findings.ts', name: 'Links to other sites that did not answer the crawler', group: 'links', class: 'reading', audit: ONLY.unconfirmed, ran: externalLinks, covered: outsideCovered },

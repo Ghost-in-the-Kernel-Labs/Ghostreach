@@ -22,10 +22,6 @@ const JAVA_SUITE_HEURISTICS = {
     value: 8000, unit: 'ms', kind: 'tool', where: 'src/crawl/failed-hosts.ts',
     pinnedBy: 'test/unit/failed-hosts.test.ts',
   },
-  SHORT_FINDINGS: {
-    value: 2, unit: 'findings', kind: 'tool', where: 'src/project/audit.ts',
-    pinnedBy: 'test/unit/audit.test.ts',
-  },
 } as const satisfies Record<string, Heuristic>;
 
 /** The values, by name: H.MENU_SHARE. */

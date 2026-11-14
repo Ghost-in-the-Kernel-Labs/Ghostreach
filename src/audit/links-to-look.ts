@@ -12,11 +12,6 @@ export const LOOK_TITLE = 'Links that need a look';
 /** What the section says of itself, in every place: why it is there. */
 export const LOOK_INTRO = 'Each of these links answered an error or did not answer. A person is to look at every one, whatever the site means by it: nothing here is cleared by a rule.';
 
-/** The findings that count against the site: an expected one (info) is said apart, never counted (item 71). */
-export function counting<T extends { severity: SiteFinding['severity'] }>(findings: T[]): T[] {
-  return findings.filter((f) => f.severity !== 'info');
-}
-
 /** One link a person is to look at. */
 export interface LinkToLook {
   /** Its address: the path of the site's own, the whole of another site's. */

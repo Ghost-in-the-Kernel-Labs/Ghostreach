@@ -6,7 +6,7 @@ import type { LinkLook, SiteFinding } from './types.js';
 import { linkingPages } from './link-findings.js';
 
 /** How many things wrong a finding stands for: one per page or address it lists. */
-export const issuesIn = (f: SiteFinding): number => Math.max(1, f.where.length);
+const issuesIn = (f: SiteFinding): number => Math.max(1, f.where.length);
 
 /** The site's own links a finding says answer an error (G-668): what its owner can act on first. None for another site's links. */
 const ownBreaks = (f: SiteFinding): LinkLook[] => (f.unconfirmed ? [] : f.where.flatMap((w) => (w.link && !w.offSite ? [w.link] : [])));
