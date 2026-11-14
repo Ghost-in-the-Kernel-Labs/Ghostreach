@@ -10,9 +10,10 @@
  * the page; a posting's address is kept only when it is https, on the default port, and on the source's own domain or the company's
  * (`keptUrl`), else the title stands alone. The lookups are kept in `<data>/companies.json`, written whole, newest first.
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fetchSource, htmlToText, type Fetched, type Transport } from './fetch.js';
+import { readKept } from './kept.js';
 
 /** The most candidate board names tried for one company. */
 export const MAX_SLUGS = 3;
@@ -320,13 +321,9 @@ export async function lookUpCompany(typed: string, options: LookupOptions): Prom
 
 export const companiesFile = (data: string): string => join(data, 'companies.json');
 
-/** The lookups kept, newest first; none yet, none. A file that cannot be read stops the page rather than be overwritten. */
+/** The lookups kept, newest first; none yet, none. A file that cannot be read is `Unreadable`, never overwritten (`kept.ts`). */
 export function readLookups(data: string): CompanyLookup[] {
-  const file = companiesFile(data);
-  if (!existsSync(file)) return [];
-  const read = JSON.parse(readFileSync(file, 'utf8')) as { lookups?: CompanyLookup[] };
-  if (!Array.isArray(read.lookups)) throw new Error(`${file} is not a list of lookups.`);
-  return read.lookups;
+  return readKept(companiesFile(data), (read) => (isObject(read) && Array.isArray(read.lookups) ? (read.lookups as CompanyLookup[]) : undefined)) ?? [];
 }
 
 /** Keeps a lookup first, in place of an earlier one of the same company (as typed, case aside); written whole, temporary file and rename. */

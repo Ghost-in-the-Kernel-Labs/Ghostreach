@@ -32,7 +32,7 @@ function queueThis(name: string, website: string, lane: Lane, rows: Rows): strin
   const review = rows.reviews.find((r) => bare(r.host) === host);
   if (review) return ` <span class="state">reviewed ${esc(review.date)}, <a href="${esc(review.href)}">PDF</a></span>`;
   if (rows.sites.some((e) => bare(e.host) === host && (e.state === 'waiting' || e.state === 'running'))) return ' <span class="state">in the queue</span>';
-  return ` <form method="post" action="/queue/lead"><input type="hidden" name="company" value="${esc(name)}"><input type="hidden" name="lane" value="${lane}"><button>Queue this site</button></form>`;
+  return ` <form method="post" action="/queue/lead"><input type="hidden" name="company" value="${esc(name)}"><input type="hidden" name="lane" value="${esc(lane)}"><button>Queue this site</button></form>`;
 }
 
 /**
@@ -62,7 +62,7 @@ export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or Zi
 
 /** One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept. */
 function boardItem(board: CompanyLookup['boards'][number]): string {
-  const head = `${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${board.roles.length} QA, test or SDET`;
+  const head = `${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${esc(board.roles.length)} QA, test or SDET`;
   if (!board.roles.length) return `<li>${head}.</li>`;
   const roles = board.roles.map((r) => `<li>${r.url ? `<a href="${esc(r.url)}" rel="noreferrer">${esc(r.title)}</a>` : esc(r.title)}</li>`).join('\n');
   return `<li>${head}:\n<ul class="roles">\n${roles}\n</ul></li>`;
@@ -82,7 +82,7 @@ export function lookupsList(lookups: readonly CompanyLookup[], rows: Rows): stri
 /** One company found: its newest QA posting (a link when its address was kept), the source (attributed, 4.11) and day, and how many more. */
 function discoveryItem(row: DiscoveryRow, rows: Rows): string {
   const title = row.url ? `<a href="${esc(row.url)}" rel="noreferrer">${esc(row.title)}</a>` : esc(row.title);
-  const more = row.others ? `, and ${row.others} more posting${row.others === 1 ? '' : 's'}` : '';
+  const more = row.others ? `, and ${esc(row.others)} more posting${row.others === 1 ? '' : 's'}` : '';
   // Attribution (4.11): a source asking for a link back is named as a link to its own posting page.
   const source = row.url && LINK_BACK.includes(row.source) ? `from <a href="${esc(row.url)}" rel="noopener noreferrer">${esc(row.source)}</a>` : esc(row.source);
   return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${source}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span>${companyTools(row.company, rows, 'discovery')}</li>`;
@@ -97,7 +97,7 @@ export function discoverySection(search: SavedSearch, run: DiscoveryRun | undefi
 <form method="post" action="/discover/run"><p><button>Run the search</button></p></form>
 ${refused ? `<p class="refused">${esc(refused)}</p>\n` : ''}`;
   if (!run) return `${form}<p>The search has not run yet.</p>`;
-  const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${run.rows.length} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
+  const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${esc(run.rows.length)} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
   const items = run.rows.length ? `\n<ul>\n${run.rows.map((row) => discoveryItem(row, rows)).join('\n')}\n</ul>` : '';
   return `${form}${head}${items}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(why)}</p>`).join('')}`;
 }

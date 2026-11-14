@@ -17,11 +17,12 @@
  * each of its rows link the source's own posting page: a posting of it whose address is not kept (not https on its own domain)
  * cannot be attributed, so it is not shown.
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cleanTitle, companyWords, isQaTitle, keptUrl } from './company.js';
 import { fetchSource, type Fetched, type SourceRequest, type Transport } from './fetch.js';
 import { KEYED_SOURCES, withKey } from './keys.js';
+import { readKept } from './kept.js';
 
 /** The saved search: the titles asked for, and where (a place, or "remote"). */
 export interface SavedSearch {
@@ -248,13 +249,12 @@ interface Kept {
   run?: DiscoveryRun;
 }
 
-/** The saved search and the last run; none saved yet, the default search. A file that cannot be read stops the page rather than be overwritten. */
+/** The saved search and the last run; none saved yet, the default search. A file that cannot be read is `Unreadable`, never overwritten (`kept.ts`). */
 export function readDiscovery(data: string): Kept {
-  const file = discoveryFile(data);
-  if (!existsSync(file)) return { search: DEFAULT_SEARCH };
-  const read = JSON.parse(readFileSync(file, 'utf8')) as Partial<Kept>;
-  if (!isObject(read.search) || !Array.isArray(read.search.titles)) throw new Error(`${file} is not a saved search.`);
-  return { search: read.search, ...(read.run ? { run: read.run } : {}) };
+  return readKept(discoveryFile(data), (read): Kept | undefined => {
+    if (!isObject(read) || !isObject(read.search) || !Array.isArray(read.search.titles)) return undefined;
+    return { search: read.search as unknown as SavedSearch, ...(read.run ? { run: read.run as DiscoveryRun } : {}) };
+  }) ?? { search: DEFAULT_SEARCH };
 }
 
 function write(data: string, kept: Kept): void {

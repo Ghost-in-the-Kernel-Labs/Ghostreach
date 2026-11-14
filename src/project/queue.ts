@@ -6,10 +6,11 @@
  * one. Every change is read, made and written synchronously, so the page's requests and the runner, in one process, never
  * interleave inside one change.
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Browser } from 'playwright';
 import { review, startUrl, type Alongside } from './review.js';
+import { isRecord, readKept, Unreadable } from './kept.js';
 
 type QueueState = 'waiting' | 'running' | 'done' | 'failed';
 
@@ -48,13 +49,9 @@ export type ReviewRun = (site: string, alongside: Alongside) => Promise<string |
 
 export const queueFile = (data: string): string => join(data, 'queue.json');
 
-/** The queue as written; empty when there is none yet. A file that cannot be read stops the program rather than be overwritten. */
+/** The queue as written; empty when there is none yet. A file that cannot be read is `Unreadable`, never overwritten (`kept.ts`). */
 export function readQueue(data: string): QueueEntry[] {
-  const file = queueFile(data);
-  if (!existsSync(file)) return [];
-  const read = JSON.parse(readFileSync(file, 'utf8')) as { sites?: QueueEntry[] };
-  if (!Array.isArray(read.sites)) throw new Error(`${file} is not a queue: it has no list of sites.`);
-  return read.sites;
+  return readKept(queueFile(data), (read) => (isRecord(read) && Array.isArray(read.sites) ? (read.sites as QueueEntry[]) : undefined)) ?? [];
 }
 
 /** Writes the queue whole: a temporary file beside it, then a rename over it (atomic on one file system). */
@@ -120,10 +117,20 @@ export function retry(data: string, id: number): boolean {
  * terminal closed), and nothing is reviewing it now, so it goes back to `waiting` to be reviewed again from the start.
  */
 export function recover(data: string): void {
-  if (!readQueue(data).some((e) => e.state === 'running')) return;
+  if (!whileReadable(() => readQueue(data).some((e) => e.state === 'running'), false)) return;
   update(data, (sites) => {
     for (const e of sites) if (e.state === 'running') e.state = 'waiting';
   });
+}
+
+/** `read`'s answer, or `none` while the queue file cannot be read: the runner and the start leave it as it is, and go on. */
+function whileReadable<T>(read: () => T, none: T): T {
+  try {
+    return read();
+  } catch (e) {
+    if (e instanceof Unreadable) return none;
+    throw e;
+  }
 }
 
 /**
@@ -177,7 +184,9 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
     };
   };
   const work = async (): Promise<void> => {
-    for (let entry = take(data); entry; entry = take(data)) {
+    // A queue file that cannot be read stops the runner, not the program: nothing more is taken, nothing written.
+    const next = (): QueueEntry | null => whileReadable(() => take(data), null);
+    for (let entry = next(); entry; entry = next()) {
       running += 1;
       for (const crawl of crawling) crawl.beside = true;
       let error: string | null;
@@ -188,7 +197,7 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
       } finally {
         running -= 1;
       }
-      finish(data, entry.id, error);
+      whileReadable(() => finish(data, entry.id, error), undefined);
       kick();
     }
   };

@@ -12,10 +12,11 @@
  * "Queue this site" (TODO 4.10): a row with a website goes into the queue (3.3) with the lead as its reason (`leadOf`), read here
  * from what the data folder keeps of that row, never from the form beyond the company's name and its lane.
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { candidateSlugs, cleanTitle, companyWords, readLookups } from './company.js';
 import { readDiscovery } from './discover.js';
+import { isRecord, readKept } from './kept.js';
 import type { Reason } from './queue.js';
 import { startUrl } from './review.js';
 
@@ -46,13 +47,9 @@ export const companyKey = (name: string): string => companyWords(name).join(' ')
 
 const leadsFile = (data: string): string => join(data, 'leads.json');
 
-/** What is kept, by company key; none yet, none. A file that cannot be read stops the page rather than be overwritten. */
+/** What is kept, by company key; none yet, none. A file that cannot be read is `Unreadable`, never overwritten (`kept.ts`). */
 export function readNotes(data: string): Record<string, CompanyNotes> {
-  const file = leadsFile(data);
-  if (!existsSync(file)) return {};
-  const read = JSON.parse(readFileSync(file, 'utf8')) as { companies?: unknown };
-  if (typeof read.companies !== 'object' || read.companies === null || Array.isArray(read.companies)) throw new Error(`${file} is not a list of companies.`);
-  return read.companies as Record<string, CompanyNotes>;
+  return readKept(leadsFile(data), (read) => (isRecord(read) && isRecord(read.companies) ? (read.companies as Record<string, CompanyNotes>) : undefined)) ?? {};
 }
 
 /** One company's notes by its key, an own key of what is kept alone. */

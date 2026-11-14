@@ -11,6 +11,7 @@ import type { readDiscovery } from './discover.js';
 import { discoverySection, lookupsList, type Rows } from './page-leads.js';
 import type { CompanyNotes } from './leads.js';
 import { esc } from './html.js';
+import { unreadableLine } from './kept.js';
 
 /** A review on the page: the site, the day, and the path its PDF is served at. */
 export interface ListedReview {
@@ -31,6 +32,8 @@ export interface View {
   discovery: ReturnType<typeof readDiscovery>;
   /** What the salesperson kept per company (`leads.ts`). */
   notes: Readonly<Record<string, CompanyNotes>>;
+  /** The data files that could not be read (`kept.ts`), each said in one line; absent, none. */
+  unreadable?: readonly string[];
 }
 
 /** What a post did, said back on the page: the paste's queued and refused lines, a company lookup refused, or a search refused. */
@@ -45,7 +48,7 @@ export interface Said {
 /** What a paste did, said back above the queue: how many were queued, and each refused line with why. */
 function addedNotice(added: Added | undefined): string {
   if (!added) return '';
-  const queued = `<p class="said">${added.queued.length} site${added.queued.length === 1 ? '' : 's'} queued.</p>`;
+  const queued = `<p class="said">${esc(added.queued.length)} site${added.queued.length === 1 ? '' : 's'} queued.</p>`;
   const refused = added.refused.map((r) => `<li class="refused">Refused: ${esc(r.line)} (${esc(r.why)})</li>`).join('\n');
   return `${queued}${refused ? `\n<ul>\n${refused}\n</ul>` : ''}`;
 }
@@ -55,10 +58,10 @@ function queueList(sites: readonly QueueEntry[]): string {
   if (!sites.length) return '<p>No site queued.</p>';
   const rows = sites.map((e) => {
     const failed = e.state === 'failed'
-      ? ` <span class="error">${esc(e.error ?? '')}</span> <form method="post" action="/queue/retry"><input type="hidden" name="id" value="${e.id}"><button>Retry</button></form>`
+      ? ` <span class="error">${esc(e.error ?? '')}</span> <form method="post" action="/queue/retry"><input type="hidden" name="id" value="${esc(e.id)}"><button>Retry</button></form>`
       : '';
     const reason = e.reason ? ` <span class="day">from ${esc(e.reason.source)}${e.reason.url ? `: <a href="${esc(e.reason.url)}" rel="noopener noreferrer">posting</a>` : ''}</span>` : '';
-    return `<li>${esc(e.site)} <span class="state">${e.state}</span>${reason}${failed}</li>`;
+    return `<li>${esc(e.site)} <span class="state">${esc(e.state)}</span>${reason}${failed}</li>`;
   });
   return `<ol>\n${rows.join('\n')}\n</ol>`;
 }
@@ -103,13 +106,13 @@ ul.roles li { border: none; padding: 0.1rem 0; }
 </head>
 <body>
 <h1>The reviews</h1>
-<h2>Sites to review</h2>
+${(view.unreadable ?? []).map((file) => `<p class="error">${esc(unreadableLine(file))}</p>\n`).join('')}<h2>Sites to review</h2>
 <form method="post" action="/queue">
 <p><label for="sites">One site per line:</label></p>
 <textarea id="sites" name="sites" rows="6" placeholder="www.example.com"></textarea>
 <p><button>Queue</button></p>
 </form>
-<p>Up to ${settings.reviewsAtOnce} site${settings.reviewsAtOnce === 1 ? ' is' : 's are'} reviewed at once.</p>
+<p>Up to ${esc(settings.reviewsAtOnce)} site${settings.reviewsAtOnce === 1 ? ' is' : 's are'} reviewed at once.</p>
 ${settings.note ? `<p class="error">${esc(settings.note)}</p>\n` : ''}${addedNotice(added)}
 ${queueList(sites)}
 <p><a href="/">Reload</a></p>

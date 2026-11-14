@@ -29,3 +29,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: "Mandatory context" in the metrics is `CLAUDE.md`'s word count alone, said only in `scripts/checks/metrics.py`; `docs/AGENT.md`'s AGT-03 says "plus whatever an agent must read before a task". The brief's `scripts/save.sh -F <file>` and `CLAUDE.md`'s `-m <message>` are both right (`save.sh` takes either), but `CLAUDE.md` names one. No workpath routed the product's code (acted on: `docs/paths/code.md`). A bare file name in a routing document is read as a path from the root by the pointer check.
 - **Suggestions**: AGT-03's text names `CLAUDE.md` alone, as the measure does.
 
+
+### 2026-11-14 · Fix: the four faults of J-044's security read · Opus
+
+- **Task**: fix the four faults tune-up pass 4's security read left in the local server (unescaped queue values, an unreadable data file stopping the server, the PDF stream's missing error handler, no limit on lookups and runs in flight), each with a test red first.
+- **Opened**: `docs/paths/code.md`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md`, `src/project/serve.ts`, `src/project/html.ts`, `src/project/page.ts`, `src/project/page-leads.ts`, `src/project/text-file.ts`, `src/project/queue.ts`, `src/project/settings.ts`, `src/project/fetch.ts`, `src/project/company.ts`, `src/project/discover.ts`, `src/project/leads.ts`, `docs/CUT.md`, `docs/modules.json`, `test/unit/serve.test.ts`, `test/unit/company.test.ts`, `docs/when/handoff.md`, `docs/JOURNAL.md`, `docs/FINDINGS.md`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the local page's row in `docs/paths/code.md` opens three files, but the fault list reached seven (the four readers live in the lead finder's files); the largest-file metric (< 400 lines) counts test files too, said only by the fast loop's failure, so a test added to `serve.test.ts` had to move to a file of its own.
+- **Suggestions**: the local page's row names the data files' readers (`src/project/kept.ts` now holds the rule); `docs/AGENT.md`'s largest-file row says it counts tests.

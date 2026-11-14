@@ -6,11 +6,14 @@
  * markup (P-16). Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
  * failed one's retry to `/queue/retry`; while a site waits or runs, the page reloads itself (a meta refresh; no script runs in it).
  * The company lane (4.6, `company.ts`): a company to `/company`. The discovery lane (4.7, `discover.ts`): the saved search edited
- * at `/discover/search`, run at `/discover/run`. The page's HTML is `page.ts` and `page-leads.ts`. The ranking (3.6) comes later.
+ * at `/discover/search`, run at `/discover/run`; one lookup and one run at a time. The page's HTML is `page.ts` and `page-leads.ts`.
+ * A data file that cannot be read is said on the page in one line and left as it is (`kept.ts`); no request stops the server
+ * (J-045). The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
 import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { pipeline } from 'node:stream';
 import type { AddressInfo } from 'node:net';
 import { join, relative, isAbsolute, sep } from 'node:path';
 import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type QueueRunner, type ReviewRun } from './queue.js';
@@ -22,6 +25,7 @@ import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
 import { reviewsPage, type ListedReview, type Said } from './page.js';
 import { keepPosting, keepWebsite, leadOf, readNotes } from './leads.js';
+import { Unreadable } from './kept.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -81,12 +85,42 @@ function answer(res: ServerResponse, status: number, text: string): void {
   res.end(`${text}\n`);
 }
 
-/** The page as HTML. */
+/** The page as HTML. A data file that cannot be read shows as empty, and the page says so in one line naming it. */
 function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, said?: Said): void {
+  const unreadable: string[] = [];
+  const read = <T>(get: (data: string) => T, none: T): T => {
+    try {
+      return get(data);
+    } catch (e) {
+      if (!(e instanceof Unreadable)) throw e;
+      unreadable.push(e.file);
+      return none;
+    }
+  };
+  const view = {
+    reviews: listReviews(data), sites: read(readQueue, []), settings, lookups: read(readLookups, []),
+    discovery: read(readDiscovery, { search: { titles: [], location: '' } }), notes: read(readNotes, {}), unreadable,
+  };
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(req.method === 'HEAD' ? undefined : reviewsPage({
-    reviews: listReviews(data), sites: readQueue(data), settings, lookups: readLookups(data), discovery: readDiscovery(data), notes: readNotes(data),
-  }, said));
+  res.end(req.method === 'HEAD' ? undefined : reviewsPage(view, said));
+}
+
+/**
+ * Runs one request's work so that nothing it throws stops the server: a data file that cannot be read answers the page, which
+ * says so (nothing was written); anything else answers `line` (500), or ends an answer already begun.
+ */
+function guarded(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, line: string, work: () => void): void {
+  try {
+    work();
+  } catch (e) {
+    failed(data, settings, req, res, line, e);
+  }
+}
+
+function failed(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, line: string, e: unknown): void {
+  if (res.headersSent) return void res.destroy();
+  if (e instanceof Unreadable) return guarded(data, settings, req, res, line, () => sendPage(data, settings, req, res));
+  answer(res, 500, line);
 }
 
 /** The most a form's body may hold: thousands of sites, and no more read into memory. */
@@ -99,6 +133,8 @@ const POSTS = new Set(['/queue', '/queue/retry', '/queue/lead', '/company', '/co
 interface Served {
   settings: Settings;
   runner: QueueRunner;
+  /** The lead finder's routes running now (`/company`, `/discover/run`): one of each at a time, for the sources' caps and the keys. */
+  running: Set<string>;
   transport?: Transport;
   env?: Readonly<Record<string, string | undefined>>;
 }
@@ -118,7 +154,7 @@ function post(data: string, served: Served, origin: string, path: string, req: I
     // Past the limit the rest is read and dropped, so the answer reaches the browser; nothing more is kept.
     if (size <= MAX_BODY) chunks.push(chunk);
   });
-  req.on('end', () => {
+  req.on('end', () => guarded(data, settings, req, res, 'Not done: the program met an error.', () => {
     if (size > MAX_BODY) return answer(res, 413, 'Too long.');
     const form = new URLSearchParams(Buffer.concat(chunks).toString('utf8'));
     if (path === '/queue') {
@@ -127,14 +163,17 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       return sendPage(data, settings, req, res, { added });
     }
     if (path === '/company') {
+      // One lookup at a time: a second while one runs is said back, never a second batch of calls to the sources.
+      if (served.running.has(path)) return sendPage(data, settings, req, res, { refused: 'A company lookup is already running; this one was not started.' });
+      served.running.add(path);
       // Every source is asked before the page answers: the salesperson waits on it, at most a probe's timeout per name and instance.
-      void lookUpCompany(form.get('company') ?? '', { data, transport: served.transport }).then(
+      void lookUpCompany(form.get('company') ?? '', { data, transport: served.transport }).finally(() => served.running.delete(path)).then(
         (lookup) => {
           if (lookup.refused) return sendPage(data, settings, req, res, { refused: lookup.refused });
           keepLookup(data, lookup);
           sendPage(data, settings, req, res);
         },
-      ).catch(() => answer(res, 500, 'The lookup could not be kept.'));
+      ).catch((e: unknown) => failed(data, settings, req, res, 'The lookup could not be kept.', e));
       return;
     }
     if (path === '/queue/lead') {
@@ -159,17 +198,21 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       return sendPage(data, settings, req, res);
     }
     if (path === '/discover/run') {
-      // Every source is asked before the page answers; a source over its cap, without its key or failing is named, never waited on.
-      void discover(readDiscovery(data).search, { data, transport: served.transport, env: served.env }).then((run) => {
+      // One run at a time, as one lookup; every source is asked before the page answers; a source over its cap, without its key
+      // or failing is named, never waited on.
+      if (served.running.has(path)) return sendPage(data, settings, req, res, { searchRefused: 'The search is already running; this run was not started.' });
+      const search = readDiscovery(data).search;
+      served.running.add(path);
+      void discover(search, { data, transport: served.transport, env: served.env }).finally(() => served.running.delete(path)).then((run) => {
         keepRun(data, run);
         sendPage(data, settings, req, res);
-      }).catch(() => answer(res, 500, 'The search could not be run.'));
+      }).catch((e: unknown) => failed(data, settings, req, res, 'The search could not be run.', e));
       return;
     }
     if (retry(data, Number(form.get('id')))) runner.kick();
     res.writeHead(303, { ...HEADERS, Location: '/' });
     res.end();
-  });
+  }));
 }
 
 /** One request: the page at `/`, a review's PDF at `/reviews/<folder>/<pdf>`, the forms' posts, and nothing else. */
@@ -201,7 +244,10 @@ function handle(data: string, served: Served, port: () => number, req: IncomingM
     'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(names[1])}`,
   });
   if (req.method === 'HEAD') return void res.end();
-  createReadStream(pdf).pipe(res);
+  // A read that fails after the headers (a disk error, the file gone since the check) ends this answer, never the server.
+  pipeline(createReadStream(pdf), res, (error) => {
+    if (error) res.destroy();
+  });
 }
 
 /** The page being served: its address, and how to stop it. */
@@ -228,7 +274,8 @@ export async function servePage(data: string, run?: ReviewRun, transport?: Trans
   const shared = run ? null : sharedBrowser();
   const runner = queueRunner(data, run ?? reviewLine(data, shared?.get), settings.reviewsAtOnce);
   let bound = 0;
-  const server = createServer((req, res) => handle(data, { settings, runner, transport, env }, () => bound, req, res));
+  const served: Served = { settings, runner, running: new Set(), transport, env };
+  const server = createServer((req, res) => guarded(data, settings, req, res, 'The page could not be shown.', () => handle(data, served, () => bound, req, res)));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
   await new Promise<void>((done, fail) => {
     server.once('error', fail);
