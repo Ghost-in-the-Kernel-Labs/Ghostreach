@@ -28,7 +28,7 @@ kind=$( [ -f "${record_file%tree}kind" ] && tr -d '[:space:]' < "${record_file%t
 if [ "$kind" = fast ]; then
   if [ -n "$first" ]; then code=yes
   else code=$(git diff --name-only refs/remotes/origin/main "$head" | grep -E '^(src/|test/|scripts/|stacks/|package\.json$|package-lock\.json$|tsconfig|vitest|stryker|knip)' | head -1); fi
-  [ -z "$code" ] || refuse "the kind of gate (a fast record, but $code changed since origin/main: run scripts/gate.sh --medium, commit, and ship)"
+  [ -z "$code" ] || refuse "the kind of gate (a fast record, but $code changed since origin/main: run scripts/gate.sh --medium, then ship (commit first only if the tree changed))"
 fi
 [ -n "$first" ] || git merge-base --is-ancestor refs/remotes/origin/main "$head" \
   || refuse "the fast-forward (fetch and rebuild: main moved; rebase onto origin/main, run scripts/gate.sh and commit again)"
