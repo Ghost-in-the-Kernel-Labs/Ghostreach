@@ -5,16 +5,18 @@
  * the crawl stopped. One object, shared by the request router and the crawl loop (crawler.ts), where
  * there were variables of one closure.
  */
-import { localeFolder, localeSegment, primaryLanguage } from '../leaf/pages/locale.js';
 import { addressPath, pageKey } from '../leaf/pages/url.js';
 import type { Fingerprint } from '../leaf/pages/fingerprint.js';
-import { H } from '../leaf/heuristics/suite.js';
 import { Discovery } from './discovery.js';
 import type { Leftover } from './frontier.js';
+import { NotCrawled } from './not-crawled.js';
 import { ALLOW_ALL, type RobotsPolicy } from './robots.js';
-import { REPORT_VERSION, type CrawledPage, type CrawlReport, type FoundLoginForm, type LinkEdge, type LoginForm, type NotCrawledReason, type ProviderSignIn, type StopReason } from '../leaf/report.js';
-import { providerSignIn, type FoundSignInLink } from './providers.js';
-import { loginRole } from './readers/login.js';
+import type { CrawledPage, CrawlReport, FoundLoginForm, LinkEdge, LoginForm, NotCrawledReason, ProviderSignIn, StopReason } from '../leaf/report.js';
+import type { FoundSignInLink } from './providers.js';
+import { LanguageFolders } from './language-folders.js';
+import { OtherHosts } from './other-hosts.js';
+import { SignIns } from './sign-ins.js';
+import { crawlReport } from './state-report.js';
 
 /** The site's robots.txt as read: its rules, the status it answered, and why it could not be read. */
 export interface RobotsAnswer {
@@ -45,7 +47,8 @@ export interface Navigation {
 
 /**
  * Every field is private: read through a getter (a collection as a read-only view), written only through a named
- * method below, which says what it records. Ghost, 2026-11-09: "Lets go with the full version".
+ * method below, which says what it records. Ghost, 2026-11-09: "Lets go with the full version". Its other languages, the
+ * other hosts, the addresses not crawled, the sign-ins and the report's assembly live in sibling files it delegates to (C-022, J-014).
  */
 // Decision: G-686
 export class CrawlState {
@@ -61,10 +64,8 @@ export class CrawlState {
   readonly #shownImages = new Set<string>();
   /** Ask no host but the site (--offline, G-333, G-335): the start page's move to another host fails the crawl, and the pages' requests to other hosts are recorded. */
   #offline = false;
-  /** Offline, the other hosts the pages asked while rendered: host -> resource types in the order seen, count, and the first page. */
-  readonly #pageHosts = new Map<string, { types: string[]; count: number; page: string }>();
-  /** Hosts the pages asked past H.OTHER_HOSTS_MAX, counted and not kept (a host asked twice past the cap counts twice). */
-  #pageHostsLeft = 0;
+  /** Offline, the other hosts the pages asked while rendered (other-hosts.ts). */
+  readonly #otherHosts = new OtherHosts();
   /** The page load under way: what the router saw of it, for the crawl loop (Fable's review, suggestion 6). */
   #current: Navigation | null = null;
   /** Pages already read (pageKey): a page's script moving the browser to one isn't sent to the site again. */
@@ -73,10 +74,8 @@ export class CrawlState {
   readonly #edges: LinkEdge[] = [];
   /** Each link once per place (from, to, words, region, hidden). */
   readonly #edgeKeys = new Set<string>();
-  readonly #notCrawled: CrawlReport['notCrawled'] = [];
-  readonly #notCrawledUrls = new Set<string>();
-  /** Addresses not crawled past H.NOT_CRAWLED_MAX, counted, not listed. */
-  #notCrawledLeft = 0;
+  /** The addresses not crawled, and why (not-crawled.ts). */
+  readonly #notCrawled = new NotCrawled();
   /** Pages found (by pageKey: /about/ is /about), so none is queued twice. */
   readonly #seen: Set<string>;
   /** Pages read, by pageKey of where they landed -> the URL of the page that reached it. */
@@ -87,12 +86,8 @@ export class CrawlState {
   /** Paths (without query) of every URL found, to spot query-string variants of a known page. */
   readonly #seenPaths: Set<string>;
   #language: CrawlReport['language'];
-  /** Locale segments of other languages met so far, and the language folders below the top level found (blog/de). */
-  readonly #otherLocales = new Set<string>();
-  /** Folders below the top level named as a locale among the addresses found (localeFolder), by the path above them: blog -> de, ja. */
-  readonly #localeFolders = new Map<string, Set<string>>();
-  /** Those a page of decided (confirmLanguageFolder, G-754): true, another language, left out; false, the crawl's own. */
-  readonly #folderDecided = new Map<string, boolean>();
+  /** The other languages met so far and the language folders found and decided (language-folders.ts, G-754). */
+  readonly #folders = new LanguageFolders();
   #consent: CrawlReport['consent'];
   #stopReason: StopReason = 'complete';
   #consecutiveErrors = 0;
@@ -107,17 +102,13 @@ export class CrawlState {
   #site: CrawlReport['site'];
   /** Each address the site's name points to, and whether it took a connection (CrawlReport.addresses). */
   #addresses: CrawlReport['addresses'];
-  /** The sign-in forms found so far, never sent (CrawlReport.loginForms). */
-  readonly #loginForms: LoginForm[] = [];
-  /** The sign-ins by another site found so far, never followed (CrawlReport.providerSignIns, G-261). */
-  readonly #providerSignIns: ProviderSignIn[] = [];
-  /** The same-site addresses that start one (/auth/google): refused as sign-in, never followed. */
-  readonly #providerStarts = new Set<string>();
+  /** The sign-in forms and the sign-ins by another site found so far, never sent nor followed (sign-ins.ts, G-261). */
+  readonly #signIns = new SignIns();
 
   constructor(startUrl: string, saturationPages: number) {
     this.#origin = new URL(startUrl).origin;
     this.#seen = new Set([pageKey(startUrl)]);
-    this.#noteLocaleFolder(startUrl);
+    this.#folders.noteLocaleFolder(startUrl);
     this.#seenPaths = new Set([pathOnly(startUrl)]);
     this.#discovery = new Discovery(saturationPages);
   }
@@ -138,7 +129,7 @@ export class CrawlState {
     return this.#offline;
   }
   get pageHosts(): ReadonlyMap<string, Readonly<{ types: readonly string[]; count: number; page: string }>> {
-    return this.#pageHosts;
+    return this.#otherHosts.pageHosts;
   }
   get current(): Navigation | null {
     return this.#current;
@@ -157,7 +148,7 @@ export class CrawlState {
     return this.#edges;
   }
   get notCrawled(): readonly CrawlReport['notCrawled'][number][] {
-    return this.#notCrawled;
+    return this.#notCrawled.list;
   }
   get seen(): ReadonlySet<string> {
     return this.#seen;
@@ -191,10 +182,10 @@ export class CrawlState {
     return this.#site;
   }
   get loginForms(): readonly LoginForm[] {
-    return this.#loginForms;
+    return this.#signIns.loginForms;
   }
   get providerStarts(): ReadonlySet<string> {
-    return this.#providerStarts;
+    return this.#signIns.providerStarts;
   }
 
   /** How the crawl was asked to look, set before it starts: offline (G-333, G-335) and the browser's guard (G-270); a setting not given stays as it was. */
@@ -242,46 +233,17 @@ export class CrawlState {
   /** A page found (pageKey), so it is never queued twice. */
   markSeen(key: string): void {
     this.#seen.add(key);
-    this.#noteLocaleFolder(key);
+    this.#folders.noteLocaleFolder(key);
   }
 
-  /** A folder below the top level named as a locale (/blog/de/), noted under the path above it, for its siblings. */
-  #noteLocaleFolder(url: string): void {
-    const folder = localeFolder(url);
-    if (!folder) return;
-    const parent = folder.slice(0, folder.lastIndexOf('/'));
-    const siblings = this.#localeFolders.get(parent) ?? new Set<string>();
-    siblings.add(folder);
-    this.#localeFolders.set(parent, siblings);
-  }
-
-  /**
-   * The folder below the top level this address may put in another language (/blog/de/post -> blog/de), for a page of it
-   * to decide (confirmLanguageFolder); null when there is nothing to ask: the site is in one language (or --all-languages),
-   * the address is in no such folder, its folder has no sibling named as a locale among the addresses found (/products/id/12
-   * alone is an id, not Indonesian), or a page of it has decided already (G-754).
-   */
-  // Decision: G-754
+  /** The folder this address may put in another language, for a page of it to decide; null, nothing to ask (language-folders.ts, G-754). */
   languageFolderCandidate(url: string): string | null {
-    const folder = this.#language ? localeFolder(url) : null;
-    if (!folder || this.#folderDecided.has(folder)) return null;
-    return (this.#localeFolders.get(folder.slice(0, folder.lastIndexOf('/')))?.size ?? 0) >= 2 ? folder : null;
+    return this.#folders.languageFolderCandidate(this.#language, url);
   }
 
-  /**
-   * A page of a candidate folder (languageFolderCandidate) says its language (its html lang): the folder is another language
-   * of the site when that is the folder's own (de in blog/de) and not the crawl's; from then on its addresses are left out
-   * (isOtherLanguage). A page in the crawl's language, or in a third, keeps the folder in (an IT section, /blog/it/, in
-   * English); a page with no lang decides nothing, and the next page of the folder is asked. True when it is left out.
-   */
+  /** A page of a candidate folder says its language: true when the folder is another language, left out from then on (language-folders.ts). */
   confirmLanguageFolder(folder: string, lang: string | null): boolean {
-    const own = this.#language?.lang ?? this.#language?.prefix;
-    const said = lang?.trim();
-    if (!own || !said) return false;
-    const other = primaryLanguage(said) === primaryLanguage(folder) && primaryLanguage(said) !== primaryLanguage(own);
-    this.#folderDecided.set(folder, other);
-    if (other) this.#otherLocales.add(folder);
-    return other;
+    return this.#folders.confirmLanguageFolder(this.#language, folder, lang);
   }
 
   /** The path (without query) of a URL found, noted; true when it was found before (with a query, a variant of a known page). */
@@ -313,7 +275,7 @@ export class CrawlState {
   /** The site's language, decided on the start page; its other languages' segments are known from then on. */
   decideLanguage(language: CrawlReport['language']): void {
     this.#language = language;
-    if (language) for (const other of language.others) this.#otherLocales.add(other);
+    if (language) this.#folders.addOthers(language.others);
   }
 
   /** The cookie banner's button, as found on a page; the first one found is kept. */
@@ -369,36 +331,14 @@ export class CrawlState {
     this.#site = { ...this.#site, ...facts };
   }
 
-  /**
-   * Offline (G-335): a request a page made to a host other than the site's, kept (host, resource type, count, the first page)
-   * and let go. Web addresses only; at most H.OTHER_HOSTS_MAX hosts, so a page naming hosts without end ends its list.
-   */
+  /** Offline (G-335): a request a page made to a host other than the site's, kept and let go (other-hosts.ts); online, nothing. */
   noteOtherHost(url: string, type: string, page: string): void {
-    if (!this.#offline) return;
-    let host: string;
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return;
-      if (parsed.hostname === new URL(this.#origin).hostname) return;
-      host = parsed.host;
-    } catch {
-      return;
-    }
-    const known = this.#pageHosts.get(host);
-    if (known) {
-      known.count++;
-      if (!known.types.includes(type)) known.types.push(type);
-    } else if (this.#pageHosts.size < H.OTHER_HOSTS_MAX) this.#pageHosts.set(host, { types: [type], count: 1, page });
-    else this.#pageHostsLeft++;
+    if (this.#offline) this.#otherHosts.note(this.#origin, url, type, page);
   }
 
-  /** Records an address not crawled, and why, once. */
+  /** Records an address not crawled, and why, once (not-crawled.ts). */
   skip(url: string, reason: NotCrawledReason): void {
-    if (this.#notCrawledUrls.has(url)) return;
-    this.#notCrawledUrls.add(url);
-    // A site that makes addresses without end ends its list here; the rest are counted (Fable's review, C2).
-    if (this.#notCrawled.length < H.NOT_CRAWLED_MAX) this.#notCrawled.push({ url, reason });
-    else this.#notCrawledLeft++;
+    this.#notCrawled.skip(url, reason);
   }
 
   /** A page read where it landed (`key`, a pageKey), reached from `reachedFrom`: `crawledFinal` and `read` move together, here only. */
@@ -418,97 +358,33 @@ export class CrawlState {
     this.#stopReason = reason;
   }
 
-  /** True for a link into another language of the site (once the start page's language is known). */
+  /** True for a link into another language of the site (once the start page's language is known; language-folders.ts). */
   isOtherLanguage(url: string): boolean {
-    const language = this.#language;
-    if (!language) return false;
-    const folder = localeFolder(url);
-    if (folder && this.#folderDecided.get(folder)) return true;
-    const segment = localeSegment(url);
-    if (!segment) return false;
-    const other = language.prefix
-      ? segment !== language.prefix
-      : // English at the root: /fr/ is another language, /en-us/ a country site
-        this.#otherLocales.has(segment) || segment.includes('-') || (language.lang !== null && primaryLanguage(segment) !== primaryLanguage(language.lang));
-    if (other) this.#otherLocales.add(segment);
-    return other;
+    return this.#folders.isOtherLanguage(this.#language, url);
   }
 
-  /**
-   * The addresses still queued when the crawl stopped, recorded as not crawled, each for its true reason (G-741): `enough-samples`
-   * only when a page of its kind was read (its pattern settled, or sampled before a saturated stop) and never for a page of the
-   * site's menu, which is no more of anything (G-674); otherwise why the crawl stopped first (the page limit, or stopped).
-   * phoenixoutcomes.com (2026-11-11) had /press, /awards and /certifications, footer-menu pages, left as `enough-samples`.
-   */
-  // Decision: G-741
+  /** The addresses still queued when the crawl stopped, recorded as not crawled, each for its true reason (not-crawled.ts, G-741). */
   leaveOver(queued: readonly Leftover[]): void {
-    const stoppedFirst: NotCrawledReason = this.#stopReason === 'page-limit' ? 'page-limit' : 'stopped';
-    for (const item of queued) {
-      if (this.#crawledFinal.has(pageKey(item.url))) continue;
-      if (this.isOtherLanguage(item.url)) {
-        this.skip(item.url, 'other-language'); // queued before a page of its folder said its language (G-754)
-        continue;
-      }
-      const enough = !item.menu && (item.settled || (this.#stopReason === 'saturated' && item.sampled));
-      this.skip(item.url, enough ? 'enough-samples' : stoppedFirst);
-    }
+    this.#notCrawled.leaveOver(queued, this.#stopReason, this.#crawledFinal, (url) => this.isOtherLanguage(url));
   }
 
-  /** A sign-in form found on a page, given its role; one already recorded there (the same password field) is not recorded again. */
+  /** A sign-in form found on a page, given its role; one already recorded there is not recorded again (sign-ins.ts). */
   addLoginForm(url: string, title: string, found: FoundLoginForm, via: LoginForm['via']): LoginForm | null {
-    if (this.#loginForms.some((f) => f.url === url && f.password.xpath === found.password.xpath)) return null;
-    const form: LoginForm = { url, via, form: found.form, ...loginRole(url, title, found.form, found.heading),username: found.username, password: found.password, submit: found.submit };
-    this.#loginForms.push(form);
-    return form;
+    return this.#signIns.addLoginForm(url, title, found, via);
   }
 
-  /** Each link or form on a page that starts a sign-in by another site, recorded once a page and provider; the ones recorded. */
+  /** Each link or form on a page that starts a sign-in by another site, recorded once a page and provider; the ones recorded (sign-ins.ts). */
   addProviderSignIns(page: string, found: FoundSignInLink[]): ProviderSignIn[] {
-    const added: ProviderSignIn[] = [];
-    for (const f of found) {
-      const signIn = providerSignIn(f, page);
-      if (!signIn) continue;
-      if (signIn.sameSite) this.#providerStarts.add(pageKey(signIn.address));
-      if (this.#providerSignIns.some((s) => s.page === page && s.provider === signIn.provider)) continue;
-      this.#providerSignIns.push(signIn);
-      added.push(signIn);
-    }
-    return added;
+    return this.#signIns.addProviderSignIns(page, found);
   }
 
-  /** The crawl report (the Observation IR) of what the crawl knows: `options`, how it was asked to look. */
+  /** The crawl report (the Observation IR) of what the crawl knows: `options`, how it was asked to look (state-report.ts). */
   report(startUrl: string, options: CrawlReport['options']): CrawlReport {
     const { origin, robots, language, consent, stopReason, failed, site } = this;
-    const [discovery, notFound, addresses] = [this.#discovery, this.#notFound, this.#addresses];
-    return {
-      tool: 'suite-builder',
-      reportVersion: REPORT_VERSION,
-      startUrl,
-      origin,
-      options,
-      adsBlocked: true,
-      robots: {
-        url: `${origin}/robots.txt`,
-        status: robots.status,
-        source: robots.policy.source,
-        crawlDelaySeconds: robots.policy.crawlDelaySeconds,
-        ...(robots.error ? { error: robots.error } : {}),
-        ...(robots.certificateChain ? { certificateChain: robots.certificateChain } : {}),
-      },
-      ...(notFound ? { notFound } : {}),
-      ...(site || this.#pageHosts.size || this.#pageHostsLeft ? { site: { ...site, ...(this.#pageHosts.size ? { pageHosts: [...this.#pageHosts].map(([host, h]) => ({ host, ...h })).sort((a, b) => b.count - a.count) } : {}), ...(this.#pageHostsLeft ? { pageHostsLeft: this.#pageHostsLeft } : {}) } } : {}),
-      ...(addresses ? { addresses } : {}),
-      ...(language ? { language: { ...language, others: [...this.#otherLocales].sort() } } : {}),
-      ...(consent ? { consent } : {}),
-      stopReason,
-      ...(failed ? { failed } : {}),
-      ...(discovery.newAt.length ? { discovery: { newAt: discovery.newAt } } : {}),
-      pages: this.#pages,
-      edges: this.#edges,
-      notCrawled: this.#notCrawled,
-      ...(this.#notCrawledLeft ? { notCrawledLeft: this.#notCrawledLeft } : {}),
-      ...(this.#loginForms.length ? { loginForms: this.#loginForms } : {}),
-      ...(this.#providerSignIns.length ? { providerSignIns: this.#providerSignIns } : {}),
-    };
+    return crawlReport(startUrl, options, {
+      origin, robots, language, consent, stopReason, failed, site, otherHosts: this.#otherHosts, otherLanguages: this.#folders.others,
+      notFound: this.#notFound, addresses: this.#addresses, discovery: this.#discovery, pages: this.#pages, edges: this.#edges,
+      notCrawled: this.#notCrawled, loginForms: this.#signIns.loginForms, providerSignIns: this.#signIns.providerSignIns,
+    });
   }
 }

@@ -17,3 +17,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-011 | Tune-up pass 0 waits on Ghost-Core; Fable's answers | decision | `J-000-099.md` |
 | J-012 | docs/CUT.md written before the copy (TODO 1.1) | feature | `J-000-099.md` |
 | J-013 | The parent's crawl, findings and audit copied (TODO 1.2); the rulings on 1.1's questions | feature | `J-000-099.md` |
+| J-014 | `src/crawl/state.ts` split by what it does (TODO 1.2 finished); the ruling grade's answer on the largest-file metric | decision | `J-000-099.md` |

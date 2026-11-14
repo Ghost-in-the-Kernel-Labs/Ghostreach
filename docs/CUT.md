@@ -58,10 +58,10 @@ cut src/pages/portable-name.ts
 | From the parent's audit command, uncut (`--before`) | 411 | 46,190 |
 | From the five entries, uncut | 372 | 41,745 |
 | From the five entries, at the cut points (1.1's list) | 111 | 11,707 |
-| Copied at 1.2, cut inside (this list) | 109 | 10,185 |
+| Copied at 1.2, cut inside (this list) | 114 | 10,357 |
 
 The third row counts whole files; the last is what 1.2 left: four files the cut left unused were not copied ("Traced, not
-copied"), two were split by a pure move, and each file lost what its row says. By module after 1.2: crawl 55 files (5,115
+copied"), two were split by a pure move and one by what it does (`state.ts`, J-014), and each file lost what its row says. By module after 1.2: crawl 60 files (5,287
 lines), leaf 27 (2,439), findings 21 (2,110), audit 4 (427), project 2 (94). The flags come off at 1.3.
 
 ## The cut points: each import severed, and what replaces it
@@ -123,8 +123,9 @@ the crawl module), is a module change and waits on Ghost; it is listed under Que
   files ("Traced, not copied"). An export only the parent's own tests imported lost its `export` ("Exports dropped at 1.2").
 - The largest-source-file target (`docs/AGENT.md`, < 400 lines) is armed (378 before the copy), not unarmed as 1.1 wrote.
   `src/leaf/report.ts` and `src/crawl/page-step.ts` were split by a pure move (`src/leaf/report-page.ts`, re-exported by
-  `report.ts`; `src/crawl/page-load.ts`); `src/crawl/state.ts` (514 lines, one class) cannot be split by a pure move and is
-  recorded: the armed metric regresses, a question for Ghost (J-013, `docs/HANDOFF.md`).
+  `report.ts`; `src/crawl/page-load.ts`); `src/crawl/state.ts` (514 lines, one class) was split by what it does on the
+  ruling grade's answer (C-022, C-023; J-014): five parts of the class moved to sibling files it delegates to, its public
+  surface unchanged, 390 lines left. Not a pure move: its behaviour proof is owed to 1.6's golden.
 
 ## The files
 
@@ -213,7 +214,12 @@ at their defaults). A dash: nothing.
 | `src/crawl/second-look.ts` | `src/crawl/second-look.ts` | 145 | `markCredentialsIn` from `credentials-entry.ts` | --delay, --quick, --settle, --user-agent, session (`--login`) |
 | `src/crawl/settle.ts` | `src/crawl/settle.ts` | 89 | — | — |
 | `src/crawl/site-probe.ts` | `src/crawl/site-probe.ts` | 297 | — | --offline |
-| `src/crawl/state.ts` | `src/crawl/state.ts` | 521 | `snapshotNames` and `#snapshotFiles` (no page is saved); 514 lines after the cut, over the 400-line target: one class, no pure move splits it (recorded) | --all-languages, --offline |
+| `src/crawl/state.ts` | `src/crawl/state.ts` | 521 | `snapshotNames` and `#snapshotFiles` (no page is saved); five parts of its class moved to sibling files it delegates to, its public surface unchanged (next five rows; J-014) | --offline |
+| `src/crawl/state.ts` | `src/crawl/language-folders.ts` | (part) | its other languages (`#otherLocales`, `#localeFolders`, `#folderDecided`; the language-folder methods), bodies moved, the site's language passed in: the 400-line target (C-022, J-014) | --all-languages |
+| `src/crawl/state.ts` | `src/crawl/not-crawled.ts` | (part) | its addresses not crawled (`#notCrawled*`, `skip`, `leaveOver`), bodies moved, why the crawl stopped and the pages read passed in: the 400-line target | — |
+| `src/crawl/state.ts` | `src/crawl/other-hosts.ts` | (part) | its other hosts (`#pageHosts`, `#pageHostsLeft`, `noteOtherHost`'s body), the origin passed in; `offline` stays in `state.ts`: the 400-line target | — |
+| `src/crawl/state.ts` | `src/crawl/sign-ins.ts` | (part) | its sign-ins (`#loginForms`, `#providerSignIns`, `#providerStarts`, `addLoginForm`, `addProviderSignIns`), bodies moved: the 400-line target | — |
+| `src/crawl/state.ts` | `src/crawl/state-report.ts` | (part) | `report()`'s assembly, the fields in the parent's order, what it read of the class passed in: the 400-line target | — |
 | `src/crawl/trackers.ts` | `src/crawl/trackers.ts` | 45 | — | — |
 | `src/crawl/values.ts` | `src/crawl/values.ts` | 47 | `heldValue` and its four constants (it runs in the page, bundled into `CONTROLS_SCRIPT`) | — |
 | `src/group/address-key.ts` | `src/findings/address-key.ts` | 13 | — | — |
