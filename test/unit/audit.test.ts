@@ -43,7 +43,7 @@ describe('a link to another site shows its host (Ghost, 2026-11-05, G-455)', () 
 describe('the audit page', () => {
   it('names the site and the date, counts by severity, and gives each finding its why, fix and pages, escaped', () => {
     const html = auditHtml(broken, siteFindings(broken), new Date('2026-10-03T12:00:00Z'));
-    expect(html).toContain('<title>Site audit: shop.test</title>');
+    expect(html).toContain('<title>Site audit: shop.test | Suite Builder</title>');
     expect(html).toContain('<h1>Automated site review: shop.test</h1>');
     expect(html).toContain('2 pages of https://shop.test (and 1 address that answered an error), read on 2026-10-03 by Suite Builder\'s crawler in a real browser, logged out, as a first-time visitor sees them. Nothing was sent, bought or signed in to. This review reads the public site as it is served. It makes only the checks listed below (a check that did not run on this crawl is marked), and it does not test security.');
     expect(html).toContain('Major: lets a visitor or a search engine down now. Minor: worth fixing.'); // defined on the first screen, above the findings
@@ -102,10 +102,10 @@ describe('the audit never calls a result secure, clean or passed (item 107, G-63
       expect(text).not.toMatch(/nothing wrong/i);
       // Said once, above the findings, and the footer is the crawler's sentence only (restoring the old one fails).
       expect(text.split('Major: lets').length - 1).toBe(1);
-      expect(text).toContain("Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt.");
+      expect(text).toContain("<footer>Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.</footer>");
       expect(text).toContain('Info: said for the record; counts against nothing.');
     }
-    expect(AUDIT_FOOTER).toBe("Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt.");
+    expect(AUDIT_FOOTER).toBe("Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.");
   });
 
   it('the checker catches each banned word', () => {

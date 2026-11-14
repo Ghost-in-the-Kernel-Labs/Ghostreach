@@ -83,8 +83,17 @@ function auditNothing(report: CrawlReport): { title: string; body: string } {
   return { title: 'Nothing to report', body: [said, ...readLimits(report), `That is what an automated read of the public site can say${onlyReadings(report, CHECKS) ? '; it is not a security test.' : '.'}`].join(' ') };
 }
 
-/** The footer: the crawler names itself in its User-Agent, always (GR-003: no other is given). */
-export const AUDIT_FOOTER = "Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt.";
+/**
+ * The page's title (TODO 1.6): the parent's, with the name a prospect reads the review under, Suite Builder's, never this
+ * program's (ROADMAP §1). One of the two lines in which this page differs from the parent's (test/unit/audit-golden.test.ts).
+ */
+const auditTitle = (host: string): string => `Site audit: ${host} | Suite Builder`;
+
+/**
+ * The footer: the crawler names itself in its User-Agent, always (GR-003: no other is given); then who prepared the review, in the
+ * words of the PDF's cover (ROADMAP 2.4). The other line in which this page differs from the parent's (TODO 1.6).
+ */
+export const AUDIT_FOOTER = "Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.";
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -136,7 +145,7 @@ export function auditHtml(report: CrawlReport, findings: SiteFinding[], when = n
     : `<section class="finding none"><h2>${nothing.title}</h2><p>${esc(nothing.body)}</p></section>`;
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Site audit: ${esc(host)}</title>
+<title>${esc(auditTitle(host))}</title>
 <style>
 :root{--bg:#fbfaf7;--fg:#1d1d1b;--dim:#6b6a65;--line:#e4e1d8;--major:#b3261e;--minor:#9a6700;--ok:#1a7f37;--card:#fff}
 @media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#ecebe6;--dim:#a19f97;--line:#33322e;--major:#ff8a80;--minor:#e3b341;--ok:#56d364;--card:#1e1e1b}}

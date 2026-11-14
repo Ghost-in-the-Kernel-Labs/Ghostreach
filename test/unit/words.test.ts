@@ -63,11 +63,8 @@ describe('the free-scan sentence, stripped with --short', () => {
 
 // TODO 1.4: the parent's suite-words.test.ts (G-636) held a delivered suite's documents and the audit's files to the review
 // vocabulary. A suite is not Ghostreach's; its subject here is the audit page, as the made-up fixtures' crawls render it, every
-// finding in, read with the parent's own list (test/support/prospect-words.ts at a4c8045): a verdict on the site, a line that judges
-// its team, and "scan". The leaf's BANNED_PHRASES is stricter ("problem" alone): SITE-29's why says "a security problem", so the
-// page fails it; which gives way is a question for the ruling grade (J-017), and the PDF's text is held to the leaf's list later.
-const PARENT_BANNED = /what is wrong|wrong with|nothing wrong|\bdefects?\b|problems? found|the site is broken|nobody (?:looks after|checked)|thinking less/i;
-const SCAN = /\bscan/i;
+// finding in. Since 1.6 the page is held to the leaf's own list (BANNED_PHRASES), which the ruling grade (2026-11-14, J-019) made
+// the parent's where the leaf's was stricter: "problem found", not "problem" alone, so SITE-29's "a security problem" stands.
 describe('the audit page, in the review vocabulary (the parent\'s suite-words, G-636)', () => {
   const golden = new URL('../golden/', import.meta.url);
   const crawls = fs.readdirSync(golden).filter((n) => n.endsWith('.crawl.json'));
@@ -79,14 +76,21 @@ describe('the audit page, in the review vocabulary (the parent\'s suite-words, G
     expect(crawls.length).toBeGreaterThanOrEqual(3);
     for (const name of crawls) expect(page(name), name).toContain('<span class="code">SITE-');
   });
-  it.each(crawls)('%s: the audit page says nothing of what is wrong, a defect, or the team, and never "scan"', (name) => {
-    const html = page(name);
-    expect(PARENT_BANNED.exec(html)?.[0]).toBeUndefined();
-    expect(SCAN.exec(html)?.[0]).toBeUndefined();
+  it.each(crawls)('%s: the audit page carries no banned phrase', (name) => {
+    expect(bannedIn(page(name))).toEqual([]);
   });
   it('the check finds each where it is (planted)', () => {
-    for (const word of ['What is wrong', 'wrong with the site', 'nothing wrong', 'defect', 'Defects', '3 problems found', 'the site is broken', 'nobody looks after it', 'nobody checked', 'thinking less of it']) expect(PARENT_BANNED.test(page(crawls[0]).replace('</h1>', ` ${word}</h1>`)), word).toBe(true);
-    expect(SCAN.test(page(crawls[0]).replace('</h1>', ' a short scan</h1>'))).toBe(true);
-    expect(PARENT_BANNED.test('a wrong username or password; When something goes wrong; 2 broken links; nothing to report; a finding about the site')).toBe(false);
+    for (const word of ['What is wrong', 'wrong with the site', 'nothing wrong', 'defect', 'Defects', '3 problems found', 'a problem found', 'the site is broken', 'nobody looks after it', 'nobody checked', 'thinking less of it', 'a short scan']) expect(bannedIn(page(crawls[0]).replace('</h1>', ` ${word}</h1>`)), word).not.toEqual([]);
+    expect(bannedIn('a wrong username or password; When something goes wrong; 2 broken links; nothing to report; a finding about the site')).toEqual([]);
+  });
+});
+
+describe('"problem" banned only as a count of them (the ruling grade, 2026-11-14)', () => {
+  it('passes "a security problem", as SITE-29\'s why says it', () => {
+    expect(bannedIn('Researchers who find a security problem look for /.well-known/security.txt to know whom to tell (RFC 9116).')).toEqual([]);
+  });
+  it('bans "3 problems found" and "a problem found"', () => {
+    expect(bannedIn('3 problems found')).toEqual(['problems found']);
+    expect(bannedIn('a problem found on the home page')).toEqual(['problem found']);
   });
 });

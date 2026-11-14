@@ -16,15 +16,11 @@ question a later item depends on is copied into that item's text, so the item re
 
 ## Phase 1: the audit, cut from the parent
 
-### 1.6 The audit golden against the parent
-
-Check: the parent's `AUDIT.html` for the fixture and this program's differ only in the title line and the footer; recorded once with `UPDATE_GOLDEN=1`, read by hand.
-
-From 1.5 (J-018): `main(argv, data)` in `src/cli/main.ts` runs one review into `<data>/<host>-<date>/` (`src/project/review.ts`; the data folder defaults to `~/Ghostreach`, a test names its own); `test/crawl/ghostreach.spec.ts` runs it on the fixture in real Chromium (about 45 s at the crawl's own pace, no flag) and holds `findings.json` to `test/golden/fixture-site.findings.json`, the parent's own output. The parent's `AUDIT.html` can be made the same way, in the scratchpad and never in its tree: `scripts/parent-findings.mjs`'s hook runs the parent's TypeScript under Node's type stripping (`auditHtml` from its `src/project/audit.ts` over its `fixture-site.crawl.json`, with a fixed date). The audit page's date is the day the crawl started, UTC (`toISOString`). Chromium is at `/opt/pw-browsers` (`PLAYWRIGHT_BROWSERS_PATH`), build 1243, the one Playwright 1.63.0 asks for: no `playwright install`, no `executablePath`. Nothing runs `ghostreach` outside a test yet (no `bin`, no build step: the code is TypeScript with `.js` imports); 5.1's packaging brings the runnable command.
-
 ### 1.7 The resync recipe
 
 Check: `docs/CUT.md`'s recipe run once as a dry run against `a4c8045..HEAD` of the parent, its moves listed.
+
+From 1.6 (J-019): "rerun 1.5 and 1.6" is three runs: `scripts/parent-findings.mjs` (findings, and `audit` for the page) from the new commit's archive, or `UPDATE_GOLDEN=1 npx vitest run --project unit test/unit/audit-golden.test.ts` for the page (it archives the parent at the pin the test names, `PIN`, which the bump changes); then the unit project and `npx playwright test`. The allowed differences between the parent's page and this program's are named in `test/support/audit-golden.ts` (`ALLOWED`); a resync that changes a parent sentence they quote changes them there, read by hand.
 
 ### 1.8 Tune-up pass 1
 

@@ -323,7 +323,7 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
 - `LOOK_INTRO` (`src/audit/links-to-look.ts`) loses its last sentence, "A link leaves this list only when the team lists it,
   with the status it answers, in the suite's expected-links block." It names a suite (GR-004) and a block Ghostreach has
   no way to fill. Deleted, not reworded (the ruling grade, J-013). It is the one allowed difference, beside the title line
-  and the footer, between the parent's `AUDIT.html` and this program's (1.6's golden).
+  and the footer, between the parent's `AUDIT.html` for the fixture and this program's (1.6's golden, `test/support/audit-golden.ts`).
 
 ## Where the copy differs from the parent's behaviour
 
@@ -497,8 +497,25 @@ The parent's fixture site, copied as a test helper: `test/fixture-site/server.ts
 for the fixture are `test/golden/fixture-site.findings.json`, written by the parent's own code at `a4c8045` (its `siteFindings`
 over its own `fixture-site.crawl.json`), never this program's: `scripts/parent-findings.mjs` (its header has the two commands);
 the spec holds this program's `findings.json`, the fixture's port made `http://fixture.test`, to it byte for byte. Not `serve.ts` (`npm run serve:fixture`), which also starts the sign-in site
-(`login.ts`, `identity.ts`): a review reads the public site. The parent's `AUDIT.html` for the fixture, the golden 1.6 compares
-to, is made once by the parent's own build in a scratch folder, never in its tree.
+(`login.ts`, `identity.ts`): a review reads the public site.
+
+## The audit golden (1.6)
+
+The parent's `AUDIT.html` for its fixture crawl is `test/golden/fixture-site.AUDIT.html`, written by the parent's own code at
+`a4c8045` (its `auditHtml` with a bare audit's defaults, over its own `fixture-site.crawl.json`, dated 2026-11-14) through
+`scripts/parent-findings.mjs <dir> audit`, from an archive in a scratch folder, never in its tree; the parent's archive carries no
+`node_modules`, so the script's hook resolves a package (the audit's imports reach `playwright`) to this repository's copy.
+`UPDATE_GOLDEN=1 npx vitest run --project unit test/unit/audit-golden.test.ts` records it again that way (the parent at
+`../suite-builder`, or `SUITE_BUILDER`). The allowed differences are named once, in `test/support/audit-golden.ts` (`ALLOWED`): the
+title line, the footer, and `LOOK_INTRO`'s last sentence (the named loss above; SITE-35's parenthesis the fixture never reaches).
+Two tests hold the page to it: `test/unit/audit-golden.test.ts` over the parent's crawl, and `test/crawl/ghostreach.spec.ts` over a
+live crawl of the fixture by `ghostreach <site>`, normalised as the parent normalises its fixture crawl (the origin, port included,
+written `http://fixture.test` in the crawl; the page rendered from it on the golden day). The page is not normalised: the audit asks
+the host's shape (SITE-31 is not asked of an address in numbers), so `127.0.0.1` replaced in the page would differ. The live crawl
+file differs from the parent's golden crawl only in fields a cut or the bare defaults explain (each page's `roleForms`, cut at 1.2;
+`options.include` and `options.exclude`, stripped at 1.3; `options.delayMs` 1000 and each page's `settled` and `late`, the bare
+audit's pace, settle and second look where the parent's crawl spec ran with none); every other field, and the order of every key,
+is the parent's (a structural diff, J-019).
 
 ## The resync recipe
 
