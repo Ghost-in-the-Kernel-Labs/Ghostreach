@@ -6,7 +6,7 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 Stamped from Ghost-Core today; 0.1 (the ghost) and 0.2 (the stack) landed through the gate (J-002). The leaf
 holds the prospect-visible vocabulary (`src/leaf/words.ts`) and the CLI its one command; nothing crawls yet.
-0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. 0.4 landed (J-004): the review contract REV-01 to REV-09 and seven modules. GR-010 (J-005): three kinds of gate, fast, medium and the sweep, as Suite Builder's. Next: 0.5, the founding decisions: GR-002, GR-004, GR-006 and GR-007 stand `proposed` in `theGhost.md` for Ghost to confirm, amend or refuse; GR-003, GR-005, GR-008 and GR-009 are in force on his words.
+0.3 landed (J-003): `docs/ROADMAP.md` and `TODO.md` hold the plan through Phase 6, with seven questions for Ghost in Phase W. 0.4 landed (J-004): the review contract REV-01 to REV-09 and seven modules. GR-010 (J-005): three kinds of gate, fast, medium and the sweep, as Suite Builder's; the sweep runs nightly at 03:23 Central as the Claude scheduled task "Ghostreach nightly sweep" (`docs/MUTATION.md`, "The sweep"). Next: 0.5, the founding decisions: GR-002, GR-004, GR-006 and GR-007 stand `proposed` in `theGhost.md` for Ghost to confirm, amend or refuse; GR-003, GR-005, GR-008 and GR-009 are in force on his words.
 
 ## For Ghost: waiting on you
 

@@ -29,3 +29,21 @@ the other scripts have no unit tests of their own until the project writes them.
 ## Survivors
 
 None yet.
+
+## The sweep (GR-010)
+
+The slow overnight run: `scripts/sweep.sh`, the cold full gate (`GHOST_COLD=1 scripts/gate.sh`: every cache off, so every
+mutant of every file is tried), its log under `build/sweep/`, never committed. Not a gate: nothing lands or ships on it, and
+what it finds is fixed forward, never a reason to undo a landing (C-040). A Claude scheduled task named "Ghostreach nightly
+sweep" opens a fresh session on this repository at 03:23 America/Chicago each night and runs it (never a GitHub scheduled
+trigger: C-032). Where its brief and this section differ, this section wins.
+
+The sweep session: setup from `origin/main` on a branch `sweep-<date>`; `scripts/sweep.sh`; on a passed verdict, report and
+stop. Otherwise fix what it found there and then, one attempt each: a surviving mutant gets a unit test that kills it
+(preferred) or a line in this file; any other red step is fixed by the step that failed. It never weakens a test, raises a
+limit or a metric target, edits a decision's text, touches an auto-execution surface (`docs/SUPPLY-CHAIN.md`) or a
+setting, adds or updates a dependency, or runs anything against a real website. What it cannot settle goes to
+`docs/HANDOFF.md` under "For Ghost". It lands through `scripts/gate.sh --medium` and `scripts/commit.sh` with the subject
+`sweep: <files>: <what>`, then `bash scripts/ship.sh`; a due tune-up stops it (the work stays on its branch, pushed by
+`scripts/save.sh`, and the summary says so). Its last message, under ten lines: the verdict line, what was killed or
+explained, what shipped, the cold gate's minutes, any question for Ghost.
