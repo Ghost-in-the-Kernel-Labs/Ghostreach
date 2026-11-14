@@ -100,6 +100,9 @@ bare `suite audit <site>` reports reads anything severed here: the readers cut w
 | `src/project/audit.ts`, `audit-checked.ts`, `page-counts.ts`; `src/model/links-to-look.ts` | audit | `src/audit/` |
 | `src/project/crawl.ts`, `text-file.ts` | project | `src/project/` |
 
+A parent's path kept as data, not as an import, is left as the parent wrote it: the check catalogue's `file` cells
+(`src/findings/check-catalogue.ts`) say `src/group/<name>.ts`, where the file here is `src/findings/<name>.ts`.
+
 The leaf takes the thresholds (`docs/CONTRACT.md`: a threshold lives in the leaf and nowhere else), the report's types every
 module reads, and the page-address helpers the crawl, the findings and the audit all call. With that, the closure fits
 `docs/modules.json` but for three imports of the parent's audit, each cut at 1.2 without a module change:

@@ -47,3 +47,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-041 | Queue this site (TODO 4.10) | decision | `J-000-099.md` |
 | J-042 | Attribution (TODO 4.11) | decision | `J-000-099.md` |
 | J-043 | The local page's forms were refused in a real browser (found by tune-up pass 4's security read) | failure-missed | `J-000-099.md` |
+| J-044 | Tune-up pass 4 (TODO 4.12), saved for the reviewer; Core still at the stamp; a read of `src/project/` and of the local server | measurement | `J-000-099.md` |
