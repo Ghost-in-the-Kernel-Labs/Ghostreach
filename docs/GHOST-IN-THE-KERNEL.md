@@ -24,26 +24,35 @@ the system should have enough structure to expose a misunderstanding when one is
 
 ## This project's ghost
 
-<!-- STAMP: replace this section. Name the loss this project is built against, in a paragraph,
-and the mechanisms by which the kernel remembers it, as a list that cites the contract and the
-decisions. The parents' sections are the examples; each is the philosophy pointed at a different
-loss. -->
+Ghostreach is built against the loss of the reason a site was worth a call. A salesperson will run
+dozens of reviews a week and hand a prospect one PDF; weeks later the prospect's developer will
+open that PDF and check the first finding, and the salesperson will not remember which review it
+was, which crawl made it, or why a page was called slow. If the finding is wrong, or cannot be
+traced to the page and the request that produced it, the sale is lost and so is the next one that
+prospect would have referred. The tool's job is to make every sentence in the PDF one the parent's
+crawler actually observed, and to keep the path from the sentence back to the observation.
 
-Every project built this way has a loss of its own, and this section names it. The parents:
+The kernel remembers that in these ways:
 
-- **Suite Builder**: a test suite written by a tool whose reasons for each test would be gone by
-  the time the suite failed; so every generated test says where it came from, and the Suite IR
-  holds every decision a suite needs as plain data read back from the output.
-- **Katana**: a COBOL program whose authors have been gone for decades; so what the code does and
-  what it means are two artifacts (the Semantic IR and the Intent IR), and a proof ledger links
-  them, hash-chained, so a person's confirmation survives a rebuild.
-- **Employee Evaluator**: turnover, the ordinary loss, in a product that measures the philosophy
-  in other people's code; so every score is traced to a fact with evidence and a confidence.
-- **Neon Rain**: the forgotten search, a loss that happens in weeks to the person who caused it:
-  how many configurations were tried before this one looked good; so the trials file is
-  append-only and its count deflates every reported number.
-
-A project whose section is still this list has not yet said what it is for.
+- **The parent's audit is the audit.** The findings, their order and their words are Suite
+  Builder's at one pinned commit (GR-002, `docs/CUT.md`); this program adds no finding of its own,
+  so a prospect who later buys a suite reads the same review in both. A resync is a numbered item,
+  never a drift.
+- **No flag, so no two reviews differ by what was typed** (GR-003, `test/unit/no-flags.test.ts`).
+  Every review is the full review; a salesperson cannot produce a softer or harsher one.
+- **No suite** (GR-004, `docs/modules.json`): the review is the door, the suite is the sale, and
+  the door never pretends to be the house.
+- **Every review keeps its crawl.** The data folder holds the crawl, the findings and the summary
+  beside the PDF, so a finding in a prospect's hands can be traced to the page and the request that
+  produced it (the contract's first invariants, `docs/CONTRACT.md`).
+- **A measurement under load says so** (GR-008): a slow-page finding made on a laptop running five
+  reviews at once is either corrected against a reference or withheld with a sentence, never
+  handed over as fact.
+- **Fetched text is data** (GR-005): a crawled page or a job posting is rendered, never followed
+  and never obeyed, because the program reads sites chosen by a search and not only sites a person
+  named.
+- **The prospect sees Suite Builder's words** (P-08, `docs/WORDS.md`): *review*, *finding*,
+  *major*, *minor*, *Nothing to report*; never a verdict on the site or its team.
 
 ## What it asks of a project's own code
 
