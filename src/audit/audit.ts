@@ -94,7 +94,7 @@ const auditTitle = (host: string): string => `Site audit: ${host} | Suite Builde
  * The footer: the crawler names itself in its User-Agent, always (GR-003: no other is given); then who prepared the review, in the
  * words of the PDF's cover (ROADMAP 2.4). The other line in which this page differs from the parent's (TODO 1.6).
  */
-export const AUDIT_FOOTER = `Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. ${BYLINE}.`;
+export const AUDIT_FOOTER = `Read by the forecursor crawler, which identifies itself in its User-Agent and obeys robots.txt. ${BYLINE}.`;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 

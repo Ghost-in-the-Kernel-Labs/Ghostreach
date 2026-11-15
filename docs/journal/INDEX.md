@@ -60,3 +60,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-054 | Ghostreach as a service behind an API | direction | `J-000-099.md` |
 | J-055 | Ghost: the crawler goes by forecursor | direction | `J-000-099.md` |
 | J-056 | The crawler is forecursor: user agent, robots.txt, probe, globals, crawl file | feature | `J-000-099.md` |
+| J-057 | The footer names the forecursor crawler | direction | `J-000-099.md` |

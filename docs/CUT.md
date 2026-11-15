@@ -389,6 +389,9 @@ at all, cut: the rows of `src/crawl/crawler.ts`, `report-held.ts` and `report-re
   and their readers, a pure rename; the crawl file's `tool` written `forecursor`, read as `forecursor` or `suite-builder` (the
   parent's golden crawls). Neither the page nor the findings name any of these, so 1.5's and 1.6's goldens are unchanged. The
   resync keeps all of it: a bundle taken `whole` has its globals renamed again (step 5).
+- The audit footer (Ghost, 2026-11-15, J-057): "Read by the forecursor crawler, which identifies itself in its User-Agent
+  and obeys robots.txt." where the parent says "Suite Builder's crawler", so the footer names what the User-Agent says
+  (GR-017). `AUDIT_FOOTER` (`src/audit/audit.ts`); allowed in 1.6's golden beside the byline (`test/support/audit-golden.ts`).
 
 ## The flags stripped
 

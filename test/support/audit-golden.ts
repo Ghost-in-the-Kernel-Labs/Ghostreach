@@ -21,7 +21,7 @@ export const ALLOWED: ReadonlyArray<{ what: string; ours: string; parent: string
   { what: 'the title line', ours: '<title>Site audit: fixture.test | Suite Builder</title>', parent: '<title>Site audit: fixture.test</title>' },
   {
     what: 'the footer',
-    ours: "<footer>Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.</footer>",
+    ours: "<footer>Read by the forecursor crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.</footer>",
     parent: "<footer>Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt.</footer>",
   },
   {

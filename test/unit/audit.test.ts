@@ -102,10 +102,10 @@ describe('the audit never calls a result secure, clean or passed (item 107, G-63
       expect(text).not.toMatch(/nothing wrong/i);
       // Said once, above the findings, and the footer is the crawler's sentence only (restoring the old one fails).
       expect(text.split('Major: lets').length - 1).toBe(1);
-      expect(text).toContain("<footer>Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.</footer>");
+      expect(text).toContain("<footer>Read by the forecursor crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.</footer>");
       expect(text).toContain('Info: said for the record; counts against nothing.');
     }
-    expect(AUDIT_FOOTER).toBe("Read by Suite Builder's crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.");
+    expect(AUDIT_FOOTER).toBe("Read by the forecursor crawler, which identifies itself in its User-Agent and obeys robots.txt. Prepared with Suite Builder, Ghost in the Kernel Labs.");
   });
 
   it('the checker catches each banned word', () => {
