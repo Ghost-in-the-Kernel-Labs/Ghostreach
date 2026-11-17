@@ -1,0 +1,39 @@
+# Ghostreach as a service (GR-015, J-058): installed by deploy/setup.sh into /etc/systemd/system/.
+# It listens on 127.0.0.1 alone; cloudflared on the same server reaches it there, and the firewall lets only SSH in.
+[Unit]
+Description=Ghostreach site review service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ghostreach
+Group=ghostreach
+WorkingDirectory=/var/lib/ghostreach
+Environment=HOME=/var/lib/ghostreach
+Environment=PLAYWRIGHT_BROWSERS_PATH=/opt/ghostreach-browsers
+Environment=NODE_ENV=production
+# Root-owned, mode 0600: the bearer token, once the API item names its variable. Never echoed by anything here.
+EnvironmentFile=/etc/ghostreach/env
+# TODO(API): the API item replaces this line with the service's command, listening on 127.0.0.1:8787 alone
+# (the port is a proposal; deploy/README.md's config.yml names the same one). Until then the unit is enabled, not started.
+ExecStart=/usr/bin/false
+Restart=on-failure
+RestartSec=5
+
+# Hardening. No MemoryDenyWriteExecute: Node's and Chromium's JIT need writable executable memory.
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/ghostreach
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+# A 4 GB server, three reviews at once in one shared Chromium: about 3 GB for the service, 1 GB for the system and cloudflared.
+MemoryHigh=2560M
+MemoryMax=3G
+
+[Install]
+WantedBy=multi-user.target

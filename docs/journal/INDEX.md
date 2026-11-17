@@ -61,3 +61,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-055 | Ghost: the crawler goes by forecursor | direction | `J-000-099.md` |
 | J-056 | The crawler is forecursor: user agent, robots.txt, probe, globals, crawl file | feature | `J-000-099.md` |
 | J-057 | The footer names the forecursor crawler | direction | `J-000-099.md` |
+| J-058 | The server's setup script and service unit, while the API contract waits | feature | `J-000-099.md` |
