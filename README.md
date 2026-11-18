@@ -24,6 +24,28 @@ Ghostreach runs on Windows and Linux; a Mac is not supported (it may work).
    is still missing, and a first review downloads it too.)
 4. Check: `ghostreach doctor` says whether Node.js and the browser are ready, each with the command that fixes it.
 
-Then `ghostreach www.example.com` reviews a site and prints where its PDF is; `ghostreach serve` opens the reviews,
-the queue and the lead finder in your browser. Reviews are kept in the `Ghostreach` folder of your home folder.
+## Use
+
+Type `ghostreach` and your browser opens the Ghostreach page: the reviews, the queue and the lead finder. If the page is
+already running, `ghostreach` opens it again instead of starting a second one. Keep that terminal window open while you
+work; Ctrl+C in it stops the page.
+
+    ghostreach                 Open the Ghostreach page in your browser (starts it if needed)
+    ghostreach <site>          Review one website and write its PDF, for example: ghostreach www.example.com
+    ghostreach doctor          Check this computer: Node.js, the browser, how many reviews at once
+    ghostreach serve           Same as ghostreach
+    ghostreach --help          This list (ghostreach help too)
+
+Reviews are kept in the `Ghostreach` folder of your home folder.
+
+## From a copy of this folder
+
+In a copy of Ghostreach's own folder (not the installed package), the folder holds two small launchers that build
+Ghostreach the first time (they say so; it takes a minute) and then run it:
+
+- Windows, in Command Prompt: go to the folder and type `ghostreach` (in PowerShell, `.\ghostreach`).
+- Linux: go to the folder and type `./ghostreach`. The shell does not look in the current folder, so the bare word
+  `ghostreach` works there only once it is linked.
+
+To make the bare word `ghostreach` work in any folder, run `npm link` once in this folder (or `npm install -g .`).
 

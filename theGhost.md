@@ -490,7 +490,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `src/cli/main.ts`, `test/unit/main.test.ts`, `test/unit/no-flags.test.ts` (TODO 1.3), `docs/CONTRACT.md` REV-05.
 - **Source:** Ghost, in chat, 2026-11-13.
 - **Status:** in force
-- **See also:** GR-008
+- **See also:** GR-008, GR-018 (superseding the command words in part)
 - **subject:** command line
 
 ### GR-004: no suite
@@ -620,3 +620,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **See also:** GR-003, GR-015
 - **subject:** crawl
 
+### GR-018: `ghostreach` alone opens the page; `--help` lists every command; `serve` and `doctor` are commands
+- **Decision:** Typed alone, `ghostreach` starts the local page and opens the browser at it; when a page already serves the same data folder (a note, `page.json` in the data folder, naming its address and process, believed only when the process is alive and the address answers with the page), it opens the browser at that one and exits 0, and a stale note is replaced. `ghostreach serve` is the same command; `ghostreach doctor` checks the computer; `ghostreach <site>` reviews one site, the same full audit as before (REV-05's reason stands: two reviews of one crawl are the same review); `ghostreach --help` (or the word `help`) lists every command in plain words, where the reviews are saved and how the page stops. Still no option beginning `--` but `--help`. From a copy of the source, `ghostreach.cmd` (Windows) and `./ghostreach` (Linux) at the root build the program the first time, saying so, and run it; neither is packed.
+- **Why:** Ghost, 2026-11-18, in chat: "Ok in the meantime, lets make ghostreach more cli friendly. Ideally, when someone navigates to the ghostreach folder via cli, they should be able to type ghostreach --help and be able to see all available commands to ghostreach. Simply typing ghostreach should start the service, and it should open up a browser window pointed at the service." One page per data folder, the agent's reading of "start the service": a second page over the same `queue.json` would run its reviews twice (J-059).
+- **Held by:** `src/cli/main.ts`, `src/project/serve.ts` (`runningPage`, `showPage`), `test/unit/main.test.ts`, `test/unit/serve.test.ts`, `test/unit/no-flags.test.ts`, `ghostreach`, `ghostreach.cmd`, `test/test_launchers.py`, `README.md`, `docs/SALES-GUIDE.md`.
+- **Source:** Ghost, in chat, 2026-11-18 (J-059). The agent's parts, for Ghost to confirm (J-060): the note's name and its check; the word `help` beside `--help`; the help's wording; the launchers building on first use with `npm ci` from the lockfile.
+- **Status:** in force
+- **subject:** command line
+- **See also:** GR-003, GR-008
+- **Supersedes:** GR-003, in part: its title's "`ghostreach <site>` and `--help`, nothing else" and its "The command takes a site and nothing else" (the command takes a site, one of the words `serve`, `doctor`, `help`, or nothing; and `--help`). The rest stands (no flag, every behaviour fixed, the settings file), so its Status stays `in force` and its See also names GR-018.

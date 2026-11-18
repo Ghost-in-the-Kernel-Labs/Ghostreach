@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parse, type Values } from '../../src/cli/main.js';
 
-// No flag (GR-003, P-15, TODO 1.3): the parser takes the site and `--help`, and refuses every option beside, the parent's
+// No flag (GR-003, GR-018, P-15, TODO 1.3): the parser takes the site, its command words and `--help`, and refuses every option beside, the parent's
 // stripped ones (docs/CUT.md, "The flags stripped") first among them.
 const ROOT = new URL('../../', import.meta.url);
 const read = (relative: string): string => fs.readFileSync(new URL(relative, ROOT), 'utf8');
@@ -35,8 +35,9 @@ describe('the parser accepts no option but --help (GR-003)', () => {
     expect(parse(['example.com'])).toEqual(values);
     expect(Object.keys(parse(['https://example.com/']) as Values)).toEqual(['site']);
   });
-  it('refuses no site, a blank one and a second argument', () => {
-    expect([[], [''], ['  '], ['example.com', 'example.org']].filter((argv) => parse(argv) !== null)).toEqual([]);
+  it('refuses a blank site and a second argument; nothing at all is the page (GR-018)', () => {
+    expect([[''], ['  '], ['example.com', 'example.org']].filter((argv) => parse(argv) !== null)).toEqual([]);
+    expect(parse([])).toBe('serve');
   });
   it('no file under src/ parses options with node:util parseArgs', () => {
     expect(sources.filter((f) => /\bparseArgs\b/.test(read(f)))).toEqual([]);

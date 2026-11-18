@@ -13,6 +13,9 @@ import type { CompanyNotes } from './leads.js';
 import { esc } from './html.js';
 import { unreadableLine } from './kept.js';
 
+/** The page's title, as served: `runningPage` (serve.ts) knows a running page by it. */
+export const PAGE_TITLE = '<title>Ghostreach: the reviews</title>';
+
 /** A review on the page: the site, the day, and the path its PDF is served at. */
 export interface ListedReview {
   host: string;
@@ -91,7 +94,7 @@ export function reviewsPage(view: View, said?: Said): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-${busy ? '<meta http-equiv="refresh" content="5; url=/">\n' : ''}<title>Ghostreach: the reviews</title>
+${busy ? '<meta http-equiv="refresh" content="5; url=/">\n' : ''}${PAGE_TITLE}
 <style>
 body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 40rem; padding: 0 1rem; color: #1b1b1b; background: #fafaf7; }
 ul { list-style: none; padding: 0; }

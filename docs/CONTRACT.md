@@ -39,7 +39,7 @@ salesperson's own screens are not the prospect's and may count findings. Held by
 
 `ghostreach <site>` takes a site and nothing else (`--help` excepted); there is no option that makes
 a review shorter, longer, softer or harsher, so two reviews of one crawl are the same review. Held by
-`test/unit/no-flags.test.ts` (Phase 1) and GR-003.
+`test/unit/no-flags.test.ts` (Phase 1), GR-003 and GR-018 (the command words).
 
 ## REV-06 Every review keeps its crawl
 

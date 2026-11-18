@@ -62,3 +62,5 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-056 | The crawler is forecursor: user agent, robots.txt, probe, globals, crawl file | feature | `J-000-099.md` |
 | J-057 | The footer names the forecursor crawler | direction | `J-000-099.md` |
 | J-058 | The server's setup script and service unit, while the API contract waits | feature | `J-000-099.md` |
+| J-059 | `ghostreach` alone opens the page; `--help` lists every command | direction | `J-000-099.md` |
+| J-060 | The command line: the page by default, one per data folder, a help that lists every command, launchers for a copy of the source | feature | `J-000-099.md` |

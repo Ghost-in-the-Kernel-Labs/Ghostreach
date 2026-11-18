@@ -1,9 +1,10 @@
 /**
- * `ghostreach serve` (TODO 3.2): the local page fetched from 127.0.0.1, listing the reviews in a data folder of the test's own and
+ * `ghostreach` and `ghostreach serve` (TODO 3.2, GR-018): the local page, one per data folder; the local page fetched from 127.0.0.1, listing the reviews in a data folder of the test's own and
  * linking each PDF; bound to the loopback only; no link or text naming AUDIT.html or a review's JSON file (TODO 2.5); every
  * path out of the data folder, and every file of a review but its PDF, refused; names from the folder written as text (P-16).
  */
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';
 import { networkInterfaces, tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
 import { readQueue, type ReviewRun } from '../../src/project/queue.js';
 import { pdfName } from '../../src/project/review.js';
-import { LOOPBACK, listReviews, opener, servePage, type ServedPage } from '../../src/project/serve.js';
+import { LOOPBACK, listReviews, opener, pageFile, servePage, type ServedPage } from '../../src/project/serve.js';
 
 /** The files of a review's folder the program keeps for its own use (REV-06), never named to the salesperson (TODO 2.5). */
 const UNNAMED = /AUDIT\.html|findings\.json|summary\.json|\.crawl\.json|\.json\b/;
@@ -167,8 +168,9 @@ describe('ghostreach serve: the local page (TODO 3.2)', () => {
 });
 
 describe('the command word and the opener', () => {
-  it('serve is a word, alone; no option beginning -- comes with it (GR-003)', () => {
+  it('serve is a word, alone, and so is nothing at all (GR-018); no option beginning -- comes with it (GR-003)', () => {
     expect(parse(['serve'])).toBe('serve');
+    expect(parse([])).toBe('serve');
     expect([['serve', 'example.com'], ['example.com', 'serve'], ['--serve'], ['serve', '--port=8080']].filter((argv) => parse(argv) !== null)).toEqual([]);
   });
 
@@ -177,12 +179,71 @@ describe('the command word and the opener', () => {
     const lines: string[] = [];
     vi.spyOn(console, 'log').mockImplementation((line: string) => void lines.push(line));
     let served: ServedPage | undefined;
-    const running = main(['serve'], data, (p) => void (served = p));
+    const running = main(['serve'], data, (_url, p) => void (served = p));
     await vi.waitFor(() => expect(served).toBeDefined());
-    expect(lines).toEqual([`The reviews are at ${served!.url} (this computer only). Ctrl-C stops the page.`]);
+    expect(lines).toEqual([`The reviews are at ${served!.url} (this computer only). Ctrl+C stops the page.`]);
     expect(await (await fetch(served!.url)).text()).toContain('example.com%20site%20review.pdf');
     await served!.close();
     expect(await running).toBe(0);
+    // The note goes with the page that wrote it.
+    expect(existsSync(pageFile(data))).toBe(false);
+  });
+
+  it('ghostreach alone starts the page, notes it in the data folder and opens the browser at it (GR-018)', async () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const opened: string[] = [];
+    let served: ServedPage | undefined;
+    const running = main([], data, (url, p) => {
+      opened.push(url);
+      served = p;
+    });
+    await vi.waitFor(() => expect(served).toBeDefined());
+    expect(opened).toEqual([served!.url]);
+    expect(JSON.parse(readFileSync(pageFile(data), 'utf8'))).toEqual({ url: served!.url, pid: process.pid });
+    await served!.close();
+    expect(await running).toBe(0);
+  });
+
+  it('a second ghostreach opens the running page and starts no second one over the same queue', async () => {
+    const lines: string[] = [];
+    vi.spyOn(console, 'log').mockImplementation((line: string) => void lines.push(line));
+    let first: ServedPage | undefined;
+    const running = main([], data, (_url, p) => void (first = p));
+    await vi.waitFor(() => expect(first).toBeDefined());
+    const opened: [string, ServedPage | undefined][] = [];
+    expect(await main([], data, (url, p) => void opened.push([url, p]))).toBe(0);
+    // The same address, and no page of its own: the second returned at once, so it serves nothing.
+    expect(opened).toEqual([[first!.url, undefined]]);
+    expect(lines.at(-1)).toBe(`Ghostreach is already open at ${first!.url} (this computer only); your browser shows it again.`);
+    expect(await main(['serve'], data, (url) => void opened.push([url, undefined]))).toBe(0);
+    expect(opened.map(([url]) => url)).toEqual([first!.url, first!.url]);
+    await first!.close();
+    expect(await running).toBe(0);
+  });
+
+  it("a stale note (its process gone, its page silent, or not this program's address) is replaced by the new page", async () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    // A port nothing listens on: a page started and stopped.
+    const gone = await servePage(join(root, 'elsewhere'), async () => null);
+    const silent = gone.url;
+    await gone.close();
+    // A process that is surely gone: a child that has exited.
+    const exited = spawnSync(process.execPath, ['-e', '0']).pid;
+    const stale = [
+      { url: silent, pid: process.pid },
+      { url: 'http://127.0.0.1:1/', pid: exited },
+      { url: 'http://example.com/', pid: process.pid },
+      'not json',
+    ];
+    for (const note of stale) {
+      writeFileSync(pageFile(data), typeof note === 'string' ? note : JSON.stringify(note));
+      let served: ServedPage | undefined;
+      const running = main([], data, (_url, p) => void (served = p));
+      await vi.waitFor(() => expect(served).toBeDefined());
+      expect(JSON.parse(readFileSync(pageFile(data), 'utf8'))).toEqual({ url: served!.url, pid: process.pid });
+      await served!.close();
+      expect(await running).toBe(0);
+    }
   });
 
   it("opens the address with the platform's own opener, the address one argument and no shell", () => {

@@ -27,9 +27,10 @@ If a step prints an error you do not understand, copy the whole message to Ghost
 
 ## 2. Open the page
 
-Each time you work, open a terminal and type `ghostreach serve`. Your browser opens a page, "The reviews", that only
-your computer can see. Keep the terminal open while you work: closing it, or pressing Ctrl-C in it, stops the page.
-A review that was running when it stopped starts again from the beginning the next time.
+Each time you work, open a terminal and type `ghostreach`. Your browser opens a page, "The reviews", that only
+your computer can see. Keep the terminal open while you work: closing it, or pressing Ctrl+C in it, stops the page.
+A review that was running when it stopped starts again from the beginning the next time. If the page is already
+running, typing `ghostreach` again just shows it in your browser. `ghostreach --help` lists every command.
 
 The page has four parts, top to bottom: **Sites to review** (the queue), **Done** (the finished reviews),
 **Is this company hiring QA?** and **Who is hiring QA?** (the two ways to find leads).

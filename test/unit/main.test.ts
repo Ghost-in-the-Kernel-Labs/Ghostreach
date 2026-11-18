@@ -32,7 +32,7 @@ describe('ghostreach doctor (TODO 3.4, GR-008)', () => {
         'This computer has 16.0 GB of memory, 6.0 GB of it free now, and 8 processor cores.',
         'Recommended: 4 reviews at once (one for each 1 GB free and each 2 cores, whichever is fewer, from 1 to 5).',
         'Set now: 3 at once, the default.',
-        `To change it, write {"reviewsAtOnce": 4} in ${settingsFile(data)} and start ghostreach serve again.`,
+        `To change it, write {"reviewsAtOnce": 4} in ${settingsFile(data)} then stop the open page (Ctrl+C in its window) and type ghostreach again.`,
       ]);
       vi.spyOn(console, 'log').mockImplementation(() => {});
       expect(await main(['doctor'], data)).toBe(0);
@@ -50,25 +50,30 @@ describe('ghostreach doctor (TODO 3.4, GR-008)', () => {
   });
 });
 
-describe('ghostreach <site> (GR-003: no flag)', () => {
+describe('ghostreach <site> and --help (GR-003: no flag; GR-018)', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it('with no site, prints what it takes and exits 1', async () => {
+  it('--help is the one option, and lists every command, where the reviews are kept and how the page stops; exits 0', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    expect(await main([])).toBe(1);
-    expect(said()).toEqual(['ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says whether this computer is ready and how many sites it can review at once. Nothing else is typed.']);
-  });
-  it('--help is the one option, and exits 0 with the same sentence', async () => {
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    expect(await main(['--help'])).toBe(0);
-    expect(said()[0]).toMatch(/^ghostreach <site>/);
+    expect(await main(['--help'], '/home/someone/Ghostreach')).toBe(0);
+    const help = said();
+    expect(help.filter((line) => /^ {2}ghostreach/.test(line)).map((line) => line.trim().split(/ {2,}/)[0])).toEqual([
+      'ghostreach', 'ghostreach <site>', 'ghostreach doctor', 'ghostreach serve', 'ghostreach --help',
+    ]);
+    expect(help).toContain('Reviews are saved in /home/someone/Ghostreach');
+    expect(help.some((line) => line.includes('Ctrl+C'))).toBe(true);
     // TODO 2.5: the PDF is the one artefact; the help names no other file of the review's folder.
-    expect(said()[0]).toContain('PDF');
-    expect(said()[0]).not.toMatch(/AUDIT\.html|\.json/);
+    expect(help.join('\n')).toContain('PDF');
+    expect(help.join('\n')).not.toMatch(/AUDIT\.html|\.json/);
+    // The word help says the same.
+    vi.mocked(console.log).mockClear();
+    expect(await main(['help'], '/home/someone/Ghostreach')).toBe(0);
+    expect(said()).toEqual(help);
   });
-  it('any other option is refused as a missing site', async () => {
+  it('any other option is refused with the list, and exits 1', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(await main(['--short', 'example.com'])).toBe(1);
+    expect(said()).toContain('  ghostreach --help          This list (ghostreach help too)');
   });
   it('a word that is not a web address is refused before anything is crawled or written', async () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});

@@ -85,3 +85,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `docs/HANDOFF.md`, `docs/paths/code.md`, `theGhost.md` (GR-015), `docs/journal/J-000-099.md`, `scripts/checks/supply_chain.py`, `docs/SUPPLY-CHAIN.md`, `scripts/checks/secrets.py`, `src/project/ready.ts`, `src/project/review.ts`, `src/cli/main.ts`, `package.json`, `package-lock.json`, `test/support.py`, `test/test_save.py`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`.
 - **Complaints**: nothing routed a file outside `src/`, `test/` and `scripts/` (a new top-level folder); the data folder's place (`$HOME/Ghostreach`) is said only in `src/project/review.ts`.
 - **Suggestions**: none.
+
+### 2026-11-18 · The command line, friendlier (J-059, J-060, GR-018) · Opus
+
+- **Task**: Ghost's word recorded as J-059 and GR-018 (superseding GR-003 in part); bare `ghostreach` opens the page, one per data folder; `--help` lists every command; launchers `ghostreach` and `ghostreach.cmd` for a copy of the source; tests, README, SALES-GUIDE.
+- **Opened**: the brief, `docs/HANDOFF.md`, `src/cli/main.ts`, `src/cli/bin.ts`, `src/project/serve.ts`, `test/unit/main.test.ts`, `test/unit/no-flags.test.ts`, `test/unit/serve.test.ts`, `test/unit/lineage.test.ts`, `test/support/lineage.ts`, `test/crawl/package.spec.ts`, `theGhost.md`, `scripts/checks/ghost.py`, `docs/CONTRACT.md`, `docs/modules.json`, `docs/paths/code.md`, `src/project/page.ts`, `src/project/kept.ts`, `README.md`, `docs/SALES-GUIDE.md`, `.gitattributes`, `.npmrc`, `scripts/fast.sh`, `test/test_deploy.py`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`.
+- **Complaints**: HANDOFF's first section reads as one 30 KB block in a terminal (the For Ghost list is in the same grep window); the rule for which of REV-05's and modules.json's words an agent may change is said nowhere but the brief.
+- **Suggestions**: none.

@@ -1,5 +1,7 @@
 # LF everywhere: goldens compared byte for byte failed on Windows with CRLF (Suite Builder G-086).
 * text=auto eol=lf
+# Except the Windows launcher: cmd.exe misreads a label in a batch file with LF endings.
+*.cmd text eol=crlf
 *.gen.ts linguist-generated -diff
 docs/decisions.md linguist-generated -diff
 docs/journal/INDEX.md linguist-generated -diff

@@ -1,14 +1,28 @@
-// ghostreach <site>: the one command (GR-003: no flag). It reads the site and writes its review (src/project/review.ts).
-// `ghostreach serve` opens the reviews' local page (TODO 3.2, src/project/serve.ts): a word, not an option.
-// `ghostreach doctor` says whether Node.js and Chromium are ready (TODO 5.1, src/project/ready.ts), then the machine's memory and the
-// reviews at once it recommends (TODO 3.4, src/project/settings.ts): a word too.
-// Decision: GR-003
+// The command line (GR-003, GR-018): no flag but `--help`. `ghostreach` alone opens the local page in the browser, starting it if
+// none runs for the data folder (src/project/serve.ts); `ghostreach serve` is the same. `ghostreach <site>` reads the site and
+// writes its review (src/project/review.ts). `ghostreach doctor` says whether Node.js and Chromium are ready (src/project/ready.ts),
+// then the machine's memory and the reviews at once it recommends (src/project/settings.ts). Each is a word, never an option.
+// Decision: GR-003, GR-018
 import { dataDir, review } from '../project/review.js';
-import { openInBrowser, servePage, type ServedPage } from '../project/serve.js';
+import { openInBrowser, showPage, type ServedPage } from '../project/serve.js';
 import { readyLines, thisInstall } from '../project/ready.js';
 import { doctorLines, thisMachine } from '../project/settings.js';
 
-const USAGE = 'ghostreach <site>: reviews the site and writes its Suite Builder PDF. ghostreach serve: opens the reviews in the browser. ghostreach doctor: says whether this computer is ready and how many sites it can review at once. Nothing else is typed.';
+/** Every command, in plain words, then where the reviews are kept and how the page stops: `--help`'s answer, and a refusal's. */
+export function helpLines(data: string): string[] {
+  return [
+    'Ghostreach reviews websites and writes each review as a PDF.',
+    '',
+    '  ghostreach                 Open the Ghostreach page in your browser (starts it if needed)',
+    '  ghostreach <site>          Review one website and write its PDF, for example: ghostreach www.example.com',
+    '  ghostreach doctor          Check this computer: Node.js, the browser, how many reviews at once',
+    '  ghostreach serve           Same as ghostreach',
+    '  ghostreach --help          This list (ghostreach help too)',
+    '',
+    `Reviews are saved in ${data}`,
+    'The page runs while its window stays open; press Ctrl+C in that window to stop it.',
+  ];
+}
 
 /** What the command line holds: the site, and nothing else. The parent's options collapse to this (P-15, GR-003). */
 export interface Values {
@@ -16,30 +30,32 @@ export interface Values {
 }
 
 /**
- * The command line read: the site, the one argument; `help` for `--help` alone, the one option; `serve` or `doctor` for that word
- * alone (the roadmap's command words, TODO 3.2 and 3.4, never options); null for anything else (no site, a second argument, or any
- * other option, `-x` or `--x`), which is refused, never guessed at.
+ * The command line read: nothing, or `serve` alone, is `serve` (GR-018); `--help` alone, the one option, or the word `help`, is
+ * `help`; `doctor` alone is `doctor`; one other argument is the site; anything else (a second argument, any other option, `-x` or
+ * `--x`, a blank) is null, refused, never guessed at.
  */
-// Decision: GR-003
+// Decision: GR-003, GR-018
 export function parse(argv: readonly string[]): Values | 'help' | 'serve' | 'doctor' | null {
-  if (argv.length === 1 && argv[0] === '--help') return 'help';
-  if (argv.length === 1 && argv[0] === 'serve') return 'serve';
-  if (argv.length === 1 && argv[0] === 'doctor') return 'doctor';
-  if (argv.length !== 1 || argv[0].startsWith('-') || !argv[0].trim()) return null;
-  return { site: argv[0] };
+  if (argv.length === 0) return 'serve';
+  if (argv.length !== 1) return null;
+  const [word] = argv;
+  if (word === '--help' || word === 'help') return 'help';
+  if (word === 'serve' || word === 'doctor') return word;
+  if (word.startsWith('-') || !word.trim()) return null;
+  return { site: word };
 }
 
-/** Opens the served page in the salesperson's browser; a test hands its own, so no browser opens under test. */
-const openPage = (page: ServedPage): void => openInBrowser(page.url);
+/** Opens the page in the salesperson's browser; a test hands its own, so no browser opens under test. */
+const openPage = (url: string): void => openInBrowser(url);
 
 /**
  * The command: its exit code. `data` is where the reviews go; a test names its own folder, the salesperson never does (no flag).
- * `serve` returns when the page stops serving (Ctrl-C ends it at the terminal).
+ * The page returns when it stops serving (Ctrl+C ends it at the terminal), or at once when one already runs.
  */
-export async function main(argv: readonly string[], data = dataDir(), open = openPage): Promise<number> {
+export async function main(argv: readonly string[], data = dataDir(), open: (url: string, page?: ServedPage) => void = openPage): Promise<number> {
   const values = parse(argv);
   if (values === null || values === 'help') {
-    console.log(USAGE);
+    for (const line of helpLines(data)) console.log(line);
     return values === 'help' ? 0 : 1;
   }
   if (values === 'doctor') {
@@ -47,11 +63,7 @@ export async function main(argv: readonly string[], data = dataDir(), open = ope
     return 0;
   }
   if (values === 'serve') {
-    const page = await servePage(data);
-    console.log(`The reviews are at ${page.url} (this computer only). Ctrl-C stops the page.`);
-    if (page.settings.note) console.log(page.settings.note);
-    open(page);
-    await page.closed;
+    await showPage(data, (line) => console.log(line), open);
     return 0;
   }
   return (await review({ site: values.site, data, say: (line) => console.log(line) })).code;

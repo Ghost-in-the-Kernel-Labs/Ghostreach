@@ -61,3 +61,4 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-015 | Ghostreach is a service behind an API; the website is the salesperson's interface | in force | delivery |
 | GR-016 | esbuild approved, deferred while no code ships | in force | dependencies |
 | GR-017 | the crawler is forecursor: its user agent, robots.txt name, probe and crawl file | in force | crawl |
+| GR-018 | `ghostreach` alone opens the page; `--help` lists every command; `serve` and `doctor` are commands | in force | command line |

@@ -34,6 +34,7 @@ const EXEMPT: Record<string, string> = {
   'src/project/serve.ts node:http': 'the local page listens on 127.0.0.1 (createServer); it fetches nothing',
   'src/project/serve.ts node:net': 'a type alone (AddressInfo), the bound port',
   'src/project/serve.ts node:child_process': "the platform's opener, given the page's own loopback address",
+  'src/project/serve.ts fetch': "a page already running, at the loopback address alone (`OWN_ADDRESS`) a note in the data folder names (GR-018)",
   'src/pdf/pdf.ts goto': "the review's own AUDIT.html, by a file: address",
   'src/project/crawl.ts node:child_process': "Playwright's own installer, the first-run Chromium download: a dependency's install, not a source",
 };

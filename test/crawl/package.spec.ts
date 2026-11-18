@@ -106,7 +106,8 @@ test('the tarball installs with one command and the installed ghostreach reviews
 
   const help = await installed(bin, ['--help'], env, scratch);
   expect(help.code).toBe(0);
-  expect(help.lines[0]).toMatch(/^ghostreach <site>: /);
+  expect(help.lines.filter((line) => /^ {2}ghostreach/.test(line)).length).toBe(5);
+  expect(help.lines).toContain(`Reviews are saved in ${join(home, 'Ghostreach')}`);
 
   const doctor = await installed(bin, ['doctor'], env, scratch);
   expect(doctor.code).toBe(0);

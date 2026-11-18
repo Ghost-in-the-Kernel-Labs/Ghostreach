@@ -35,7 +35,6 @@ export const ALLOWED: readonly Allowed[] = [
   { file: 'dist/pdf/brand.js', text: '<div class="wordmark">Suite Builder</div>', why: "the PDF cover's wordmark" },
   { file: 'dist/audit/audit.js', text: '| Suite Builder`', why: "the review page's title" },
   { file: 'dist/audit/audit.js', text: "by Suite Builder's crawler in a real browser", why: 'the page says who read the site' },
-  { file: 'dist/cli/main.js', text: 'writes its Suite Builder PDF', why: 'the salesperson is told whose PDF it writes' },
   { file: 'dist/leaf/report.js', text: "'suitebuilder'", why: 'the name the crawler went by before, whose robots.txt rules it still obeys (it names itself forecursor)' },
   { file: 'dist/crawl/report-read.js', text: "report?.tool !== 'suite-builder'", why: "the format mark of the crawl files this program is held to, read back (it writes forecursor)" },
   { file: 'dist/crawl/report-read.js', text: 'was made by a newer Suite Builder (', why: "the reader's refusal of a newer crawl file, in the brand's name" },

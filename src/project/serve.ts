@@ -1,9 +1,10 @@
 /**
- * `ghostreach serve` (TODO 3.2): the salesperson's local page, the reviews already in the data folder, each linking its PDF, served
- * by Node's `http` (P-04, no framework) on 127.0.0.1 alone and opened in the browser. The PDF is the one artefact (TODO 2.5): the
- * page names and links a review's PDF only, never AUDIT.html, a JSON file or the crawl, and the server answers for nothing else
- * of the folder. Every name it shows comes from the data folder or the salesperson's paste and is written as text, never as
- * markup (P-16). Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
+ * `ghostreach` alone, or `ghostreach serve` (TODO 3.2, GR-018): the salesperson's local page, one per data folder (`showPage`):
+ * the reviews already in the data folder, each linking its PDF, served by Node's `http` (P-04, no framework) on 127.0.0.1 alone
+ * and opened in the browser. The PDF is the one artefact (TODO 2.5): the page names and links a review's PDF only, never
+ * AUDIT.html, a JSON file or the crawl, and the server answers for nothing else of the folder.
+ * Every name it shows comes from the data folder or the salesperson's paste and is written as text, never as markup (P-16).
+ * Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
  * failed one's retry to `/queue/retry`; while a site waits or runs, the page reloads itself (a meta refresh; no script runs in it).
  * The company lane (4.6, `company.ts`): a company to `/company`. The discovery lane (4.7, `discover.ts`): the saved search edited
  * at `/discover/search`, run at `/discover/run`; one lookup and one run at a time. The page's HTML is `page.ts` and `page-leads.ts`.
@@ -11,7 +12,7 @@
  * (J-045). The ranking (3.6) comes later.
  */
 import { spawn } from 'node:child_process';
-import { createReadStream, existsSync, lstatSync, readdirSync, realpathSync } from 'node:fs';
+import { createReadStream, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { pipeline } from 'node:stream';
 import type { AddressInfo } from 'node:net';
@@ -23,9 +24,9 @@ import { readSettings, type Settings } from './settings.js';
 import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
-import { reviewsPage, type ListedReview, type Said } from './page.js';
+import { PAGE_TITLE, reviewsPage, type ListedReview, type Said } from './page.js';
 import { keepPosting, keepWebsite, leadOf, readNotes } from './leads.js';
-import { Unreadable } from './kept.js';
+import { isRecord, Unreadable } from './kept.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -310,4 +311,69 @@ export function openInBrowser(url: string): void {
   const child = spawn(command, args, { shell: false, stdio: 'ignore', detached: true });
   child.on('error', () => {});
   child.unref();
+}
+
+/** The running page's note in the data folder: its address and its process, so a second `ghostreach` opens it instead (GR-018). */
+export const pageFile = (data: string): string => join(data, 'page.json');
+
+/** The only address a note may name: this program's own, on the loopback. A note naming anything else is not believed. */
+const OWN_ADDRESS = /^http:\/\/127\.0\.0\.1:\d{1,5}\/$/;
+
+/** Whether a process is alive: a signal 0 reaches it, or it exists and belongs to someone else. */
+function alive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return (e as NodeJS.ErrnoException).code === 'EPERM';
+  }
+}
+
+/**
+ * The address of the page already serving this data folder, or null. The note is believed only when its process is alive and its
+ * address answers with this page within two seconds; a note left by a page that stopped (Ctrl+C, a closed window), or whose port
+ * another program now holds, is stale, and the next page writes its own over it.
+ */
+// Decision: GR-018
+async function runningPage(data: string): Promise<string | null> {
+  let note: unknown;
+  try {
+    note = JSON.parse(readFileSync(pageFile(data), 'utf8'));
+  } catch {
+    return null;
+  }
+  if (!isRecord(note) || typeof note.url !== 'string' || !OWN_ADDRESS.test(note.url) || !Number.isInteger(note.pid) || !alive(note.pid as number)) return null;
+  try {
+    const res = await fetch(note.url, { signal: AbortSignal.timeout(2000) });
+    return res.ok && (await res.text()).includes(PAGE_TITLE) ? note.url : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * `ghostreach` alone (and `ghostreach serve`): one page per data folder. When one already runs, the browser opens it and this
+ * returns; else the page starts, its note is written, the browser opens it, and this returns when it stops (its note removed).
+ * `open` is handed the address, and the page this call serves (a test's opener stops it).
+ */
+// Decision: GR-018
+export async function showPage(data: string, say: (line: string) => void, open: (url: string, page?: ServedPage) => void): Promise<void> {
+  const running = await runningPage(data);
+  if (running) {
+    say(`Ghostreach is already open at ${running} (this computer only); your browser shows it again.`);
+    return open(running);
+  }
+  const page = await servePage(data);
+  mkdirSync(data, { recursive: true });
+  writeFileSync(pageFile(data), `${JSON.stringify({ url: page.url, pid: process.pid })}\n`);
+  say(`The reviews are at ${page.url} (this computer only). Ctrl+C stops the page.`);
+  if (page.settings.note) say(page.settings.note);
+  open(page.url, page);
+  await page.closed;
+  try {
+    // Only this page's own note is removed; another's written since is left.
+    if (readFileSync(pageFile(data), 'utf8').includes(`"${page.url}"`)) unlinkSync(pageFile(data));
+  } catch {
+    // Gone already: nothing to remove.
+  }
 }

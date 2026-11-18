@@ -74,6 +74,6 @@ export function doctorLines(data: string, machine: Machine): string[] {
     `This computer has ${gb(machine.totalBytes)} GB of memory, ${gb(machine.freeBytes)} GB of it free now, and ${machine.cores} processor core${machine.cores === 1 ? '' : 's'}.`,
     `Recommended: ${n} review${n === 1 ? '' : 's'} at once (one for each 1 GB free and each 2 cores, whichever is fewer, from 1 to ${MOST_AT_ONCE}).`,
     `Set now: ${set.reviewsAtOnce} at once${existsSync(file) ? '' : ', the default'}.${set.note ? ` ${set.note}` : ''}`,
-    `To change it, write {"reviewsAtOnce": ${n}} in ${file} and start ghostreach serve again.`,
+    `To change it, write {"reviewsAtOnce": ${n}} in ${file} then stop the open page (Ctrl+C in its window) and type ghostreach again.`,
   ];
 }
