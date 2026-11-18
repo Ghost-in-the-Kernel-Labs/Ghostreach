@@ -629,3 +629,13 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **subject:** command line
 - **See also:** GR-003, GR-008
 - **Supersedes:** GR-003, in part: its title's "`ghostreach <site>` and `--help`, nothing else" and its "The command takes a site and nothing else" (the command takes a site, one of the words `serve`, `doctor`, `help`, or nothing; and `--help`). The rest stands (no flag, every behaviour fixed, the settings file), so its Status stays `in force` and its See also names GR-018.
+
+### GR-019: a dev-only advisory with no fix may stand as a recorded exception
+- **Decision:** A high or critical advisory reached only through dev dependencies (`npm audit --omit=dev` finds nothing), with no fixed version published, may stand as an exception: its id, package, path, date and reason recorded in `docs/HANDOFF.md`'s advisories section, removed once a fix comes in by `docs/DEPENDENCY-REVIEW.md`. An advisory in what ships is never excepted. The gate's audit step is changed to read the exceptions only when one is first needed.
+- **Why:** Ghost, 2026-11-18, "go with a", to the coordinator's options for GHSA-fc5q-39xc-vjpf (picomatch 4.0.7, dev-only through knip and vitest, no fix): "(a) allow a recorded exception for this dev-only advisory until a fix ships". By the time it was recorded, `npm audit` no longer reported it, so no exception stands today.
+- **Held by:** `docs/HANDOFF.md` (advisories), `stacks/typescript/gate.sh`.
+- **Source:** Ghost, in chat, 2026-11-18 (J-061).
+- **Status:** in force
+- **See also:** GR-009
+- **subject:** dependencies
+

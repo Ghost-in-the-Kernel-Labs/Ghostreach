@@ -131,7 +131,7 @@ One more override is not a cooldown pin and stays until Core's check reads the p
 
 ## Advisories under the gate's threshold
 
-Over it, 2026-11-18 (J-060): `npm audit --audit-level=high` reports GHSA-fc5q-39xc-vjpf (picomatch, ReDoS through single-branch repeated extglobs; every version, no fix) on `picomatch` 4.0.7, reached only through the dev dependencies `knip` and `vitest` (and their `vite`, `tinyglobby`, `fdir`); `npm audit --omit=dev` finds 0, so nothing shipped carries it. Every gate refuses at its advisories step until a fixed picomatch is published and comes in by `docs/DEPENDENCY-REVIEW.md`, or Ghost rules on an exception; J-060's medium checks otherwise all passed (unit, tsc, knip, cooldown, integration, the crawl specs).
+Resolved 2026-11-18 (J-061, GR-019): `npm audit` now reports 0, and Ghost allows a recorded exception for a dev-only advisory with no fix should one recur. Was, 2026-11-18 (J-060): `npm audit --audit-level=high` reports GHSA-fc5q-39xc-vjpf (picomatch, ReDoS through single-branch repeated extglobs; every version, no fix) on `picomatch` 4.0.7, reached only through the dev dependencies `knip` and `vitest` (and their `vite`, `tinyglobby`, `fdir`); `npm audit --omit=dev` finds 0, so nothing shipped carries it. Every gate refuses at its advisories step until a fixed picomatch is published and comes in by `docs/DEPENDENCY-REVIEW.md`, or Ghost rules on an exception; J-060's medium checks otherwise all passed (unit, tsc, knip, cooldown, integration, the crawl specs).
 
 None: `npm audit` found 0 vulnerabilities on 2026-11-14 once Stryker left (J-024), again in both full gates of pass 2 (J-028), and at pass 4 (J-044); the two moderate ones of passes 0 and 1 came through it.
 
