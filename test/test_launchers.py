@@ -85,7 +85,8 @@ class WindowsLauncher(unittest.TestCase):
 
     def test_neither_launcher_is_packed(self):
         files = json.loads((ROOT / "package.json").read_text())["files"]
-        self.assertEqual(files, ["dist/"])
+        # The build and the page's icon (launch fixes 6, J-066), never a launcher.
+        self.assertEqual(files, ["dist/", "assets/icon.svg", "assets/icon-32.png"])
 
     def test_is_written_with_crlf(self):
         attributes = (ROOT / ".gitattributes").read_text().splitlines()

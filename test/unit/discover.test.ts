@@ -209,7 +209,8 @@ describe('the discovery lane on the local page (TODO 4.7)', () => {
     page = await servePage(data, async () => null, sources(), {});
     const blank = await (await fetch(page.url)).text();
     expect(blank).not.toMatch(/<script/i);
-    expect(blank).toContain('<form method="post" action="/discover/search">');
+    // One form, one "Search" button (launch fixes 5); the route that saves alone still takes a post.
+    expect(blank).not.toContain('<form method="post" action="/discover/search">');
     expect(blank).toContain('<form method="post" action="/discover/run">');
     expect(blank).toContain('>QA engineer\ntest automation\nSDET\nQA analyst</textarea>');
     expect(blank).toContain('The search has not run yet.');

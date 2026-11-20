@@ -99,3 +99,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: `theGhost.md` (C-040, GR-011), `scripts/commit.sh`, `scripts/ship.sh`, `docs/when/tune-up.md`, `TODO.md`, `docs/DONE.md`, `docs/HANDOFF.md`, `scripts/gate.sh`, `docs/JOURNAL.md`, `docs/journal/J-000-099.md`, `docs/decisions.md`, `docs/REVIEWED-VERSIONS.md`, `scripts/checks/dependency_review.py`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`, `docs/CUT.md`.
 - **Complaints**: `docs/when/tune-up.md` says the reviewer lands a pass with a `tune-up:` commit, but not what to do when the passes ran on a session branch and `main`'s count is 0 (no tune-up "due" by `scripts/commit.sh`); the review record's Journal cell takes one id, said only in the check, so a later approval has to go in the Decision cell.
 - **Suggestions**: a line in tune-up.md's edge cases: a pass saved on a session branch lands as the `tune-up:` commit of that branch's landing, whatever the count.
+
+### 2026-11-20 · Launch fixes, item A (the page) · Opus
+
+- **Task**: item A (points 1 to 6) of the launch walk's fixes: the primary action, a done row's PDF and counts, progress, plain errors, the lead finder folded, the favicon.
+- **Opened**: `docs/HANDOFF.md`, `src/project/page.ts`, `src/project/html.ts`, `src/project/page-leads.ts`, `src/project/serve.ts`, `src/project/queue.ts`, `src/project/review.ts`, `src/project/crawl.ts`, `test/unit/serve.test.ts`, `docs/paths/code.md`, `docs/CUT.md`, `test/unit/keys.test.ts`, `test/unit/discover.test.ts`, `test/crawl/package.spec.ts`, `test/support/lineage.ts`, `docs/SALES-GUIDE.md`, `docs/journal/J-000-099.md`.
+- **Complaints**: HANDOFF's first section is one long list (about 30 KB) with no "the latest" marker, so finding where the last session stopped means reading to its end. A new file under `src/` needs its line in CUT.md and, if it uses the network, a moved exemption in both `test/unit/hosts.test.ts` and SOURCES.md: the code row names neither.
+- **Suggestions**: the local page's row in `docs/paths/code.md` names `test/unit/hosts.test.ts` and SOURCES.md's exemption list for a file split.

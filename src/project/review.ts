@@ -134,6 +134,7 @@ export async function review(request: ReviewRequest): Promise<{ code: number; fo
   const summary = reviewSummary(report, findings, day);
   writeFileSync(join(folder, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   const pdf = join(folder, pdfName(summary.host));
+  request.say('Writing the PDF...');
   await printPdf(file, pdf, { site: summary.host, date: day }, request.browser);
   const { major, minor } = summary.bySeverity;
   // The PDF is the one artefact (TODO 2.5): the one path the salesperson is shown; AUDIT.html, the JSON files and the crawl stay

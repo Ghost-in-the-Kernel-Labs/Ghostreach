@@ -262,7 +262,7 @@ the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5
 `<data>/<host>-<date>/`, naming only the PDF's path to the salesperson (2.5). `src/pdf/pdf.ts` (2.3, GR-006) prints its `AUDIT.html` to the PDF, US Letter, "What this review checked" moved last and opened in print (2.6); `src/pdf/brand.ts`
 (2.4, GR-012) is the PDF's cover and running footer, added only in print, so the page stays 1.6's. `src/project/serve.ts`
 (3.2) is the salesperson's local page on 127.0.0.1, the reviews with a PDF each linking it, its HTML written by `src/project/page.ts`
-and, for the lead finder's sections, `src/project/page-leads.ts`, each name escaped by `src/project/html.ts`; `src/project/queue.ts` (3.3) the
+and, for the lead finder's sections, `src/project/page-leads.ts`, each name escaped by `src/project/html.ts`, its launch (one page per data folder, the opener) `src/project/show.ts`; `src/project/queue.ts` (3.3) the
 sites pasted there, kept in `queue.json` with a state each and reviewed up to N at once (3.4), never two of one host together;
 `src/project/settings.ts` (3.4, GR-008) the program's settings file, `<data>/settings.json`, and `ghostreach doctor`'s report;
 `src/project/keys.ts` (4.4) the lead finder's keys, one environment variable per keyed source, read only where a fetch uses it;
@@ -280,6 +280,7 @@ discovery lane, one saved search run across the discovery-lane sources through i
 - `src/pdf/pdf.ts`
 - `src/pdf/brand.ts`
 - `src/project/serve.ts`
+- `src/project/show.ts`
 - `src/project/page.ts`
 - `src/project/page-leads.ts`
 - `src/project/html.ts`

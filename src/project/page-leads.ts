@@ -6,7 +6,7 @@
  */
 import type { CompanyLookup } from './company.js';
 import { LINK_BACK, type DiscoveryRow, type DiscoveryRun, type SavedSearch } from './discover.js';
-import { esc } from './html.js';
+import { esc, plainError } from './html.js';
 import { companyKey, postingsOf, websiteOf, type CompanyNotes, type Lane } from './leads.js';
 import type { QueueEntry } from './queue.js';
 import type { ListedReview } from './page.js';
@@ -73,7 +73,7 @@ export function lookupsList(lookups: readonly CompanyLookup[], rows: Rows): stri
   if (!lookups.length) return '<p>No company looked up yet.</p>';
   const items = lookups.map((l) => {
     const found = l.boards.length ? `<ul>\n${l.boards.map(boardItem).join('\n')}\n</ul>` : `<p>${NO_BOARD} ${PASTE_LANE}</p>`;
-    const unanswered = l.unanswered.map((why) => `<p class="error">Not asked: ${esc(why)}</p>`).join('\n');
+    const unanswered = l.unanswered.map((why) => `<p class="error">Not asked: ${esc(plainError(why))}</p>`).join('\n');
     return `<li><strong>${esc(l.asked)}</strong> <span class="day">${esc(l.at.slice(0, 10))}</span>${companyTools(l.asked, rows, 'company')}\n${found}${unanswered ? `\n${unanswered}` : ''}</li>`;
   });
   return `<ul>\n${items.join('\n')}\n</ul>`;
@@ -88,16 +88,15 @@ function discoveryItem(row: DiscoveryRow, rows: Rows): string {
   return `<li><strong>${esc(row.company)}</strong>: ${title} <span class="day">${source}, ${esc(row.at.slice(0, 10) || 'no date')}${more}</span>${companyTools(row.company, rows, 'discovery')}</li>`;
 }
 
-/** The discovery lane: the saved search's form, the run button, and the last run's rows and skipped sources. */
+/** The discovery lane: the saved search's form, one button that saves it and runs it (launch fixes 5), and the last run's rows and skipped sources. */
 export function discoverySection(search: SavedSearch, run: DiscoveryRun | undefined, refused: string | undefined, rows: Rows): string {
-  const form = `<form method="post" action="/discover/search">
+  const form = `<form method="post" action="/discover/run">
 <p><label for="titles">Titles, one per line:</label></p><textarea id="titles" name="titles" rows="5">${esc(search.titles.join('\n'))}</textarea>
-<p><label for="location">A location, or remote:</label> <input id="location" name="location" type="text" maxlength="100" value="${esc(search.location)}"> <button>Save the search</button></p>
+<p><label for="location">A location, or remote:</label> <input id="location" name="location" type="text" maxlength="100" value="${esc(search.location)}"> <button>Search</button></p>
 </form>
-<form method="post" action="/discover/run"><p><button>Run the search</button></p></form>
 ${refused ? `<p class="refused">${esc(refused)}</p>\n` : ''}`;
   if (!run) return `${form}<p>The search has not run yet.</p>`;
   const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${esc(run.rows.length)} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
   const items = run.rows.length ? `\n<ul>\n${run.rows.map((row) => discoveryItem(row, rows)).join('\n')}\n</ul>` : '';
-  return `${form}${head}${items}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(why)}</p>`).join('')}`;
+  return `${form}${head}${items}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(plainError(why))}</p>`).join('')}`;
 }

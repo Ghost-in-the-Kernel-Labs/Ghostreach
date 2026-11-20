@@ -11,8 +11,7 @@
  * A data file that cannot be read is said on the page in one line and left as it is (`kept.ts`); no request stops the server
  * (J-045). The ranking (3.6) comes later.
  */
-import { spawn } from 'node:child_process';
-import { createReadStream, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, unlinkSync, writeFileSync } from 'node:fs';
+import { createReadStream, existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { pipeline } from 'node:stream';
 import type { AddressInfo } from 'node:net';
@@ -24,7 +23,7 @@ import { readSettings, type Settings } from './settings.js';
 import { keepLookup, lookUpCompany, readLookups } from './company.js';
 import type { Transport } from './fetch.js';
 import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './discover.js';
-import { PAGE_TITLE, reviewsPage, type ListedReview, type Said } from './page.js';
+import { reviewsPage, type ListedReview, type Said } from './page.js';
 import { keepPosting, keepWebsite, leadOf, readNotes } from './leads.js';
 import { isRecord, Unreadable } from './kept.js';
 
@@ -46,11 +45,30 @@ export function listReviews(data: string): ListedReview[] {
     if (!entry.isDirectory() || !match || !oneName(entry.name)) continue;
     const [, host, date, n] = match;
     if (!pdfIn(data, entry.name, pdfName(host))) continue;
-    listed.push({ host, date, folder: entry.name, href: `/reviews/${encodeURIComponent(entry.name)}/${encodeURIComponent(pdfName(host))}`, n: Number(n ?? 1) });
+    const href = `/reviews/${encodeURIComponent(entry.name)}/${encodeURIComponent(pdfName(host))}`;
+    listed.push({ host, date, folder: entry.name, href, counts: countsIn(join(data, entry.name)), n: Number(n ?? 1) });
   }
   listed.sort((a, b) => b.date.localeCompare(a.date) || a.host.localeCompare(b.host) || b.n - a.n);
   return listed.map(({ n: _, ...review }) => review);
 }
+
+/** A review's findings counted, from its `summary.json` (`ReviewSummary`); undefined when that file cannot be read as one. */
+function countsIn(folder: string): ListedReview['counts'] {
+  try {
+    const summary: unknown = JSON.parse(readFileSync(join(folder, 'summary.json'), 'utf8'));
+    const by = isRecord(summary) && isRecord(summary.bySeverity) ? summary.bySeverity : undefined;
+    const [major, minor, info] = [by?.major, by?.minor, by?.info].map((n) => (Number.isInteger(n) && (n as number) >= 0 ? (n as number) : NaN));
+    return [major, minor, info].some(Number.isNaN) ? undefined : { findings: major + minor + info, major, minor };
+  } catch {
+    return undefined;
+  }
+}
+
+/** The page's icon (GR-020, launch fixes 6): served from the package's own `assets/`, by its path and type, and nothing else of it. */
+const ICONS: Readonly<Record<string, { file: string; type: string }>> = {
+  '/favicon.svg': { file: 'icon.svg', type: 'image/svg+xml' },
+  '/favicon-32.png': { file: 'icon-32.png', type: 'image/png' },
+};
 
 /**
  * The PDF's path on disk when `folder` is a review folder directly under the data folder and `file` is that review's PDF, a
@@ -75,7 +93,7 @@ function pdfIn(data: string, folder: string, file: string): string | null {
  * own forms with `Origin: null` and `post` refuses them.
  */
 const HEADERS = {
-  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'",
+  'Content-Security-Policy': "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'",
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'same-origin',
   'Cache-Control': 'no-store',
@@ -87,7 +105,7 @@ function answer(res: ServerResponse, status: number, text: string): void {
 }
 
 /** The page as HTML. A data file that cannot be read shows as empty, and the page says so in one line naming it. */
-function sendPage(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, said?: Said): void {
+function sendPage(data: string, served: Served, req: IncomingMessage, res: ServerResponse, said?: Said): void {
   const unreadable: string[] = [];
   const read = <T>(get: (data: string) => T, none: T): T => {
     try {
@@ -99,8 +117,8 @@ function sendPage(data: string, settings: Settings, req: IncomingMessage, res: S
     }
   };
   const view = {
-    reviews: listReviews(data), sites: read(readQueue, []), settings, lookups: read(readLookups, []),
-    discovery: read(readDiscovery, { search: { titles: [], location: '' } }), notes: read(readNotes, {}), unreadable,
+    reviews: listReviews(data), sites: read(readQueue, []), settings: served.settings, lookups: read(readLookups, []),
+    discovery: read(readDiscovery, { search: { titles: [], location: '' } }), notes: read(readNotes, {}), unreadable, progress: served.runner.progress(),
   };
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
   res.end(req.method === 'HEAD' ? undefined : reviewsPage(view, said));
@@ -110,17 +128,17 @@ function sendPage(data: string, settings: Settings, req: IncomingMessage, res: S
  * Runs one request's work so that nothing it throws stops the server: a data file that cannot be read answers the page, which
  * says so (nothing was written); anything else answers `line` (500), or ends an answer already begun.
  */
-function guarded(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, line: string, work: () => void): void {
+function guarded(data: string, served: Served, req: IncomingMessage, res: ServerResponse, line: string, work: () => void): void {
   try {
     work();
   } catch (e) {
-    failed(data, settings, req, res, line, e);
+    failed(data, served, req, res, line, e);
   }
 }
 
-function failed(data: string, settings: Settings, req: IncomingMessage, res: ServerResponse, line: string, e: unknown): void {
+function failed(data: string, served: Served, req: IncomingMessage, res: ServerResponse, line: string, e: unknown): void {
   if (res.headersSent) return void res.destroy();
-  if (e instanceof Unreadable) return guarded(data, settings, req, res, line, () => sendPage(data, settings, req, res));
+  if (e instanceof Unreadable) return guarded(data, served, req, res, line, () => sendPage(data, served, req, res));
   answer(res, 500, line);
 }
 
@@ -145,7 +163,10 @@ interface Served {
  * server's own origin, or is missing, is another site's page (or no browser) posting into the salesperson's queue: refused.
  */
 function post(data: string, served: Served, origin: string, path: string, req: IncomingMessage, res: ServerResponse): void {
-  const { settings, runner } = served;
+  const { runner } = served;
+  // The answer to a lead finder's form shows its folded part open, where the salesperson was (launch fixes 5).
+  const leads = path !== '/queue' && path !== '/queue/retry';
+  const send = (said?: Said): void => sendPage(data, served, req, res, leads ? { ...said, leads } : said);
   if (req.headers.origin !== origin) return answer(res, 403, 'Only from this page.');
   if ((req.headers['content-type'] ?? '').split(';')[0].trim() !== 'application/x-www-form-urlencoded') return answer(res, 415, 'Only a form.');
   const chunks: Buffer[] = [];
@@ -155,59 +176,62 @@ function post(data: string, served: Served, origin: string, path: string, req: I
     // Past the limit the rest is read and dropped, so the answer reaches the browser; nothing more is kept.
     if (size <= MAX_BODY) chunks.push(chunk);
   });
-  req.on('end', () => guarded(data, settings, req, res, 'Not done: the program met an error.', () => {
+  req.on('end', () => guarded(data, served, req, res, 'Not done: the program met an error.', () => {
     if (size > MAX_BODY) return answer(res, 413, 'Too long.');
     const form = new URLSearchParams(Buffer.concat(chunks).toString('utf8'));
     if (path === '/queue') {
       const added = addSites(data, form.get('sites') ?? '');
       runner.kick();
-      return sendPage(data, settings, req, res, { added });
+      return send({ added });
     }
     if (path === '/company') {
       // One lookup at a time: a second while one runs is said back, never a second batch of calls to the sources.
-      if (served.running.has(path)) return sendPage(data, settings, req, res, { refused: 'A company lookup is already running; this one was not started.' });
+      if (served.running.has(path)) return send({ refused: 'A company lookup is already running; this one was not started.' });
       served.running.add(path);
       // Every source is asked before the page answers: the salesperson waits on it, at most a probe's timeout per name and instance.
       void lookUpCompany(form.get('company') ?? '', { data, transport: served.transport }).finally(() => served.running.delete(path)).then(
         (lookup) => {
-          if (lookup.refused) return sendPage(data, settings, req, res, { refused: lookup.refused });
+          if (lookup.refused) return send({ refused: lookup.refused });
           keepLookup(data, lookup);
-          sendPage(data, settings, req, res);
+          send();
         },
-      ).catch((e: unknown) => failed(data, settings, req, res, 'The lookup could not be kept.', e));
+      ).catch((e: unknown) => failed(data, served, req, res, 'The lookup could not be kept.', e));
       return;
     }
     if (path === '/queue/lead') {
       // "Queue this site" (4.10): the row's website and reason read from the data folder, the form naming only the company and its lane.
       const company = form.get('company') ?? '';
       const lead = leadOf(data, company, form.get('lane') === 'company' ? 'company' : 'discovery');
-      if (!lead) return sendPage(data, settings, req, res, { row: { company, why: 'No website kept for this company.' } });
+      if (!lead) return send({ row: { company, why: 'No website kept for this company.' } });
       const added = addSites(data, lead.website, lead.reason);
       runner.kick();
-      return sendPage(data, settings, req, res, { added });
+      return send({ added });
     }
     if (path === '/company/site' || path === '/company/posting') {
       // The salesperson's typed website (4.8), held to a site's test, or a closed site's posting (4.9): kept, never fetched.
       const company = form.get('company') ?? '';
       const why = path === '/company/site' ? keepWebsite(data, company, form.get('site') ?? '') : keepPosting(data, company, form.get('posting') ?? '');
-      return sendPage(data, settings, req, res, why ? { row: { company, why } } : undefined);
+      return send(why ? { row: { company, why } } : undefined);
     }
     if (path === '/discover/search') {
       const parsed = parseSearch(form.get('titles') ?? '', form.get('location') ?? '');
-      if ('refused' in parsed) return sendPage(data, settings, req, res, { searchRefused: parsed.refused });
+      if ('refused' in parsed) return send({ searchRefused: parsed.refused });
       saveSearch(data, parsed.search);
-      return sendPage(data, settings, req, res);
+      return send();
     }
     if (path === '/discover/run') {
       // One run at a time, as one lookup; every source is asked before the page answers; a source over its cap, without its key
-      // or failing is named, never waited on.
-      if (served.running.has(path)) return sendPage(data, settings, req, res, { searchRefused: 'The search is already running; this run was not started.' });
+      // or failing is named, never waited on. The page's one "Search" button posts the search with it: saved, then run.
+      if (served.running.has(path)) return send({ searchRefused: 'The search is already running; this run was not started.' });
+      const typed = form.has('titles') ? parseSearch(form.get('titles') ?? '', form.get('location') ?? '') : undefined;
+      if (typed && 'refused' in typed) return send({ searchRefused: typed.refused });
+      if (typed) saveSearch(data, typed.search);
       const search = readDiscovery(data).search;
       served.running.add(path);
       void discover(search, { data, transport: served.transport, env: served.env }).finally(() => served.running.delete(path)).then((run) => {
         keepRun(data, run);
-        sendPage(data, settings, req, res);
-      }).catch((e: unknown) => failed(data, settings, req, res, 'The search could not be run.', e));
+        send();
+      }).catch((e: unknown) => failed(data, served, req, res, 'The search could not be run.', e));
       return;
     }
     if (retry(data, Number(form.get('id')))) runner.kick();
@@ -228,7 +252,14 @@ function handle(data: string, served: Served, port: () => number, req: IncomingM
     res.setHeader('Allow', POSTS.has(path) ? 'POST' : 'GET, HEAD');
     return answer(res, 405, POSTS.has(path) ? 'Only POST.' : 'Only GET.');
   }
-  if (path === '/') return sendPage(data, settings, req, res);
+  if (path === '/') return sendPage(data, served, req, res);
+  const icon = ICONS[path];
+  if (icon) {
+    // From the built package (dist/project/) or the source (src/project/) alike: two folders up, the package's assets/.
+    const body = readFileSync(new URL(`../../assets/${icon.file}`, import.meta.url));
+    res.writeHead(200, { ...HEADERS, 'Content-Type': icon.type, 'Content-Length': String(body.length) });
+    return void res.end(req.method === 'HEAD' ? undefined : body);
+  }
   const parts = path.split('/');
   let names: string[] = [];
   try {
@@ -276,7 +307,7 @@ export async function servePage(data: string, run?: ReviewRun, transport?: Trans
   const runner = queueRunner(data, run ?? reviewLine(data, shared?.get), settings.reviewsAtOnce);
   let bound = 0;
   const served: Served = { settings, runner, running: new Set(), transport, env };
-  const server = createServer((req, res) => guarded(data, settings, req, res, 'The page could not be shown.', () => handle(data, served, () => bound, req, res)));
+  const server = createServer((req, res) => guarded(data, served, req, res, 'The page could not be shown.', () => handle(data, served, () => bound, req, res)));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
   await new Promise<void>((done, fail) => {
     server.once('error', fail);
@@ -296,84 +327,4 @@ export async function servePage(data: string, run?: ReviewRun, transport?: Trans
     }),
     closed,
   };
-}
-
-/** The platform's own opener for a web address, as a program and a fixed argument list: no shell reads the address. */
-export function opener(platform: NodeJS.Platform, url: string): { command: string; args: string[] } {
-  if (platform === 'darwin') return { command: 'open', args: [url] };
-  if (platform === 'win32') return { command: 'explorer.exe', args: [url] };
-  return { command: 'xdg-open', args: [url] };
-}
-
-/** Opens the page in the salesperson's browser; when no opener answers, the address printed beside it is the way in. */
-export function openInBrowser(url: string): void {
-  const { command, args } = opener(process.platform, url);
-  const child = spawn(command, args, { shell: false, stdio: 'ignore', detached: true });
-  child.on('error', () => {});
-  child.unref();
-}
-
-/** The running page's note in the data folder: its address and its process, so a second `ghostreach` opens it instead (GR-018). */
-export const pageFile = (data: string): string => join(data, 'page.json');
-
-/** The only address a note may name: this program's own, on the loopback. A note naming anything else is not believed. */
-const OWN_ADDRESS = /^http:\/\/127\.0\.0\.1:\d{1,5}\/$/;
-
-/** Whether a process is alive: a signal 0 reaches it, or it exists and belongs to someone else. */
-function alive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (e) {
-    return (e as NodeJS.ErrnoException).code === 'EPERM';
-  }
-}
-
-/**
- * The address of the page already serving this data folder, or null. The note is believed only when its process is alive and its
- * address answers with this page within two seconds; a note left by a page that stopped (Ctrl+C, a closed window), or whose port
- * another program now holds, is stale, and the next page writes its own over it.
- */
-// Decision: GR-018
-async function runningPage(data: string): Promise<string | null> {
-  let note: unknown;
-  try {
-    note = JSON.parse(readFileSync(pageFile(data), 'utf8'));
-  } catch {
-    return null;
-  }
-  if (!isRecord(note) || typeof note.url !== 'string' || !OWN_ADDRESS.test(note.url) || !Number.isInteger(note.pid) || !alive(note.pid as number)) return null;
-  try {
-    const res = await fetch(note.url, { signal: AbortSignal.timeout(2000) });
-    return res.ok && (await res.text()).includes(PAGE_TITLE) ? note.url : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * `ghostreach` alone (and `ghostreach serve`): one page per data folder. When one already runs, the browser opens it and this
- * returns; else the page starts, its note is written, the browser opens it, and this returns when it stops (its note removed).
- * `open` is handed the address, and the page this call serves (a test's opener stops it).
- */
-// Decision: GR-018
-export async function showPage(data: string, say: (line: string) => void, open: (url: string, page?: ServedPage) => void): Promise<void> {
-  const running = await runningPage(data);
-  if (running) {
-    say(`Ghostreach is already open at ${running} (this computer only); your browser shows it again.`);
-    return open(running);
-  }
-  const page = await servePage(data);
-  mkdirSync(data, { recursive: true });
-  writeFileSync(pageFile(data), `${JSON.stringify({ url: page.url, pid: process.pid })}\n`);
-  say(`The reviews are at ${page.url} (this computer only). Ctrl+C stops the page.`);
-  if (page.settings.note) say(page.settings.note);
-  open(page.url, page);
-  await page.closed;
-  try {
-    // Only this page's own note is removed; another's written since is left.
-    if (readFileSync(pageFile(data), 'utf8').includes(`"${page.url}"`)) unlinkSync(pageFile(data));
-  } catch {
-    // Gone already: nothing to remove.
-  }
 }

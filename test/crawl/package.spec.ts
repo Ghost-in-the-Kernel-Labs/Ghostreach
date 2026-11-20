@@ -1,6 +1,6 @@
 /**
  * The package (TODO 5.1): the salesperson's install, run as the salesperson runs it. The program is built (`npm run build`) and
- * packed (`npm pack`); the tarball holds `package.json`, the README and the built `dist/` alone, each built file the build of a
+ * packed (`npm pack`); the tarball holds `package.json`, the README, the built `dist/` and the page's icon alone, each built file the build of a
  * source under `src/` (no test, fixture, document, key, data folder or .env). In a fresh folder under the system's temporary
  * folder (TMPDIR), nowhere near this repository's node_modules, `npm install -g --prefix <folder>/prefix <tarball> --ignore-scripts`
  * (npm 11) installs it, and the installed `ghostreach` alone, on a PATH holding only it, Node and the system, answers `--help`,
@@ -17,6 +17,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { startFixtureSite, type FixtureSite } from '../fixture-site/server.js';
 import { pdfPages, squeezed } from '../support/pdf-text.js';
 import { ADDRESS } from '../../src/leaf/words.js';
@@ -77,9 +78,12 @@ test('the tarball installs with one command and the installed ghostreach reviews
   const [packed] = JSON.parse(ran(NPM, ['pack', '--pack-destination', scratch, '--json', '--silent'], REPO)) as { filename: string; files: { path: string }[] }[];
   const tarball = join(scratch, packed.filename);
   const shipped = packed.files.map((f) => f.path).sort();
-  // What runs, and the README for the salesperson; every built file the build of a source under src/ (nothing stale, nothing else).
+  // What runs, the README for the salesperson and the icon; every built file the build of a source under src/ (nothing stale, nothing else).
   const source = (p: string) => /^dist\/.+\.js$/.test(p) && existsSync(join(REPO, p.replace(/^dist\//, 'src/').replace(/\.js$/, '.ts')));
-  expect(shipped.filter((p) => p !== 'README.md' && p !== 'package.json' && !source(p))).toEqual([]);
+  // The page's icon (launch fixes 6), served as its favicon from the installed package.
+  const icon = (p: string) => p === 'assets/icon.svg' || p === 'assets/icon-32.png';
+  expect(shipped.filter((p) => p !== 'README.md' && p !== 'package.json' && !source(p) && !icon(p))).toEqual([]);
+  expect(shipped.filter(icon)).toEqual(['assets/icon-32.png', 'assets/icon.svg']);
   expect(shipped.filter((p) => /(^|\/)(\.env|test|docs|Ghostreach)(\/|$)|\.(pem|key|json)$/.test(p) && p !== 'package.json')).toEqual([]);
 
   // The salesperson's one command, in a folder of its own: npm 11, no install script run.
@@ -108,6 +112,18 @@ test('the tarball installs with one command and the installed ghostreach reviews
   expect(help.code).toBe(0);
   expect(help.lines.filter((line) => /^ {2}ghostreach/.test(line)).length).toBe(5);
   expect(help.lines).toContain(`Reviews are saved in ${join(home, 'Ghostreach')}`);
+
+  // The page's favicon, served from the installed package's own assets (launch fixes 6).
+  const served = (await import(pathToFileURL(join(copy, 'dist', 'project', 'serve.js')).href)) as typeof import('../../src/project/serve.js');
+  const shown = await served.servePage(join(scratch, 'page-data'), async () => null);
+  try {
+    const svg = await fetch(new URL('/favicon.svg', shown.url));
+    expect(svg.headers.get('content-type')).toBe('image/svg+xml');
+    expect(await svg.text()).toContain('<svg');
+    expect((await fetch(new URL('/favicon-32.png', shown.url))).headers.get('content-type')).toBe('image/png');
+  } finally {
+    await shown.close();
+  }
 
   const doctor = await installed(bin, ['doctor'], env, scratch);
   expect(doctor.code).toBe(0);

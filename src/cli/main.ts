@@ -4,7 +4,8 @@
 // then the machine's memory and the reviews at once it recommends (src/project/settings.ts). Each is a word, never an option.
 // Decision: GR-003, GR-018
 import { dataDir, review } from '../project/review.js';
-import { openInBrowser, showPage, type ServedPage } from '../project/serve.js';
+import { openInBrowser, showPage } from '../project/show.js';
+import type { ServedPage } from '../project/serve.js';
 import { readyLines, thisInstall } from '../project/ready.js';
 import { doctorLines, thisMachine } from '../project/settings.js';
 

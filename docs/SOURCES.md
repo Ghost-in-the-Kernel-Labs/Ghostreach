@@ -77,7 +77,7 @@ Three kinds of network use are outside it, each by design and each named in `tes
    and, as the parent's crawl does, the addresses that site's own pages load or link to (scripts, styles, frames, the
    external links it confirms). What it fetches is chosen by the prospect's site, never by a search or a source. It is
    held by the parent's own guards (robots.txt, `src/crawl/destination.ts`), not by this list.
-2. **The local page** (`src/project/serve.ts`): it listens on 127.0.0.1; it fetches only a page of its own already
+2. **The local page** (`src/project/serve.ts`, its launch in `src/project/show.ts`): it listens on 127.0.0.1; it fetches only a page of its own already
    running, at the loopback address the data folder's `page.json` names (`OWN_ADDRESS`, GR-018); it opens its own loopback
    address with the platform's opener; the PDF (`src/pdf/pdf.ts`) loads the review's own file by a `file:` address.
 3. **The first-run browser download** (`src/project/crawl.ts`): Playwright's own installer fetches Chromium from
