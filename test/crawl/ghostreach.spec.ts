@@ -67,9 +67,11 @@ test('ghostreach <site>: the review written under <data>/<host>-<date>/, its fin
   expect(code).toBe(0);
 
   // The day the crawl started (a run across midnight UTC names the first day).
-  const day = readdirSync(data).length === 1 && readdirSync(data)[0] === `127.0.0.1-${today()}` ? today() : before;
-  const folder = join(data, `127.0.0.1-${day}`);
-  expect(readdirSync(data)).toEqual([`127.0.0.1-${day}`]);
+  // The site is the host and its port (launch fixes 11), the port after `_` in the folder's name.
+  const named = `127.0.0.1_${site.port}`;
+  const day = readdirSync(data).length === 1 && readdirSync(data)[0] === `${named}-${today()}` ? today() : before;
+  const folder = join(data, `${named}-${day}`);
+  expect(readdirSync(data)).toEqual([`${named}-${day}`]);
   // REV-06: the crawl kept beside the audit, and nothing else written.
   expect(readdirSync(folder).sort()).toEqual(['127.0.0.1 site review.pdf', '127.0.0.1.crawl.json', 'AUDIT.html', 'findings.json', 'summary.json']);
   // TODO 2.5: the PDF is the one artefact. Of the folder's files, the salesperson is shown the PDF's path alone, on the last line.
@@ -174,5 +176,17 @@ test('ghostreach <site> that does not answer: no review, and no file of the fold
   for (const line of lines) {
     expect(line).not.toMatch(UNNAMED);
     expect(line).not.toContain(data);
+  }
+  // Launch fixes 13: the crawl is kept (REV-06), set aside under failed/, so the data folder's top level holds no review folder
+  // without a PDF; a second failure that day is kept beside the first, never over it.
+  const named = `127.0.0.1_${new URL(origin).port}`;
+  expect(readdirSync(data)).toEqual(['failed']);
+  expect((await run([`${origin}/`], data)).code).toBe(2);
+  expect(readdirSync(data)).toEqual(['failed']);
+  const failed = readdirSync(join(data, 'failed')).sort();
+  expect(failed).toHaveLength(2);
+  for (const folder of failed) {
+    expect(folder).toMatch(new RegExp(`^${named.replace(/\./g, '\\.')}-\\d{4}-\\d{2}-\\d{2}(-2)?$`));
+    expect(readdirSync(join(data, 'failed', folder))).toEqual(['127.0.0.1.crawl.json']);
   }
 });

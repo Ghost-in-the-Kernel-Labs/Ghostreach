@@ -43,10 +43,11 @@ a review shorter, longer, softer or harsher, so two reviews of one crawl are the
 
 ## REV-06 Every review keeps its crawl
 
-A review's folder, `<data>/<host>-<date>/`, holds the crawl the parent's crawler wrote, the findings
-as data (`findings.json`), the summary the ranking reads (`summary.json`) and the PDF; a finding in a
-prospect's hands traces to the page and the request that produced it. Nothing is written anywhere
-else. Held by `test/crawl/ghostreach.spec.ts` (Phase 1).
+A review's folder, `<data>/<host>-<date>/` (a port after `_` when the address gives one, launch fixes
+11), holds the crawl the parent's crawler wrote, the findings as data (`findings.json`), the summary
+the ranking reads (`summary.json`) and the PDF; a finding in a prospect's hands traces to the page and
+the request that produced it. A review that wrote no PDF keeps its crawl in its folder set aside under
+`<data>/failed/` (launch fixes 13). Nothing is written anywhere else. Held by `test/crawl/ghostreach.spec.ts` (Phase 1).
 
 ## REV-07 The findings are the parent's
 

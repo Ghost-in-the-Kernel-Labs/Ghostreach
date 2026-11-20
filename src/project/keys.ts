@@ -1,7 +1,7 @@
 /**
  * The lead finder's keys (TODO 4.4, docs/SOURCES.md's Key cells): one named environment variable per keyed source the code
  * may read (an `in` row), read at the moment a fetch needs it and handed to that fetch alone, never kept, printed, logged or
- * written. The local page asks only whether each is set (`keyStates`), so it can say "key present" or "key absent" and never
+ * written. The local page asks only whether each is set (`keyStates`), so it can say "key present" or "needs a key from Ghost" and never
  * holds a key; a source without its key is skipped with one line saying so (`withKey`). The Muse's `MUSE_API_KEY` is not read:
  * its row is `unverified`, read by nothing (J-034); Adzuna's variables neither: its row is `excluded`.
  */

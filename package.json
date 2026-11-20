@@ -8,7 +8,11 @@
     "ghostreach": "dist/cli/bin.js"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "assets/icon.svg",
+    "assets/icon-32.png",
+    "assets/icon.ico",
+    "assets/icon-256.png"
   ],
   "imports": {
     "#gr/*": "./src/*"

@@ -9,7 +9,7 @@
 import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Browser } from 'playwright';
-import { review, startUrl, type Alongside } from './review.js';
+import { review, siteOf, startUrl, type Alongside } from './review.js';
 import { isRecord, readKept, Unreadable } from './kept.js';
 
 type QueueState = 'waiting' | 'running' | 'done' | 'failed';
@@ -20,7 +20,7 @@ export interface QueueEntry {
   id: number;
   /** The site as pasted, trimmed. */
   site: string;
-  /** The host the review will name its folder by: one host is never waiting or running twice. */
+  /** The site the review will name its folder by, its host and any port (`siteOf`): one is never waiting or running twice. */
   host: string;
   state: QueueState;
   /** A failed review's one line saying why. */
@@ -43,9 +43,24 @@ export interface Added {
 
 /**
  * Reviews one site: null when the review was written, else one line saying why it was not. The page runs `reviewLine`; a test its
- * own. `alongside` is the runner's: what the review asks to know whether its crawl ran beside another review.
+ * own. `alongside` is the runner's: what the review asks to know whether its crawl ran beside another review. `progress` takes
+ * each line the review says as it goes; the page shows the latest that reads plainly (`plainProgress`).
  */
-export type ReviewRun = (site: string, alongside: Alongside) => Promise<string | null>;
+export type ReviewRun = (site: string, alongside: Alongside, progress?: (line: string) => void) => Promise<string | null>;
+
+/**
+ * A review's line as the salesperson reads it on a running row (launch fixes 3), or null for a line that is not progress: a page
+ * read (`[8/300] <address>`), a second look, the browser's first download, the PDF being written.
+ */
+export function plainProgress(line: string): string | null {
+  const second = /^\[(\d+)\/(\d+)\] second look:/.exec(line);
+  if (second) return `second look, page ${second[1]} of ${second[2]}`;
+  const read = /^\[(\d+)\/(\d+)\] /.exec(line);
+  if (read) return `reading page ${read[1]} of up to ${read[2]}`;
+  if (line.startsWith('Downloading the browser')) return 'downloading the browser (first run)';
+  if (line.startsWith('Writing the PDF')) return 'writing the PDF';
+  return null;
+}
 
 export const queueFile = (data: string): string => join(data, 'queue.json');
 
@@ -88,7 +103,7 @@ export function addSites(data: string, text: string, reason?: Reason): Added {
         added.refused.push({ line, why: 'not a web address' });
         continue;
       }
-      const host = new URL(url).hostname;
+      const host = siteOf(url);
       if (sites.some((e) => e.host === host && (e.state === 'waiting' || e.state === 'running'))) {
         added.refused.push({ line, why: 'already in the queue' });
         continue;
@@ -161,6 +176,8 @@ function finish(data: string, id: number, error: string | null): void {
 export interface QueueRunner {
   kick: () => void;
   idle: () => Promise<void>;
+  /** Each running entry's latest plain progress line, by its id; held in memory alone, gone when the review ends. */
+  progress: () => ReadonlyMap<number, string>;
 }
 
 /**
@@ -183,6 +200,7 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
       return crawl.beside;
     };
   };
+  const latest = new Map<number, string>();
   const work = async (): Promise<void> => {
     // A queue file that cannot be read stops the runner, not the program: nothing more is taken, nothing written.
     const next = (): QueueEntry | null => whileReadable(() => take(data), null);
@@ -191,11 +209,16 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
       for (const crawl of crawling) crawl.beside = true;
       let error: string | null;
       try {
-        error = await run(entry.site, alongside);
+        const id = entry.id;
+        error = await run(entry.site, alongside, (line) => {
+          const plain = plainProgress(line);
+          if (plain) latest.set(id, plain);
+        });
       } catch (e) {
         error = e instanceof Error ? e.message : String(e);
       } finally {
         running -= 1;
+        latest.delete(entry.id);
       }
       whileReadable(() => finish(data, entry.id, error), undefined);
       kick();
@@ -209,6 +232,7 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
   };
   return {
     kick,
+    progress: () => latest,
     idle: async () => {
       while (working.size) await Promise.all(working);
     },
@@ -221,11 +245,12 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
  * runner's `alongside` goes to the review, which withholds SITE-22 when its crawl ran beside another review (GR-014).
  */
 export function reviewLine(data: string, browser?: () => Promise<Browser | undefined>): ReviewRun {
-  return async (site, alongside) => {
+  return async (site, alongside, progress) => {
     let last = '';
     const say = (line: string) => {
       last = line;
       console.log(`${site}: ${line}`);
+      progress?.(line);
     };
     const { code } = await review({ site, data, say, browser: await browser?.(), alongside });
     return code === 0 ? null : last || `the review stopped (${code})`;

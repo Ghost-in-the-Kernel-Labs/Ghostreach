@@ -119,6 +119,18 @@ describe('the queue (TODO 3.3)', () => {
     expect(addSites(data, '\n  \n')).toEqual({ queued: [], refused: [] });
   });
 
+  it('two ports on one host are two sites (launch fixes 11): both queued, both may run; the same port twice is refused', () => {
+    const added = addSites(data, 'http://127.0.0.1:9/\nhttp://127.0.0.1:41479/\nhttp://127.0.0.1:9/about\nlocalhost:9');
+    expect(added.queued.map((e) => [e.site, e.host])).toEqual([
+      ['http://127.0.0.1:9/', '127.0.0.1:9'],
+      ['http://127.0.0.1:41479/', '127.0.0.1:41479'],
+      ['localhost:9', 'localhost:9'],
+    ]);
+    expect(added.refused).toEqual([{ line: 'http://127.0.0.1:9/about', why: 'already in the queue' }]);
+    // The default port is the bare host, as a queue written before this kept it.
+    expect(addSites(data, 'https://example.com:443/\nexample.com').queued.map((e) => e.host)).toEqual(['example.com']);
+  });
+
   it('a restart puts an entry left running back to waiting, and nothing else', () => {
     addSites(data, 'a.example\nb.example\nc.example');
     const sites = readQueue(data);
@@ -274,21 +286,25 @@ describe('concurrency (TODO 3.4, GR-008)', () => {
     expect([beside['e.example'], beside['f.example']]).toEqual([false, false]);
   });
 
-  it('N comes from the settings file: default 3, ceiling 5, a value it cannot run made one it can, with a line saying so', () => {
-    expect(readSettings(data)).toEqual({ reviewsAtOnce: 3, note: null });
+  it("N comes from the settings file, else this computer's recommendation (launch fixes 9); ceiling 5; a value it cannot run made one it can, with a line saying so", () => {
+    // A machine the recommendation reads as 4: 6 GB free, 8 cores.
+    const machine = { totalBytes: 16 * 1024 ** 3, freeBytes: 6 * 1024 ** 3, cores: 8 };
+    expect(readSettings(data, machine)).toEqual({ reviewsAtOnce: 4, fromFile: false, note: null });
     const asks = (text: string) => {
       mkdirSync(data, { recursive: true });
       writeFileSync(settingsFile(data), text);
-      return readSettings(data);
+      return readSettings(data, machine);
     };
-    expect(asks('{"reviewsAtOnce": 5}')).toEqual({ reviewsAtOnce: 5, note: null });
-    expect(asks('{"reviewsAtOnce": 1}')).toEqual({ reviewsAtOnce: 1, note: null });
-    expect(asks('{}')).toEqual({ reviewsAtOnce: 3, note: null });
-    expect(asks('{"reviewsAtOnce": 9}')).toEqual({ reviewsAtOnce: 5, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
-    expect(asks('{"reviewsAtOnce": 0}')).toEqual({ reviewsAtOnce: 1, note: 'settings.json asks for 0 reviews at once; 1 run at once (a whole number from 1 to 5).' });
+    expect(asks('{"reviewsAtOnce": 5}')).toEqual({ reviewsAtOnce: 5, fromFile: true, note: null });
+    expect(asks('{"reviewsAtOnce": 1}')).toEqual({ reviewsAtOnce: 1, fromFile: true, note: null });
+    expect(asks('{}')).toEqual({ reviewsAtOnce: 4, fromFile: false, note: null });
+    expect(asks('{"reviewsAtOnce": 9}')).toEqual({ reviewsAtOnce: 5, fromFile: true, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
+    expect(asks('{"reviewsAtOnce": 0}')).toEqual({ reviewsAtOnce: 1, fromFile: true, note: 'settings.json asks for 0 reviews at once; 1 run at once (a whole number from 1 to 5).' });
     expect(asks('{"reviewsAtOnce": 2.5}').reviewsAtOnce).toBe(2);
-    expect(asks('{"reviewsAtOnce": "4"}')).toEqual({ reviewsAtOnce: 3, note: "settings.json's reviewsAtOnce is not a number, so 3 reviews run at once, the default." });
-    expect(asks('{"reviewsAtOnce": 4')).toEqual({ reviewsAtOnce: 3, note: 'settings.json could not be read, so 3 reviews run at once, the default.' });
-    expect(asks('null')).toEqual({ reviewsAtOnce: 3, note: null });
+    expect(asks('{"reviewsAtOnce": "4"}')).toEqual({ reviewsAtOnce: 4, fromFile: false, note: "settings.json's reviewsAtOnce is not a number, so 4 reviews run at once, recommended for this computer." });
+    expect(asks('{"reviewsAtOnce": 4')).toEqual({ reviewsAtOnce: 4, fromFile: false, note: 'settings.json could not be read, so 4 reviews run at once, recommended for this computer.' });
+    expect(asks('null')).toEqual({ reviewsAtOnce: 4, fromFile: false, note: null });
+    // A machine that can carry one review runs one when the file says nothing.
+    expect(readSettings(join(data, 'none'), { totalBytes: 4 * 1024 ** 3, freeBytes: 0.5 * 1024 ** 3, cores: 2 }).reviewsAtOnce).toBe(1);
   });
 });

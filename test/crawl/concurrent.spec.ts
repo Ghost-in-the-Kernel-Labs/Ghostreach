@@ -9,7 +9,8 @@
  * serial run lacks, its PDF carries the sentence, and the serial PDF does not.
  *
  * The three hosts: 127.0.0.1, `localhost` and 127.0.0.2 (a forwarder to a third fixture server, since the fixture server listens
- * on 127.0.0.1 alone): the queue never reviews one host twice at once, so three sites on one host would run one after another.
+ * on 127.0.0.1 alone): chosen when the queue took a host as one site whatever its port; since launch fixes 11 two ports are two
+ * sites, and three hosts are kept so each folder and PDF is told apart by its host too.
  * 127.0.0.2 answers on Linux and Windows, where every 127.x address is the machine's own; macOS has 127.0.0.1 alone, so the spec
  * is skipped there.
  */
@@ -59,9 +60,9 @@ async function forward(address: string, port: number): Promise<{ origin: string;
   return { origin: `http://${address}:${bound}`, server };
 }
 
-/** The one review folder under `data` named for `host`. */
+/** The one review folder under `data` named for `host` (its port after `_`, launch fixes 11). */
 function folderOf(data: string, host: string): string {
-  const folders = readdirSync(data).filter((f) => f.startsWith(`${host}-`));
+  const folders = readdirSync(data).filter((f) => f.startsWith(`${host}_`));
   expect(folders).toHaveLength(1);
   return join(data, folders[0]);
 }

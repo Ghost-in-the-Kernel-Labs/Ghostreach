@@ -21,19 +21,23 @@ Ghostreach runs on Windows and Linux. (It may run on a Mac, but nobody looks aft
    package). **Linux:** use `npx playwright@1.63.0 install --with-deps chromium` instead; it asks for your password to
    add the libraries Chromium needs.
 6. Check: `ghostreach doctor`. Its first two lines should say Node.js is "new enough" and Chromium is "installed". If a
-   line says something is missing or too old, it says how to fix it: do that, then run `ghostreach doctor` again. Its last lines say how many sites this computer can review at once.
+   line says something is missing or too old, it says how to fix it: do that, then run `ghostreach doctor` again. Its last line says how many sites are reviewed at once, the number recommended for this computer.
 
 If a step prints an error you do not understand, copy the whole message to Ghost.
 
 ## 2. Open the page
 
-Each time you work, open a terminal and type `ghostreach`. Your browser opens a page, "The reviews", that only
-your computer can see. Keep the terminal open while you work: closing it, or pressing Ctrl+C in it, stops the page.
+Each time you work, open a terminal and type `ghostreach`. Your browser opens a page, "Review a website", that only
+your computer can see; if it does not, the terminal says the address to open, the same each time, so you can bookmark it.
+Keep the terminal open while you work: closing it, or pressing Ctrl+C in it, stops the page ("Stopped.").
+To start Ghostreach from an icon instead, type `ghostreach shortcut` once: it puts Ghostreach on your desktop and in the
+Start menu (Windows) or the applications menu (Linux); the icon opens the same terminal window.
 A review that was running when it stopped starts again from the beginning the next time. If the page is already
 running, typing `ghostreach` again just shows it in your browser. `ghostreach --help` lists every command.
 
-The page has four parts, top to bottom: **Sites to review** (the queue), **Done** (the finished reviews),
-**Is this company hiring QA?** and **Who is hiring QA?** (the two ways to find leads).
+The page has three parts, top to bottom: the box to name sites (the queue), **Done** (the finished reviews), and
+**Find companies to review**, folded: click it to open **Is this company hiring QA?** and **Who is hiring QA?** (the two
+ways to find leads).
 
 ## 3. Find leads
 
@@ -41,12 +45,13 @@ The page has four parts, top to bottom: **Sites to review** (the queue), **Done*
 Look up. Ghostreach asks the public job boards companies use for their careers pages (Greenhouse, Lever, Ashby,
 SmartRecruiters, Recruitee, Personio). For each board it finds, you see how many roles are open and which are QA,
 test or SDET roles. "No public board found" means none of those boards knows the company; that is not a no.
+A board marked "maybe" was found by guessing its name from what you typed, and nothing on it names the company:
+it may belong to another company with a similar name, so check its roles before you write.
 
 **Companies hiring QA right now.** Under "Who is hiring QA?", the search lists job titles (QA engineer, test
-automation, SDET, QA analyst) and a location. Change them if you like and press Save the search, then press Run the
-search. You get one row per company, with its newest QA posting and where it was posted. Two boards, Jooble and
-USAJOBS, need a key Ghost sets up: the "Lead sources" part at the bottom of the page shows "key absent" for each one
-not set up yet, and the search skips it.
+automation, SDET, QA analyst) and a location. Change them if you like and press Search. You get one row per company, with its newest QA posting and where it was posted. Two boards, Jooble and
+USAJOBS, need a key Ghost sets up: the "Lead sources" part at the bottom of the page says "needs a key from Ghost" for
+each one not set up yet, and the search skips it.
 
 **On every company row** you can:
 
@@ -58,17 +63,18 @@ not set up yet, and the search skips it.
 
 ## 4. Queue sites
 
-Press **Queue this site** on a company row, or type websites into the box under "Sites to review", one per line
-(`www.example.com` is enough), and press Queue. Each site shows its state: waiting, running, done or failed. The page
+Press **Queue this site** on a company row, or type websites into the box under "Review a website", one per line
+(`www.example.com` is enough), and press Review these sites. Each site shows its state: waiting, running (with how
+far it has got, such as "reading page 8 of up to 300"), done or failed. The page
 refreshes itself while anything is waiting or running. A review usually takes a few minutes; the page says how many
 run at once.
 
-When a site is done, its row on the lead finder says "reviewed" with the date and a PDF link, and it appears under
-Done.
+When a site is done, its row says **Open PDF** with how many findings it has, and **Download PDF** saves it; its row on
+the lead finder says "reviewed" with the date and a PDF link, and it appears under Done.
 
 ## 5. Read the review
 
-Under Done, click the site's name: the PDF opens in your browser. It has:
+Under Done, click **Open PDF** beside the site: the PDF opens in your browser (**Download PDF** saves it instead). It has:
 
 - a cover page with the site and the date;
 - what was read: how many pages, logged out, as a first-time visitor sees them (nothing is sent, bought or signed in

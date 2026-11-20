@@ -1,6 +1,6 @@
 /**
  * The lead finder's keys (TODO 4.4): one named environment variable per keyed `in` source of docs/SOURCES.md, read only where a
- * fetch uses it; the local page says "key present" or "key absent" per source and never carries a key; a source without its key
+ * fetch uses it; the local page says "key present" or "needs a key from Ghost" per source and never carries a key; a source without its key
  * is skipped and said so. Every key here is made up and joined at run time from pieces (CLAUDE.md), so no key-shaped literal is in
  * this file; the environment is the test's own (`vi.stubEnv`), restored after each test.
  */
@@ -94,11 +94,12 @@ describe("the local page shows key present or absent, never a key (TODO 4.4's ch
       page = undefined;
     }
   });
-  it('says key absent with the variables to set, the source skipped until then', async () => {
+  it('says a source without its key needs one from Ghost, naming no variable (launch fixes 5)', async () => {
     stubAll(() => '');
     const html = await pageHtml();
-    expect(html).toContain('Jooble <span class="state">key absent</span> <span class="error">skipped until JOOBLE_API_KEY is set</span>');
-    expect(html).toContain('USAJOBS <span class="state">key absent</span> <span class="error">skipped until USAJOBS_API_KEY and USAJOBS_EMAIL are set</span>');
+    expect(html).toContain('Jooble <span class="state">needs a key from Ghost</span>');
+    expect(html).toContain('USAJOBS <span class="state">needs a key from Ghost</span>');
+    expect(html).not.toContain('skipped until');
   });
   it('would find a key had one reached the page (the check can fail)', async () => {
     stubAll(() => '');

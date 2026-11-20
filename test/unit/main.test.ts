@@ -1,10 +1,11 @@
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
-import { doctorLines, recommended, settingsFile } from '../../src/project/settings.js';
-import { reviewFolder, reviewSummary } from '../../src/project/review.js';
+import { doctorLines, recommended, settingsFile, thisMachine } from '../../src/project/settings.js';
+import { pdfName, reviewFolder, reviewSummary } from '../../src/project/review.js';
+import { listReviews } from '../../src/project/serve.js';
 import { readCrawlReport } from '../../src/crawl/report-read.js';
 import { siteFindings } from '../../src/findings/findings.js';
 
@@ -25,23 +26,36 @@ describe('ghostreach doctor (TODO 3.4, GR-008)', () => {
     expect(recommended({ totalBytes: 64 * GB, freeBytes: 40 * GB, cores: 32 })).toBe(5);
     expect(recommended({ totalBytes: 4 * GB, freeBytes: 0.3 * GB, cores: 1 })).toBe(1);
   });
-  it("says the machine's memory, the number it recommends, what is set, and where to set it, in plain words", async () => {
+  it("says the machine's memory and the reviews at once it uses, recommended for this computer, and why; no JSON to write (launch fixes 9)", async () => {
     const data = mkdtempSync(join(tmpdir(), 'ghostreach-doctor-'));
+    const machine = { totalBytes: 16 * GB, freeBytes: 6 * GB, cores: 8 };
     try {
-      expect(doctorLines(data, { totalBytes: 16 * GB, freeBytes: 6 * GB, cores: 8 })).toEqual([
+      expect(doctorLines(data, machine)).toEqual([
         'This computer has 16.0 GB of memory, 6.0 GB of it free now, and 8 processor cores.',
-        'Recommended: 4 reviews at once (one for each 1 GB free and each 2 cores, whichever is fewer, from 1 to 5).',
-        'Set now: 3 at once, the default.',
-        `To change it, write {"reviewsAtOnce": 4} in ${settingsFile(data)} then stop the open page (Ctrl+C in its window) and type ghostreach again.`,
+        'Reviews at once: 4, recommended for this computer (one for each 1 GB free and each 2 cores, whichever is fewer, from 1 to 5).',
       ]);
+      // The settings file still has the last word, and the doctor says what it uses and why.
+      writeFileSync(settingsFile(data), '{"reviewsAtOnce": 2}');
+      expect(doctorLines(data, machine)).toEqual([
+        'This computer has 16.0 GB of memory, 6.0 GB of it free now, and 8 processor cores.',
+        `Reviews at once: 2, as ${settingsFile(data)} asks (4 is recommended for this computer).`,
+      ]);
+      writeFileSync(settingsFile(data), '{"reviewsAtOnce": "two"}');
+      expect(doctorLines(data, machine)[1]).toBe(
+        "Reviews at once: 4, recommended for this computer (one for each 1 GB free and each 2 cores, whichever is fewer, from 1 to 5). settings.json's reviewsAtOnce is not a number, so 4 reviews run at once, recommended for this computer.",
+      );
+      rmSync(settingsFile(data));
       vi.spyOn(console, 'log').mockImplementation(() => {});
       expect(await main(['doctor'], data)).toBe(0);
-      expect(said()).toHaveLength(6);
+      expect(said()).toHaveLength(4);
       // TODO 5.1: Node.js and Chromium first, each ready or missing with the command that fixes it.
       expect(said()[0]).toMatch(/^Node\.js \d+\.\d+\.\d+: /);
       expect(said()[1]).toMatch(/^Chromium, the browser the review drives: (installed\.|not installed\. Run: npx playwright@\d+\.\d+\.\d+ install chromium)$/);
       expect(said()[2]).toMatch(/^This computer has \d+\.\d GB of memory, \d+\.\d GB of it free now, and \d+ processor cores?\.$/);
-      expect(said()[3]).toMatch(/^Recommended: [1-5] reviews? at once/);
+      // No one is asked to hand-write JSON, and its N is this machine's recommendation (free memory moves, so within one).
+      expect(said().join('\n')).not.toContain('{');
+      const n = Number(/^Reviews at once: ([1-5]), recommended for this computer/.exec(said()[3])?.[1]);
+      expect(Math.abs(n - recommended(thisMachine()))).toBeLessThanOrEqual(1);
       // The doctor only reads: nothing is written into the data folder.
       expect(readdirSync(data)).toEqual([]);
     } finally {
@@ -58,7 +72,7 @@ describe('ghostreach <site> and --help (GR-003: no flag; GR-018)', () => {
     expect(await main(['--help'], '/home/someone/Ghostreach')).toBe(0);
     const help = said();
     expect(help.filter((line) => /^ {2}ghostreach/.test(line)).map((line) => line.trim().split(/ {2,}/)[0])).toEqual([
-      'ghostreach', 'ghostreach <site>', 'ghostreach doctor', 'ghostreach serve', 'ghostreach --help',
+      'ghostreach', 'ghostreach <site>', 'ghostreach doctor', 'ghostreach shortcut', 'ghostreach serve', 'ghostreach --help',
     ]);
     expect(help).toContain('Reviews are saved in /home/someone/Ghostreach');
     expect(help.some((line) => line.includes('Ctrl+C'))).toBe(true);
@@ -102,6 +116,33 @@ describe('the review folder and its summary (REV-06)', () => {
       rmSync(data, { recursive: true, force: true });
     }
   });
+  it('names a port when one is given (launch fixes 11): two ports on one host get two folders, each read back as its site', () => {
+    const data = mkdtempSync(join(tmpdir(), 'ghostreach-folder-'));
+    try {
+      const nine = reviewFolder(data, '127.0.0.1:9', '2026-11-20');
+      const other = reviewFolder(data, '127.0.0.1:41479', '2026-11-20');
+      // `:` is not allowed in a Windows file name: the port follows `_`, which no web address's host ends in.
+      expect([nine, other]).toEqual([join(data, '127.0.0.1_9-2026-11-20'), join(data, '127.0.0.1_41479-2026-11-20')]);
+      expect(reviewFolder(data, 'example.com', '2026-11-20')).toBe(join(data, 'example.com-2026-11-20'));
+      for (const [folder, site] of [[nine, '127.0.0.1:9'], [other, '127.0.0.1:41479']]) {
+        mkdirSync(folder);
+        // The PDF is named by the host alone, as the audit's heading names the site.
+        writeFileSync(join(folder, pdfName('127.0.0.1')), '%PDF-1.7\n%%EOF\n');
+        expect(site).toMatch(/^127\.0\.0\.1:\d+$/);
+      }
+      // A folder written before ports were named is still listed, by its host.
+      mkdirSync(join(data, 'example.com-2026-11-19'));
+      writeFileSync(join(data, 'example.com-2026-11-19', pdfName('example.com')), '%PDF-1.7\n%%EOF\n');
+      expect(listReviews(data).map((r) => [r.host, r.folder, r.href])).toEqual([
+        ['127.0.0.1:41479', '127.0.0.1_41479-2026-11-20', `/reviews/127.0.0.1_41479-2026-11-20/${encodeURIComponent(pdfName('127.0.0.1'))}`],
+        ['127.0.0.1:9', '127.0.0.1_9-2026-11-20', `/reviews/127.0.0.1_9-2026-11-20/${encodeURIComponent(pdfName('127.0.0.1'))}`],
+        ['example.com', 'example.com-2026-11-19', `/reviews/example.com-2026-11-19/${encodeURIComponent(pdfName('example.com'))}`],
+      ]);
+    } finally {
+      rmSync(data, { recursive: true, force: true });
+    }
+  });
+
   it("holds the host, the date, the pages read, the count by severity and the count by code, in the findings' order", () => {
     const file = 'test/golden/fixture-site.crawl.json';
     const report = readCrawlReport(readFileSync(file, 'utf8'), file);

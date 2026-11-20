@@ -13,7 +13,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
 import { readQueue, type ReviewRun } from '../../src/project/queue.js';
 import { pdfName } from '../../src/project/review.js';
-import { LOOPBACK, listReviews, opener, pageFile, servePage, type ServedPage } from '../../src/project/serve.js';
+import { LOOPBACK, listReviews, servePage, type ServedPage } from '../../src/project/serve.js';
+import { opener, pageFile } from '../../src/project/show.js';
 
 /** The files of a review's folder the program keeps for its own use (REV-06), never named to the salesperson (TODO 2.5). */
 const UNNAMED = /AUDIT\.html|findings\.json|summary\.json|\.crawl\.json|\.json\b/;
@@ -77,8 +78,8 @@ describe('ghostreach serve: the local page (TODO 3.2)', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
     const html = await res.text();
-    // Every link but the page's own reload link (3.3).
-    const links = [...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1]).filter((l) => l !== '/');
+    // Every review's link, once (its Open PDF and Download PDF links name the same PDF); the reload link and the icons aside.
+    const links = [...new Set([...html.matchAll(/href="([^"]*)"/g)].map((m) => m[1]).filter((l) => l.startsWith('/reviews/')))];
     expect(links).toEqual([
       '/reviews/example.com-2026-11-14-2/example.com%20site%20review.pdf',
       '/reviews/example.com-2026-11-14/example.com%20site%20review.pdf',
@@ -181,10 +182,11 @@ describe('the command word and the opener', () => {
     let served: ServedPage | undefined;
     const running = main(['serve'], data, (_url, p) => void (served = p));
     await vi.waitFor(() => expect(served).toBeDefined());
-    expect(lines).toEqual([`The reviews are at ${served!.url} (this computer only). Ctrl+C stops the page.`]);
+    expect(lines[0]).toBe(`The reviews are at ${served!.url} (this computer only). Ctrl+C stops the page.`);
     expect(await (await fetch(served!.url)).text()).toContain('example.com%20site%20review.pdf');
     await served!.close();
     expect(await running).toBe(0);
+    expect(lines.at(-1)).toBe('Stopped.');
     // The note goes with the page that wrote it.
     expect(existsSync(pageFile(data))).toBe(false);
   });
@@ -362,7 +364,7 @@ describe('the queue on the page (TODO 3.3)', () => {
       started.push(site);
       finish.push(() => done(null));
     }));
-    expect(page.settings).toEqual({ reviewsAtOnce: 5, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
+    expect(page.settings).toEqual({ reviewsAtOnce: 5, fromFile: true, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
     await raw(page.url, '/queue', form({ sites: 'a.example\nb.example\nc.example\nd.example\ne.example\nf.example' }, own()));
     await vi.waitFor(() => expect(started).toHaveLength(5));
     const html = await (await fetch(page.url)).text();
