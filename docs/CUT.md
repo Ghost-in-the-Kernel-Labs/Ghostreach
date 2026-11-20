@@ -272,7 +272,7 @@ company-lane sources through it, the QA roles of each board found kept in `<data
 discovery lane, one saved search run across the discovery-lane sources through it, one row per company kept in `<data>/discovery.json`;
 `src/project/leads.ts` (4.8) what the salesperson keeps on a company row, its typed website and the closed sites' postings pasted (4.9), in `<data>/leads.json`;
 `src/project/kept.ts` (J-045) those four data files read back, one that cannot be read never overwritten and said on the page in one line.
-`src/cli/bin.ts` (5.1) the installed command, `main` run with the words typed; `src/project/ready.ts` (5.1) `ghostreach doctor`'s first lines, Node.js and Chromium ready or the command that fixes each.
+`src/cli/bin.ts` (5.1) the installed command, `main` run with the words typed; `src/project/ready.ts` (5.1) `ghostreach doctor`'s first lines, Node.js and Chromium ready or the command that fixes each. `src/project/shortcut.ts` (launch fixes 10, GR-022) `ghostreach shortcut`, the desktop and menu shortcut with the icon, made only when asked, and the first launch's one-line tip about it.
 
 - `src/leaf/words.ts`
 - `src/cli/main.ts`
@@ -294,6 +294,7 @@ discovery lane, one saved search run across the discovery-lane sources through i
 - `src/project/kept.ts`
 - `src/cli/bin.ts`
 - `src/project/ready.ts`
+- `src/project/shortcut.ts`
 
 ## Traced, not copied: left unused by the cut
 

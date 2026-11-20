@@ -83,6 +83,9 @@ Three kinds of network use are outside it, each by design and each named in `tes
 3. **The first-run browser download** (`src/project/crawl.ts`): Playwright's own installer fetches Chromium from
    Playwright's download hosts when none is installed, a dependency's install, not a source.
 
+`src/project/shortcut.ts` (`ghostreach shortcut`, GR-022) is named in the test too, though it reaches no network: it runs a
+program of this computer's own (PowerShell on Windows, `gio` on Linux) to make the shortcut, as `node:child_process` could.
+
 Outside `src/crawl/`, any other network use in `src/` fails `test/unit/hosts.test.ts` until it is either the fetch
 function reading an allow-listed host, or named here and in the test with its reason.
 

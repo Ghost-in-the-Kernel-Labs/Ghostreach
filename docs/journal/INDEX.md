@@ -70,3 +70,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-064 | @types/node approved, and the branch landed on Ghost's word | decision | `J-000-099.md` |
 | J-065 | The landing: the branch's net change as the reviewer's tune-up commit | decision | `J-000-099.md` |
 | J-066 | The launch fixes, item A: the page a salesperson meets first | decision | `J-000-099.md` |
+| J-067 | The launch fixes, item B: the launch's messages and `ghostreach shortcut` | decision | `J-000-099.md` |

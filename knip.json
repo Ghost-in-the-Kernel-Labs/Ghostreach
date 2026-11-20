@@ -17,6 +17,7 @@
     "test/fixtures/**"
   ],
   "ignoreBinaries": [
-    "openssl"
+    "openssl",
+    "desktop-file-validate"
   ]
 }

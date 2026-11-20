@@ -26,13 +26,16 @@ Ghostreach runs on Windows and Linux; a Mac is not supported (it may work).
 
 ## Use
 
-Type `ghostreach` and your browser opens the Ghostreach page: the reviews, the queue and the lead finder. If the page is
-already running, `ghostreach` opens it again instead of starting a second one. Keep that terminal window open while you
-work; Ctrl+C in it stops the page.
+Type `ghostreach` and your browser opens the Ghostreach page: the reviews, the queue and the lead finder. If the browser
+cannot be opened, the terminal says the address to open (it stays `http://127.0.0.1:4747/` unless another program holds that
+port, so a bookmark keeps working). If the page is already running, `ghostreach` opens it again instead of starting a second
+one. Keep that terminal window open while you work; Ctrl+C in it stops the page. `ghostreach shortcut` puts Ghostreach, with
+its icon, on the desktop and in the Start menu (Windows) or the applications menu (Linux); it is made only when you ask.
 
     ghostreach                 Open the Ghostreach page in your browser (starts it if needed)
     ghostreach <site>          Review one website and write its PDF, for example: ghostreach www.example.com
     ghostreach doctor          Check this computer: Node.js, the browser, how many reviews at once
+    ghostreach shortcut        Put Ghostreach, with its icon, on your desktop and in your menu
     ghostreach serve           Same as ghostreach
     ghostreach --help          This list (ghostreach help too)
 

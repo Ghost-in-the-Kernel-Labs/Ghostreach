@@ -182,10 +182,11 @@ describe('the command word and the opener', () => {
     let served: ServedPage | undefined;
     const running = main(['serve'], data, (_url, p) => void (served = p));
     await vi.waitFor(() => expect(served).toBeDefined());
-    expect(lines).toEqual([`The reviews are at ${served!.url} (this computer only). Ctrl+C stops the page.`]);
+    expect(lines[0]).toBe(`The reviews are at ${served!.url} (this computer only). Ctrl+C stops the page.`);
     expect(await (await fetch(served!.url)).text()).toContain('example.com%20site%20review.pdf');
     await served!.close();
     expect(await running).toBe(0);
+    expect(lines.at(-1)).toBe('Stopped.');
     // The note goes with the page that wrote it.
     expect(existsSync(pageFile(data))).toBe(false);
   });
@@ -363,7 +364,7 @@ describe('the queue on the page (TODO 3.3)', () => {
       started.push(site);
       finish.push(() => done(null));
     }));
-    expect(page.settings).toEqual({ reviewsAtOnce: 5, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
+    expect(page.settings).toEqual({ reviewsAtOnce: 5, fromFile: true, note: 'settings.json asks for 9 reviews at once; 5 run at once (a whole number from 1 to 5).' });
     await raw(page.url, '/queue', form({ sites: 'a.example\nb.example\nc.example\nd.example\ne.example\nf.example' }, own()));
     await vi.waitFor(() => expect(started).toHaveLength(5));
     const html = await (await fetch(page.url)).text();

@@ -1,6 +1,6 @@
 /**
  * The package (TODO 5.1): the salesperson's install, run as the salesperson runs it. The program is built (`npm run build`) and
- * packed (`npm pack`); the tarball holds `package.json`, the README, the built `dist/` and the page's icon alone, each built file the build of a
+ * packed (`npm pack`); the tarball holds `package.json`, the README, the built `dist/` and the icons alone, each built file the build of a
  * source under `src/` (no test, fixture, document, key, data folder or .env). In a fresh folder under the system's temporary
  * folder (TMPDIR), nowhere near this repository's node_modules, `npm install -g --prefix <folder>/prefix <tarball> --ignore-scripts`
  * (npm 11) installs it, and the installed `ghostreach` alone, on a PATH holding only it, Node and the system, answers `--help`,
@@ -14,7 +14,7 @@
  */
 import { test, expect } from 'playwright/test';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { delimiter, dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -80,10 +80,11 @@ test('the tarball installs with one command and the installed ghostreach reviews
   const shipped = packed.files.map((f) => f.path).sort();
   // What runs, the README for the salesperson and the icon; every built file the build of a source under src/ (nothing stale, nothing else).
   const source = (p: string) => /^dist\/.+\.js$/.test(p) && existsSync(join(REPO, p.replace(/^dist\//, 'src/').replace(/\.js$/, '.ts')));
-  // The page's icon (launch fixes 6), served as its favicon from the installed package.
-  const icon = (p: string) => p === 'assets/icon.svg' || p === 'assets/icon-32.png';
+  // The page's icon (launch fixes 6), served as its favicon from the installed package; the shortcut's (launch fixes 10, GR-022).
+  const ICONS = ['assets/icon-256.png', 'assets/icon-32.png', 'assets/icon.ico', 'assets/icon.svg'];
+  const icon = (p: string) => ICONS.includes(p);
   expect(shipped.filter((p) => p !== 'README.md' && p !== 'package.json' && !source(p) && !icon(p))).toEqual([]);
-  expect(shipped.filter(icon)).toEqual(['assets/icon-32.png', 'assets/icon.svg']);
+  expect(shipped.filter(icon)).toEqual(ICONS);
   expect(shipped.filter((p) => /(^|\/)(\.env|test|docs|Ghostreach)(\/|$)|\.(pem|key|json)$/.test(p) && p !== 'package.json')).toEqual([]);
 
   // The salesperson's one command, in a folder of its own: npm 11, no install script run.
@@ -110,7 +111,7 @@ test('the tarball installs with one command and the installed ghostreach reviews
 
   const help = await installed(bin, ['--help'], env, scratch);
   expect(help.code).toBe(0);
-  expect(help.lines.filter((line) => /^ {2}ghostreach/.test(line)).length).toBe(5);
+  expect(help.lines.filter((line) => /^ {2}ghostreach/.test(line)).length).toBe(6);
   expect(help.lines).toContain(`Reviews are saved in ${join(home, 'Ghostreach')}`);
 
   // The page's favicon, served from the installed package's own assets (launch fixes 6).
@@ -149,4 +150,44 @@ test('the tarball installs with one command and the installed ghostreach reviews
   expect(pages.length).toBeGreaterThan(1);
   expect(pages.every((page) => squeezed(page.text).includes(ADDRESS))).toBe(true);
   expect(pages.some((page) => /ghostreach/i.test(page.text))).toBe(false);
+
+  if (WINDOWS) return;
+  // The page's launch (launch fixes 7, 8): no browser opener on this PATH, so the address is said as the way in; Ctrl+C says
+  // "Stopped." and takes the note; the next launch is at the same address; the shortcut's tip said on the first launch alone.
+  const opener = ['/usr/bin/xdg-open', '/bin/xdg-open'].some((f) => existsSync(f));
+  const launched = async (): Promise<{ code: number | null; lines: string[] }> => {
+    const child = spawn(bin, [], { cwd: scratch, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    child.stdout.on('data', (chunk: Buffer) => (out += chunk.toString('utf8')));
+    child.stderr.on('data', (chunk: Buffer) => (out += chunk.toString('utf8')));
+    const closed = new Promise<number | null>((done) => child.on('close', done));
+    await expect.poll(() => out, { timeout: 20_000 }).toContain(opener ? 'Ctrl+C stops the page.' : 'Open this address in your browser: ');
+    expect(existsSync(join(data, 'page.json'))).toBe(true);
+    child.kill('SIGINT');
+    return { code: await closed, lines: out.split('\n').filter((line) => line.trim()) };
+  };
+  const address = (lines: string[]) => /^The reviews are at (http:\/\/127\.0\.0\.1:\d+\/) /.exec(lines[0] ?? '')?.[1];
+  const first = await launched();
+  expect(first.code, first.lines.join('\n')).toBe(0);
+  expect(first.lines.at(-1)).toBe('Stopped.');
+  expect(existsSync(join(data, 'page.json'))).toBe(false);
+  if (!opener) expect(first.lines).toContain(`Open this address in your browser: ${address(first.lines)}`);
+  expect(first.lines.filter((line) => line.startsWith('Tip: type ghostreach shortcut'))).toHaveLength(1);
+  const second = await launched();
+  expect(address(second.lines)).toBe(address(first.lines));
+  expect(second.lines.some((line) => line.startsWith('Tip:'))).toBe(false);
+  expect(existsSync(join(data, 'page.json'))).toBe(false);
+
+  // `ghostreach shortcut` (launch fixes 10, GR-022), on Linux: the .desktop file runs Node and the installed program, its icon the
+  // PNG copied beside it; desktop-file-validate passes it when the machine has it.
+  const made = await installed(bin, ['shortcut'], env, scratch);
+  expect(made.code, made.lines.join('\n')).toBe(0);
+  const desktopFile = join(home, '.local', 'share', 'applications', 'ghostreach.desktop');
+  const entry = readFileSync(desktopFile, 'utf8');
+  expect(entry).toContain(`Exec="${process.execPath}" "${join(realpathSync(copy), 'dist', 'cli', 'bin.js')}"`);
+  const iconFile = join(home, '.local', 'share', 'icons', 'ghostreach.png');
+  expect(entry).toContain(`Icon=${iconFile}`);
+  expect(readFileSync(iconFile).equals(readFileSync(join(copy, 'assets', 'icon-256.png')))).toBe(true);
+  const validated = spawnSync('desktop-file-validate', [desktopFile], { encoding: 'utf8' });
+  if (!validated.error) expect(validated.status, `${validated.stdout}${validated.stderr}`).toBe(0);
 });

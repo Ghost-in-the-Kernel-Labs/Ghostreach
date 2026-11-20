@@ -21,14 +21,17 @@ Ghostreach runs on Windows and Linux. (It may run on a Mac, but nobody looks aft
    package). **Linux:** use `npx playwright@1.63.0 install --with-deps chromium` instead; it asks for your password to
    add the libraries Chromium needs.
 6. Check: `ghostreach doctor`. Its first two lines should say Node.js is "new enough" and Chromium is "installed". If a
-   line says something is missing or too old, it says how to fix it: do that, then run `ghostreach doctor` again. Its last lines say how many sites this computer can review at once.
+   line says something is missing or too old, it says how to fix it: do that, then run `ghostreach doctor` again. Its last line says how many sites are reviewed at once, the number recommended for this computer.
 
 If a step prints an error you do not understand, copy the whole message to Ghost.
 
 ## 2. Open the page
 
 Each time you work, open a terminal and type `ghostreach`. Your browser opens a page, "Review a website", that only
-your computer can see. Keep the terminal open while you work: closing it, or pressing Ctrl+C in it, stops the page.
+your computer can see; if it does not, the terminal says the address to open, the same each time, so you can bookmark it.
+Keep the terminal open while you work: closing it, or pressing Ctrl+C in it, stops the page ("Stopped.").
+To start Ghostreach from an icon instead, type `ghostreach shortcut` once: it puts Ghostreach on your desktop and in the
+Start menu (Windows) or the applications menu (Linux); the icon opens the same terminal window.
 A review that was running when it stopped starts again from the beginning the next time. If the page is already
 running, typing `ghostreach` again just shows it in your browser. `ghostreach --help` lists every command.
 

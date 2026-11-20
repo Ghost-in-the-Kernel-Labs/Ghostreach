@@ -535,7 +535,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `test/unit/queue.test.ts`, `test/crawl/concurrent.spec.ts` (TODO 3.4, 3.5), `docs/CONTRACT.md` REV-03.
 - **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard drafted by the agent, confirmed by Ghost in chat 2026-11-14; which guard is still Ghost's choice (TODO 3.1).
 - **Status:** in force
-- **See also:** GR-003, GR-007, GR-014
+- **See also:** GR-003, GR-007, GR-014, GR-022
 - **subject:** concurrency
 
 ### GR-009: the dev dependencies, and why each
@@ -627,7 +627,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Source:** Ghost, in chat, 2026-11-18 (J-059). The agent's parts, for Ghost to confirm (J-060): the note's name and its check; the word `help` beside `--help`; the help's wording; the launchers building on first use with `npm ci` from the lockfile.
 - **Status:** in force
 - **subject:** command line
-- **See also:** GR-003, GR-008
+- **See also:** GR-003, GR-008, GR-022
 - **Supersedes:** GR-003, in part: its title's "`ghostreach <site>` and `--help`, nothing else" and its "The command takes a site and nothing else" (the command takes a site, one of the words `serve`, `doctor`, `help`, or nothing; and `--help`). The rest stands (no flag, every behaviour fixed, the settings file), so its Status stays `in force` and its See also names GR-018.
 
 ### GR-019: a dev-only advisory with no fix may stand as a recorded exception
@@ -645,7 +645,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `assets/icon.svg`, `assets/icon.ico`, `assets/icon-256.png`.
 - **Source:** Ghost, in chat, 2026-11-20 (J-062).
 - **Status:** in force
-- **See also:** GR-018
+- **See also:** GR-018, GR-022
 - **subject:** brand
 
 ### GR-021: the free review hands over the full PDF
@@ -656,4 +656,14 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Status:** in force
 - **See also:** GR-015
 - **subject:** delivery
+
+### GR-022: the launch: a fixed port, an honest opener, the doctor's own number, and `ghostreach shortcut`, opt-in
+- **Decision:** The local page tries port 4747 first and takes a free one only when another program holds it, so its address stays the same between launches. When the browser could not be opened, the terminal says "Open this address in your browser:" and the address, never that it opened; Ctrl+C says "Stopped." and removes `page.json`. With no number in `settings.json`, the reviews at once are `recommended()` for this computer, and `ghostreach doctor` says what it uses and why, asking no one to write JSON. `ghostreach shortcut` is a command word like `doctor`, listed by `--help`: on Windows `Ghostreach.lnk` on the desktop and in the Start menu with `assets/icon.ico`, made by PowerShell's WScript.Shell from a fixed, encoded script with every path in its environment; on Linux `ghostreach.desktop` in ~/.local/share/applications (and ~/Desktop when there is one, marked trusted by `gio` where it can) with the 256 px PNG copied to ~/.local/share/icons; each runs the folder's own launcher in a copy of the source, else Node and the installed program. It is made only when asked; the first launch says so in one line, once (`<data>/shortcut-tip.txt`). Both icon files ship in the package.
+- **Why:** Ghost, 2026-11-20, in chat: "go ahead with the launch fixes and the icon shortcut", to the launch walk's points 7 to 10 (the ruling grade's walk on a fresh clone); and of the shortcut, "Oh, opt in is fine".
+- **Held by:** `src/project/show.ts`, `src/project/serve.ts` (`servePage`'s port), `src/project/settings.ts`, `src/project/shortcut.ts`, `src/cli/main.ts`, `test/unit/launch.test.ts`, `test/unit/opener.int.test.ts`, `test/unit/shortcut.test.ts`, `test/unit/main.test.ts`, `test/unit/queue.test.ts`, `test/crawl/package.spec.ts`.
+- **Source:** Ghost, in chat, 2026-11-20 (J-067). The agent's parts, for Ghost to confirm: the port 4747; the tip's words and its mark's name; the shortcut's target (the launcher in a copy of the source, else Node and the installed `bin.js`, not npm's `ghostreach.cmd` shim, whose place the program cannot know); the paths passed to PowerShell in its environment; `Terminal=true` on Linux; SIGTERM handled as Ctrl+C is.
+- **Status:** in force
+- **See also:** GR-008, GR-018, GR-020
+- **subject:** command line
+- **Supersedes:** GR-008, in part: its "default 3" (the default is now this computer's recommendation, 1 to 5); and GR-018, in part: its title's "`serve` and `doctor` are commands" (`shortcut` is one too). The rest of each stands, so each Status stays `in force` and its See also names GR-022.
 

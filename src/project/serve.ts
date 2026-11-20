@@ -293,13 +293,14 @@ export interface ServedPage {
 }
 
 /**
- * Serves the data folder's reviews and queue on 127.0.0.1 alone, on a free port the system picks. `run` reviews a queued site
+ * Serves the data folder's reviews and queue on 127.0.0.1 alone, on `port` (the launch's fixed one, GR-022) or, when that is 0 or
+ * another program holds it, a free port the system picks. `run` reviews a queued site
  * (a test hands its own; else the command's own review, each in a context of the queue's one Chromium, closed when the page
  * stops); up to the settings file's number at once (GR-008). At start, an entry left `running` by a stop mid-review goes back to
  * `waiting` (`recover`) and the runner takes up what waits. `transport` is the lead finder's network and `env` where its keys are
  * read: a test's, else the platform's and the process's.
  */
-export async function servePage(data: string, run?: ReviewRun, transport?: Transport, env?: Readonly<Record<string, string | undefined>>): Promise<ServedPage> {
+export async function servePage(data: string, run?: ReviewRun, transport?: Transport, env?: Readonly<Record<string, string | undefined>>, port = 0): Promise<ServedPage> {
   recover(data);
   // The settings file, read once at start (GR-008): how many reviews run at once, all of them in one Chromium (RF-09).
   const settings = readSettings(data);
@@ -309,9 +310,17 @@ export async function servePage(data: string, run?: ReviewRun, transport?: Trans
   const served: Served = { settings, runner, running: new Set(), transport, env };
   const server = createServer((req, res) => guarded(data, served, req, res, 'The page could not be shown.', () => handle(data, served, () => bound, req, res)));
   const closed = new Promise<void>((done) => server.once('close', () => done()));
-  await new Promise<void>((done, fail) => {
+  const listen = (on: number) => new Promise<void>((done, fail) => {
     server.once('error', fail);
-    server.listen(0, LOOPBACK, () => done());
+    server.listen(on, LOOPBACK, () => {
+      server.off('error', fail);
+      done();
+    });
+  });
+  // Decision: GR-022
+  await listen(port).catch((e: NodeJS.ErrnoException) => {
+    if (port === 0 || e.code !== 'EADDRINUSE') throw e;
+    return listen(0);
   });
   bound = (server.address() as AddressInfo).port;
   runner.kick();
