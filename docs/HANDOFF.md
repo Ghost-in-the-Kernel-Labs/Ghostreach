@@ -50,7 +50,8 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 - The crawler is forecursor (J-055, Ghost's word; GR-017; J-056): a site's owner reads `Mozilla/5.0 (compatible; forecursor/1.0; +https://forecursor.com)` on every request and one probe for `/forecursor-no-such-page-<hash>`; it obeys robots.txt groups for `forecursor` and the old `SuiteBuilder` together (the agent's conservative choice, For Ghost N); the in-page globals are `__forecursor*`; crawl files say `tool: 'forecursor'` and the parent's (`suite-builder`) still read. The lineage marker now catches any `suite builder` spelling; 11 allow-list entries.
 - The server's setup, ahead of the API (J-058, Ghost's word): `deploy/setup.sh` sets up an Ubuntu 24.04 server (the `ghostreach` user, Node.js 24.22.3 checksum-checked, the tarball, Chromium, `/etc/ghostreach/env` with no value, ufw letting only SSH in), `deploy/ghostreach.service` runs as `ghostreach` hardened and on 127.0.0.1 alone, `deploy/README.md` is Ghost's steps through the Tunnel and Access; `test/test_deploy.py` holds them. The unit's `ExecStart` is a placeholder marked `TODO(API)`, so the service is enabled and not started until the API item fills it with its command and port (8787 proposed) and names the bearer token's variable (For Ghost P). Nothing of it ran as root or under systemd here.
 - The command line, friendlier (J-059, Ghost's word; GR-018; J-060): `ghostreach` alone starts the page and opens the browser, or, when a page already serves the data folder (`page.json` there, its process alive and its address answering with the page), opens that one and exits 0; `serve` is the same; `ghostreach --help` (or `help`) lists every command, the data folder and how to stop the page; still no option but `--help`. From a copy of the source, `ghostreach.cmd` and `./ghostreach` build on first use and run it (not packed); README and SALES-GUIDE updated.
-- Next: Phase 5's open chain is 5.4 (waits on GR-007 through 3.6) and 5.6; 2.7 and 4.12 wait for the reviewer to land.
+- Landed on `main` (2026-11-20, J-064, J-065): Ghost's word in chat, "Yes please land it. You have explicit approval", approved GR-011 and the landing; the session branch's net change went onto `main` as one `tune-up:` commit, the reviewer's for passes 2 and 4, and 0.6, 1.8, 2.7 and 4.12 moved to `docs/DONE.md`.
+- Next: Phase 5's open chain is 5.4 (waits on GR-007 through 3.6) and 5.6.
 
 ## For Ghost: waiting on you
 
@@ -58,7 +59,7 @@ O. The API contract (GR-015, J-054): a draft v1 went to the web design session; 
 
 P. The server (J-058), in this order once you want it up: create the Ubuntu 24.04 server (2 vCPU, 4 GB); `npm pack` and copy the tarball and the `deploy/` folder; `bash deploy/setup.sh --check <tarball>`, then without `--check`; install cloudflared, create the Tunnel and route `api.forecursor.com` (or the name you pick) to it; in Zero Trust, a service token and a Service Auth application for the hostname; the token into `/etc/ghostreach/env` and the website's secrets (`deploy/README.md`, steps 1 to 6). Placeholders until the API item: the unit's `ExecStart` (`TODO(API)`; the service stays stopped), the port (8787 proposed), and the bearer token's variable name. The agent's choices (J-058) are the ruling grade's to read; shellcheck was not run (not installed in the session).
 
-A. Approve `@types/node` 22.20.5 (with `undici-types` 6.21.0) as a dev dependency, GR-011 `proposed` (J-013): `tsc` cannot check the copied crawl without Node's types. Nothing lands on `main` before your answer; the review rows in `docs/REVIEWED-VERSIONS.md` say UNSURE because the read-only reviewer was not run. Reputation (J-051): @types/node CLEAN; its undici-types 6.21.0 CONCERN, medium-low, unverified (published without provenance; one closed takeover report without evidence; types only, no runtime code).
+A. Resolved by Ghost's word (2026-11-20, J-064): `@types/node` 22.20.5 with `undici-types` 6.21.0 approved as a dev dependency, GR-011 in force ("Yes please land it. You have explicit approval"), the undici-types concern (medium-low, unverified, types only) before him; the review rows say so; the branch landed on `main` (J-065).
 
 B. The largest-source-file target at 1.2: ruled by the ruling grade (split `src/crawl/state.ts` by what it does, no exemption; C-022, C-023), done in J-014; reversible.
 
@@ -74,7 +75,7 @@ E. The audit page's title line and footer, the agent's choice at 1.6 (J-019), mi
 
 F. Resolved by Ghost's word (2026-11-14, J-024): mutation cut from Ghostreach (GR-013); the full gate no longer runs it, so it is no longer red there.
 
-G. 0.6 and 1.8 (Phase W) waited only on the core-update step, which 2.7 ran (J-028): Core's `main` is still the stamp, 9a29945, so neither has a C-nnn to take. Moving them back to `docs/DONE.md` is yours (`TODO.md`'s header: Ghost moves a waiting item back), or the reviewer's on your word, with 2.7.
+G. Resolved at the landing Ghost approved (2026-11-20, J-065): 0.6 and 1.8 waited only on the core-update step, met at 2.7 and 4.12 (Core's `main` 9a29945 = the lineage); both moved to `docs/DONE.md` by the reviewer with 2.7 and 4.12.
 
 H. Core's TypeScript starter says unit tests import no `node:` module (`stacks/typescript/README.md`, held as text by Core's `test/test_stacks.py`); 15 of the parent's tests carried at 1.4 import one, and the fast loop runs them in about 6 s. Refuse the rule for this project (a GR decision), or have the tests rewritten (J-028).
 

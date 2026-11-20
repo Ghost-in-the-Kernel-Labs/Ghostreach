@@ -118,8 +118,8 @@ the crawl module), is a module change and waits on Ghost; it is listed under Que
 
 - Every relative import is rewritten for its new folder and takes `.js` under the stack's `NodeNext`; the parent's are
   extensionless (`Bundler`). `tsconfig.json` names `"types": ["node"]` (TypeScript 7 loads no `@types` by default).
-- `@types/node` 22.20.5, a dev dependency, exact, on the ruling grade's recommendation: GR-011, `proposed`, waiting on Ghost's
-  approval before anything lands on `main` (J-013). It brings `undici-types` 6.21.0.
+- `@types/node` 22.20.5, a dev dependency, exact, on the ruling grade's recommendation: GR-011, proposed (J-013) and
+  in force on Ghost's approval in chat, 2026-11-20 (J-064). It brings `undici-types` 6.21.0.
 - Playwright `~1.63.0` (locked at 1.63.0, past the cooldown), the one runtime dependency (GR-009); it brings `playwright-core`.
   No browser is downloaded here.
 - `knip.json` named the five entries of the block above beside `src/cli/main.ts`: until 1.5 wired the command to them, they

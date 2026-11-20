@@ -14,18 +14,6 @@ whose every item waits takes its tune-up pass with it (the pass's `Waits on:` na
 phase needs no pass of its own. When what it waits on arrives, Ghost moves the item back into the chain. An open
 question a later item depends on is copied into that item's text, so the item reads whole where it stands.
 
-## Phase 2: the PDF
-
-### 2.7 Tune-up pass 2
-
-Check: `docs/when/tune-up.md` followed in full.
-
-## Phase 4: the lead finder
-
-### 4.12 Tune-up pass 4
-
-Check: `docs/when/tune-up.md` followed in full.
-
 ## Phase 5: in the salesperson's hands
 
 ### 5.4 Ten real audits read
@@ -38,18 +26,6 @@ Check: `theGhost.md` carries Ghost's ruling on the weights (GR-007 settled) and 
 Check: `docs/when/tune-up.md` followed in full.
 
 ## Phase W: waiting on Ghost
-
-### 0.6 Tune-up pass 0
-
-Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
-Moved: from Phase 0
-Check: `docs/when/tune-up.md` followed in full; the metrics table written; the navigation log's "Last review" set.
-
-### 1.8 Tune-up pass 1
-
-Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the core-update step)
-Moved: from Phase 1
-Check: `docs/when/tune-up.md` followed in full.
 
 ### 3.6 The ranking
 

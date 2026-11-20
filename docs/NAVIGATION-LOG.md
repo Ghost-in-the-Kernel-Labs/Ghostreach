@@ -92,3 +92,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: the brief, `docs/HANDOFF.md`, `src/cli/main.ts`, `src/cli/bin.ts`, `src/project/serve.ts`, `test/unit/main.test.ts`, `test/unit/no-flags.test.ts`, `test/unit/serve.test.ts`, `test/unit/lineage.test.ts`, `test/support/lineage.ts`, `test/crawl/package.spec.ts`, `theGhost.md`, `scripts/checks/ghost.py`, `docs/CONTRACT.md`, `docs/modules.json`, `docs/paths/code.md`, `src/project/page.ts`, `src/project/kept.ts`, `README.md`, `docs/SALES-GUIDE.md`, `.gitattributes`, `.npmrc`, `scripts/fast.sh`, `test/test_deploy.py`, `docs/journal/J-000-099.md`, `docs/when/handoff.md`.
 - **Complaints**: HANDOFF's first section reads as one 30 KB block in a terminal (the For Ghost list is in the same grep window); the rule for which of REV-05's and modules.json's words an agent may change is said nowhere but the brief.
 - **Suggestions**: none.
+
+### 2026-11-20 · The landing of the session branch, GR-011 approved · Opus
+
+- **Task**: record Ghost's approval of GR-011 and the landing (J-064), and land the session branch's net change on `main` as the reviewer's `tune-up:` commit for passes 2 and 4 (J-065).
+- **Opened**: `theGhost.md` (C-040, GR-011), `scripts/commit.sh`, `scripts/ship.sh`, `docs/when/tune-up.md`, `TODO.md`, `docs/DONE.md`, `docs/HANDOFF.md`, `scripts/gate.sh`, `docs/JOURNAL.md`, `docs/journal/J-000-099.md`, `docs/decisions.md`, `docs/REVIEWED-VERSIONS.md`, `scripts/checks/dependency_review.py`, `docs/when/handoff.md`, `docs/NAVIGATION-LOG.md`, `docs/CUT.md`.
+- **Complaints**: `docs/when/tune-up.md` says the reviewer lands a pass with a `tune-up:` commit, but not what to do when the passes ran on a session branch and `main`'s count is 0 (no tune-up "due" by `scripts/commit.sh`); the review record's Journal cell takes one id, said only in the check, so a later approval has to go in the Decision cell.
+- **Suggestions**: a line in tune-up.md's edge cases: a pass saved on a session branch lands as the `tune-up:` commit of that branch's landing, whatever the count.

@@ -67,3 +67,5 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-061 | Dev-only advisories: Ghost allows a recorded exception | decision | `J-000-099.md` |
 | J-062 | The icon: a ghost out of a chip | decision | `J-000-099.md` |
 | J-063 | The free review gets the full PDF | decision | `J-000-099.md` |
+| J-064 | @types/node approved, and the branch landed on Ghost's word | decision | `J-000-099.md` |
+| J-065 | The landing: the branch's net change as the reviewer's tune-up commit | decision | `J-000-099.md` |

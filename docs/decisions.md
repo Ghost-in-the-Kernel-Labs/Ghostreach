@@ -54,7 +54,7 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-008 | up to five reviews at once, of five different sites | in force | concurrency |
 | GR-009 | the dev dependencies, and why each | in force | dependencies |
 | GR-010 | three kinds of gate, as Suite Builder's: fast, medium, and the slow sweep | in force | gate |
-| GR-011 | Node's type declarations, @types/node, a dev dependency | proposed | dependencies |
+| GR-011 | Node's type declarations, @types/node, a dev dependency | in force | dependencies |
 | GR-012 | the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel | in force | pdf |
 | GR-013 | no mutation testing: Core C-018 refused, Stryker removed | in force | mutation |
 | GR-014 | SITE-22 withheld from a review that ran alongside another | in force | concurrency |

@@ -560,8 +560,8 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** `@types/node` 22.20.5, pinned exactly, a dev dependency beside GR-009's four (it brings `undici-types`); `tsconfig.json` names it in `types`. Reason: the copied crawl imports `node:fs`, `node:path`, `node:crypto`, `node:dns/promises` and more, and `tsc --noEmit` cannot check them without Node's types; Node 22's, the parent's major (it pins `^22.20.5`).
 - **Why:** TODO 1.2's check is `tsc --noEmit` green over the parent's copy (`docs/CUT.md`, "What 1.2 needs"); no dependency brings Node's types and GR-009 names none. The ruling grade recommended adding it on the session branch, its approval left to Ghost (J-013).
 - **Held by:** `package.json`, `package-lock.json`, `tsconfig.json`, `docs/REVIEWED-VERSIONS.md`.
-- **Source:** an agent, on the ruling grade's recommendation; awaiting Ghost's approval.
-- **Status:** proposed
+- **Source:** Ghost, in chat, 2026-11-20 (J-064), answering the coordinator's request to land the branch and approve `@types/node` 22.20.5 with `undici-types`: "Yes please land it. You have explicit approval". Proposed by an agent on the ruling grade's recommendation (J-013).
+- **Status:** in force
 - **See also:** GR-009, Core C-035
 - **subject:** dependencies
 
