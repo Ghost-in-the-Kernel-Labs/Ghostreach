@@ -12,7 +12,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { BOARDS, MAX_CALLS, MAX_SLUGS, candidateSlugs, companiesFile, isQaTitle, keepLookup, keptUrl, lookUpCompany, readLookups } from '../../src/project/company.js';
 import { FETCHED_SOURCES, type Transport } from '../../src/project/fetch.js';
-import { NO_BOARD, PASTE_LANE } from '../../src/project/page-leads.js';
+import { MAYBE, NO_BOARD, PASTE_LANE } from '../../src/project/page-leads.js';
 import { servePage, type ServedPage } from '../../src/project/serve.js';
 import { parseSources, sourcesText } from '../support/sources.js';
 import * as ashby from '../support/boards/ashby.js';
@@ -190,6 +190,25 @@ describe('a lookup (TODO 4.6)', () => {
     expect(asked.filter((u) => u.includes('ashbyhq') || u.includes('greenhouse'))).toHaveLength(2);
   });
 
+  it("a board found by a guessed name is a maybe unless its own data names the company's domain or name (launch fixes 12)", async () => {
+    // "example.com" typed: Greenhouse holds a board "example", but nothing on it names example.com: maybe another company's.
+    const guessed = await lookUpCompany('example.com', { data, transport: boards({ [G('example')]: { body: greenhouse.NO_QA, type: greenhouse.TYPE } }) });
+    expect(guessed.boards.map((b) => [b.slug, b.named])).toEqual([['example', undefined]]);
+    // A posting on the company's own domain names it.
+    const site = await lookUpCompany('www.acme-robotics.com', { data, transport: boards({ [G('acme-robotics')]: { body: greenhouse.BOARD, type: greenhouse.TYPE } }) });
+    expect(site.boards[0].named).toBe(true);
+    // Typed by name: the board's addresses carry the guessed name itself, so they never confirm it; a field naming the company does.
+    const byName = await lookUpCompany('Acme Robotics', { data, transport: boards({ [G('acmerobotics')]: { body: greenhouse.BOARD, type: greenhouse.TYPE } }) });
+    expect(byName.boards[0].named).toBeUndefined();
+    const naming = JSON.stringify({ jobs: [{ title: 'QA Engineer', absolute_url: 'https://boards.greenhouse.io/acmerobotics/jobs/1', company_name: 'Acme Robotics, Inc.' }], meta: { total: 1 } });
+    const named = await lookUpCompany('Acme Robotics', { data, transport: boards({ [G('acmerobotics')]: { body: naming, type: greenhouse.TYPE } }) });
+    expect(named.boards[0].named).toBe(true);
+    // A domain inside another (example.com.evil.net, notexample.com) is not the company's.
+    const other = JSON.stringify({ jobs: [{ title: 'QA at notexample.com', absolute_url: 'https://example.com.evil.net/jobs/1' }], meta: { total: 1 } });
+    const not = await lookUpCompany('example.com', { data, transport: boards({ [G('example')]: { body: other, type: greenhouse.TYPE } }) });
+    expect(not.boards[0].named).toBeUndefined();
+  });
+
   it('keeps lookups newest first, one per company, written whole', async () => {
     const one = await lookUpCompany('Acme Robotics', { data, transport: boards({}), now: () => new Date('2026-11-14T10:00:00Z') });
     keepLookup(data, one);
@@ -240,6 +259,18 @@ describe('the company lane on the local page (TODO 4.6)', () => {
     expect(html).not.toContain('evil.example');
     // Stored, and shown again from the data folder.
     expect((await (await fetch(page.url)).text())).toContain('Senior QA Engineer</a>');
+  });
+
+  it('shows a board found by a guessed name as "maybe", with a line that it may be another company\'s (launch fixes 12)', async () => {
+    page = await servePage(data, async () => null, boards({ 'https://boards-api.greenhouse.io/v1/boards/example/jobs': { body: greenhouse.NO_QA, type: greenhouse.TYPE } }));
+    const html = await (await post('example.com', own())).text();
+    expect(html).toContain('<li>maybe: Greenhouse board "example": 1 open role, 0 QA, test or SDET.');
+    expect(html).toContain(MAYBE);
+    expect(html).not.toMatch(/<li>Greenhouse board "example"/);
+    await page.close();
+    page = await servePage(data, async () => null, boards({ 'https://boards-api.greenhouse.io/v1/boards/acme-robotics/jobs': { body: greenhouse.BOARD, type: greenhouse.TYPE } }));
+    const own2 = await (await post('www.acme-robotics.com', own())).text();
+    expect(own2).toContain('<li>Greenhouse board "acme-robotics": 7 open roles, 4 QA, test or SDET:');
   });
 
   it('a company on no board says "no public board found" and offers the paste lane', async () => {

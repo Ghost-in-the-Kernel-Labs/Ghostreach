@@ -135,11 +135,12 @@ test('the tarball installs with one command and the installed ghostreach reviews
   expect(bare.lines[1]).toBe(`Chromium, the browser the review drives: not installed. Run: npx playwright@${version} install ${process.platform === 'linux' ? '--with-deps ' : ''}chromium`);
 
   site = await startFixtureSite();
+  const { port } = site;
   const reviewed = await installed(bin, [`${site.origin}/`], env, scratch);
   expect(reviewed.code, reviewed.lines.join('\n')).toBe(0);
   const data = join(home, 'Ghostreach');
-  const [folder] = readdirSync(data).filter((name) => name.startsWith('127.0.0.1-'));
-  expect(folder).toMatch(/^127\.0\.0\.1-\d{4}-\d{2}-\d{2}$/);
+  const [folder] = readdirSync(data).filter((name) => name.startsWith(`127.0.0.1_${port}-`));
+  expect(folder).toMatch(/^127\.0\.0\.1_\d+-\d{4}-\d{2}-\d{2}$/);
   const pdf = join(data, folder, '127.0.0.1 site review.pdf');
   expect(reviewed.lines.at(-1)?.endsWith(pdf)).toBe(true);
   const bytes = readFileSync(pdf);

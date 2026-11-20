@@ -9,7 +9,7 @@
 import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Browser } from 'playwright';
-import { review, startUrl, type Alongside } from './review.js';
+import { review, siteOf, startUrl, type Alongside } from './review.js';
 import { isRecord, readKept, Unreadable } from './kept.js';
 
 type QueueState = 'waiting' | 'running' | 'done' | 'failed';
@@ -20,7 +20,7 @@ export interface QueueEntry {
   id: number;
   /** The site as pasted, trimmed. */
   site: string;
-  /** The host the review will name its folder by: one host is never waiting or running twice. */
+  /** The site the review will name its folder by, its host and any port (`siteOf`): one is never waiting or running twice. */
   host: string;
   state: QueueState;
   /** A failed review's one line saying why. */
@@ -103,7 +103,7 @@ export function addSites(data: string, text: string, reason?: Reason): Added {
         added.refused.push({ line, why: 'not a web address' });
         continue;
       }
-      const host = new URL(url).hostname;
+      const host = siteOf(url);
       if (sites.some((e) => e.host === host && (e.state === 'waiting' || e.state === 'running'))) {
         added.refused.push({ line, why: 'already in the queue' });
         continue;

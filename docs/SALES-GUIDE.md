@@ -45,6 +45,8 @@ ways to find leads).
 Look up. Ghostreach asks the public job boards companies use for their careers pages (Greenhouse, Lever, Ashby,
 SmartRecruiters, Recruitee, Personio). For each board it finds, you see how many roles are open and which are QA,
 test or SDET roles. "No public board found" means none of those boards knows the company; that is not a no.
+A board marked "maybe" was found by guessing its name from what you typed, and nothing on it names the company:
+it may belong to another company with a similar name, so check its roles before you write.
 
 **Companies hiring QA right now.** Under "Who is hiring QA?", the search lists job titles (QA engineer, test
 automation, SDET, QA analyst) and a location. Change them if you like and press Search. You get one row per company, with its newest QA posting and where it was posted. Two boards, Jooble and

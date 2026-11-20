@@ -113,3 +113,11 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Opened**: the brief, `docs/HANDOFF.md`, `docs/journal/J-000-099.md` (J-066), `src/project/show.ts`, `src/cli/main.ts`, `src/project/settings.ts`, `src/project/serve.ts`, `test/unit/main.test.ts`, `test/unit/serve.test.ts`, `test/unit/queue.test.ts`, `test/unit/hosts.test.ts`, `test/test_launchers.py`, `test/crawl/package.spec.ts`, `test/support/lineage.ts`, `docs/modules.json`, `docs/paths/code.md`, `docs/CUT.md`, `docs/SOURCES.md`, `theGhost.md` (GR-008, GR-018, GR-020, GR-021), `knip.json`, `README.md`, `docs/SALES-GUIDE.md`.
 - **Complaints**: the stack gate's refusal prints only "refused at the typescript stack's fast checks" to the terminal; the reason (knip's unlisted binary) is in `build/gate-fast.log`, which the refusal line does not name. A partial supersession's "See also on the old entry" is said only by C-036's precedent, not in theGhost.md's header.
 - **Suggestions**: the gate's refusal line names the log file it wrote.
+
+### 2026-11-20 · Launch fixes, item C (the three bugs) · Opus
+
+- **Task**: item C (points 11 to 13) of the launch walk's fixes: host:port as the site, a guessed company board shown as a maybe, a failed review set aside under `failed/` (J-068).
+- **Opened**: the brief, `docs/HANDOFF.md`, `docs/journal/J-000-099.md` (J-066, J-067), `src/project/queue.ts`, `src/project/review.ts`, `src/project/serve.ts`, `src/project/page.ts`, `src/project/page-leads.ts`, `src/project/company.ts`, `src/project/crawl.ts`, `src/project/leads.ts`, `src/leaf/pages/url.ts`, `src/audit/audit.ts`, `test/unit/queue.test.ts`, `test/unit/main.test.ts`, `test/unit/company.test.ts`, `test/support/boards/greenhouse.ts`, `test/crawl/ghostreach.spec.ts`, `test/crawl/concurrent.spec.ts`, `test/crawl/package.spec.ts`, `docs/CONTRACT.md`, `docs/SALES-GUIDE.md`, `docs/when/handoff.md`
+- **Complaints**: the review folder's name is built in `review.ts` and parsed back in `serve.ts` (`FOLDER`), with three specs each spelling it again; nothing routes a change of it to all five.
+- **Suggestions**: none.
+

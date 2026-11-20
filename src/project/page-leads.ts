@@ -28,7 +28,7 @@ const bare = (host: string): string => host.toLowerCase().replace(/^www\./, '');
  * reviewed shows its newest review and PDF instead (no score: the ranking waits on GR-007), one waiting or running says so.
  */
 function queueThis(name: string, website: string, lane: Lane, rows: Rows): string {
-  const host = bare(new URL(website).hostname);
+  const host = bare(new URL(website).host);
   const review = rows.reviews.find((r) => bare(r.host) === host);
   if (review) return ` <span class="state">reviewed ${esc(review.date)}, <a href="${esc(review.href)}">PDF</a></span>`;
   if (rows.sites.some((e) => bare(e.host) === host && (e.state === 'waiting' || e.state === 'running'))) return ' <span class="state">in the queue</span>';
@@ -60,12 +60,19 @@ function pasteLane(name: string, rows: Rows): string {
 export const NO_BOARD = 'No public board found.';
 export const PASTE_LANE = 'Seen its posting on LinkedIn, Indeed, Glassdoor or ZipRecruiter? Keep it with the paste lane below: its address is kept as a note, never opened by this program.';
 
-/** One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept. */
+/** What the page says under a board found by a guessed name alone (launch fixes 12). */
+export const MAYBE = 'Found by its name alone: this board may belong to another company.';
+
+/**
+ * One board found: the source, the name it answered under, its open roles, and each QA role, a link when its address was kept; a
+ * board whose own answer does not name the company "maybe:", with the line that it may be another company's (launch fixes 12).
+ */
 function boardItem(board: CompanyLookup['boards'][number]): string {
-  const head = `${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${esc(board.roles.length)} QA, test or SDET`;
-  if (!board.roles.length) return `<li>${head}.</li>`;
+  const head = `${board.named ? '' : 'maybe: '}${esc(board.source)} board "${esc(board.slug)}": ${esc(String(board.open))} open role${board.open === 1 ? '' : 's'}, ${esc(board.roles.length)} QA, test or SDET`;
+  const maybe = board.named ? '' : `\n<p class="day">${esc(MAYBE)}</p>`;
+  if (!board.roles.length) return `<li>${head}.${maybe}</li>`;
   const roles = board.roles.map((r) => `<li>${r.url ? `<a href="${esc(r.url)}" rel="noreferrer">${esc(r.title)}</a>` : esc(r.title)}</li>`).join('\n');
-  return `<li>${head}:\n<ul class="roles">\n${roles}\n</ul></li>`;
+  return `<li>${head}:${maybe}\n<ul class="roles">\n${roles}\n</ul></li>`;
 }
 
 /** The lookups kept, newest first: each company's boards, or no board and the paste lane; each source that could not be asked. */

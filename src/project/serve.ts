@@ -17,7 +17,7 @@ import { pipeline } from 'node:stream';
 import type { AddressInfo } from 'node:net';
 import { join, relative, isAbsolute, sep } from 'node:path';
 import { addSites, queueRunner, readQueue, recover, retry, reviewLine, type QueueRunner, type ReviewRun } from './queue.js';
-import { pdfName } from './review.js';
+import { hostOfSite, pdfName, siteOfFolder } from './review.js';
 import { sharedBrowser } from './crawl.js';
 import { readSettings, type Settings } from './settings.js';
 import { keepLookup, lookUpCompany, readLookups } from './company.js';
@@ -30,7 +30,7 @@ import { isRecord, Unreadable } from './kept.js';
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
 
-/** A review folder's name read back: `<host>-<YYYY-MM-DD>`, then `-2`, `-3` for a second review that day (`reviewFolder`). */
+/** A review folder's name read back: `<site>-<YYYY-MM-DD>` (`reviewFolder`: a port after `_`), then `-2`, `-3` for a second review that day (`reviewFolder`). */
 const FOLDER = /^(.+)-(\d{4}-\d{2}-\d{2})(?:-([2-9]|[1-9]\d+))?$/;
 
 /** A folder name that is one name and nothing else: no separator, no `.` or `..`, no NUL. */
@@ -43,9 +43,11 @@ export function listReviews(data: string): ListedReview[] {
   for (const entry of readdirSync(data, { withFileTypes: true })) {
     const match = FOLDER.exec(entry.name);
     if (!entry.isDirectory() || !match || !oneName(entry.name)) continue;
-    const [, host, date, n] = match;
-    if (!pdfIn(data, entry.name, pdfName(host))) continue;
-    const href = `/reviews/${encodeURIComponent(entry.name)}/${encodeURIComponent(pdfName(host))}`;
+    const [, named, date, n] = match;
+    const host = siteOfFolder(named);
+    const pdf = pdfName(hostOfSite(host));
+    if (!pdfIn(data, entry.name, pdf)) continue;
+    const href = `/reviews/${encodeURIComponent(entry.name)}/${encodeURIComponent(pdf)}`;
     listed.push({ host, date, folder: entry.name, href, counts: countsIn(join(data, entry.name)), n: Number(n ?? 1) });
   }
   listed.sort((a, b) => b.date.localeCompare(a.date) || a.host.localeCompare(b.host) || b.n - a.n);
@@ -76,7 +78,7 @@ const ICONS: Readonly<Record<string, { file: string; type: string }>> = {
  */
 function pdfIn(data: string, folder: string, file: string): string | null {
   const match = FOLDER.exec(folder);
-  if (!match || !oneName(folder) || !oneName(file) || file !== pdfName(match[1])) return null;
+  if (!match || !oneName(folder) || !oneName(file) || file !== pdfName(hostOfSite(siteOfFolder(match[1])))) return null;
   const path = join(data, folder, file);
   try {
     if (!lstatSync(path).isFile()) return null;

@@ -18,6 +18,7 @@ export const PAGE_TITLE = '<title>Ghostreach: the reviews</title>';
 
 /** A review on the page: the site, the day, and the path its PDF is served at. */
 export interface ListedReview {
+  /** The site, its host and any port (`siteOfFolder`). */
   host: string;
   date: string;
   /** The review's folder under the data folder, as written by `reviewFolder` (`<host>-<date>`, `-2`, ...). */

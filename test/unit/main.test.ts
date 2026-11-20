@@ -4,7 +4,8 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { main, parse } from '../../src/cli/main.js';
 import { doctorLines, recommended, settingsFile, thisMachine } from '../../src/project/settings.js';
-import { reviewFolder, reviewSummary } from '../../src/project/review.js';
+import { pdfName, reviewFolder, reviewSummary } from '../../src/project/review.js';
+import { listReviews } from '../../src/project/serve.js';
 import { readCrawlReport } from '../../src/crawl/report-read.js';
 import { siteFindings } from '../../src/findings/findings.js';
 
@@ -115,6 +116,33 @@ describe('the review folder and its summary (REV-06)', () => {
       rmSync(data, { recursive: true, force: true });
     }
   });
+  it('names a port when one is given (launch fixes 11): two ports on one host get two folders, each read back as its site', () => {
+    const data = mkdtempSync(join(tmpdir(), 'ghostreach-folder-'));
+    try {
+      const nine = reviewFolder(data, '127.0.0.1:9', '2026-11-20');
+      const other = reviewFolder(data, '127.0.0.1:41479', '2026-11-20');
+      // `:` is not allowed in a Windows file name: the port follows `_`, which no web address's host ends in.
+      expect([nine, other]).toEqual([join(data, '127.0.0.1_9-2026-11-20'), join(data, '127.0.0.1_41479-2026-11-20')]);
+      expect(reviewFolder(data, 'example.com', '2026-11-20')).toBe(join(data, 'example.com-2026-11-20'));
+      for (const [folder, site] of [[nine, '127.0.0.1:9'], [other, '127.0.0.1:41479']]) {
+        mkdirSync(folder);
+        // The PDF is named by the host alone, as the audit's heading names the site.
+        writeFileSync(join(folder, pdfName('127.0.0.1')), '%PDF-1.7\n%%EOF\n');
+        expect(site).toMatch(/^127\.0\.0\.1:\d+$/);
+      }
+      // A folder written before ports were named is still listed, by its host.
+      mkdirSync(join(data, 'example.com-2026-11-19'));
+      writeFileSync(join(data, 'example.com-2026-11-19', pdfName('example.com')), '%PDF-1.7\n%%EOF\n');
+      expect(listReviews(data).map((r) => [r.host, r.folder, r.href])).toEqual([
+        ['127.0.0.1:41479', '127.0.0.1_41479-2026-11-20', `/reviews/127.0.0.1_41479-2026-11-20/${encodeURIComponent(pdfName('127.0.0.1'))}`],
+        ['127.0.0.1:9', '127.0.0.1_9-2026-11-20', `/reviews/127.0.0.1_9-2026-11-20/${encodeURIComponent(pdfName('127.0.0.1'))}`],
+        ['example.com', 'example.com-2026-11-19', `/reviews/example.com-2026-11-19/${encodeURIComponent(pdfName('example.com'))}`],
+      ]);
+    } finally {
+      rmSync(data, { recursive: true, force: true });
+    }
+  });
+
   it("holds the host, the date, the pages read, the count by severity and the count by code, in the findings' order", () => {
     const file = 'test/golden/fixture-site.crawl.json';
     const report = readCrawlReport(readFileSync(file, 'utf8'), file);

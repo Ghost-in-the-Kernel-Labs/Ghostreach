@@ -119,6 +119,18 @@ describe('the queue (TODO 3.3)', () => {
     expect(addSites(data, '\n  \n')).toEqual({ queued: [], refused: [] });
   });
 
+  it('two ports on one host are two sites (launch fixes 11): both queued, both may run; the same port twice is refused', () => {
+    const added = addSites(data, 'http://127.0.0.1:9/\nhttp://127.0.0.1:41479/\nhttp://127.0.0.1:9/about\nlocalhost:9');
+    expect(added.queued.map((e) => [e.site, e.host])).toEqual([
+      ['http://127.0.0.1:9/', '127.0.0.1:9'],
+      ['http://127.0.0.1:41479/', '127.0.0.1:41479'],
+      ['localhost:9', 'localhost:9'],
+    ]);
+    expect(added.refused).toEqual([{ line: 'http://127.0.0.1:9/about', why: 'already in the queue' }]);
+    // The default port is the bare host, as a queue written before this kept it.
+    expect(addSites(data, 'https://example.com:443/\nexample.com').queued.map((e) => e.host)).toEqual(['example.com']);
+  });
+
   it('a restart puts an entry left running back to waiting, and nothing else', () => {
     addSites(data, 'a.example\nb.example\nc.example');
     const sites = readQueue(data);

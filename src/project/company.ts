@@ -249,12 +249,49 @@ interface Role {
   url?: string;
 }
 
-/** A board found: the source, the name it answered under, how many open postings it lists, and the QA roles among them. */
+/**
+ * A board found: the source, the name it answered under, how many open postings it lists, and the QA roles among them. `named`
+ * when the board's own answer names the company (`namesCompany`); absent, the board was found by a guessed name alone and may be
+ * another company's (launch fixes 12; a lookup kept before reads so too).
+ */
 interface FoundBoard {
   source: string;
   slug: string;
   open: number;
   roles: Role[];
+  named?: true;
+}
+
+/** Every text value of an answer: a JSON answer's strings, at any depth; a text answer as it came. */
+function textsOf(answer: Fetched & { ok: true }): string[] {
+  if (answer.kind !== 'json') return answer.kind === 'text' ? [answer.text] : [];
+  const found: string[] = [];
+  const walk = (v: unknown): void => {
+    if (typeof v === 'string') found.push(v);
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (isObject(v)) Object.values(v).forEach(walk);
+  };
+  walk(answer.json);
+  return found;
+}
+
+/** Text as words: accents folded, lowercase, one space between, a space at each end (so a phrase is found whole). */
+const asWords = (text: string): string => ` ${text.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).join(' ')} `;
+
+/**
+ * Whether a board's own answer names the company (launch fixes 12): a typed site's domain anywhere in it (a posting on the
+ * company's own site, a mail address there), a whole domain, not one inside another (`notexample.com`, `example.com.evil.net`);
+ * a typed name's words, in order, in a text that is not an address. Addresses and host names are left out for a name, since the
+ * board's own addresses carry the guessed name itself (`acme-robotics.recruitee.com`). No fetch beyond the probe's own.
+ */
+function namesCompany(answer: Fetched & { ok: true }, typed: string, companyDomain: string | null): boolean {
+  const texts = textsOf(answer);
+  if (companyDomain) {
+    const domain = new RegExp(`(?:^|[^a-z0-9-])${companyDomain.replace(/[.]/g, '\\.')}(?![a-z0-9-]|\\.[a-z0-9])`, 'i');
+    return texts.some((t) => domain.test(t));
+  }
+  const name = companyWords(typed).join(' ');
+  return name !== '' && texts.some((t) => asWords(t.replace(/\S*:\/\/\S*|\S*[a-z0-9]\.[a-z]\S*/gi, ' ')).includes(` ${name} `));
 }
 
 /** One lookup: what was typed, when, the names tried, each board found, and each source that could not be asked, with why. */
@@ -276,7 +313,7 @@ export interface LookupOptions {
 }
 
 /** One source asked: its first board among the names, or none (each name answered 404, a redirect, or no open posting), or why it could not be asked. */
-async function probe(board: Board, slugs: readonly string[], companyDomain: string | null, options: LookupOptions): Promise<FoundBoard | string | null> {
+async function probe(board: Board, typed: string, slugs: readonly string[], companyDomain: string | null, options: LookupOptions): Promise<FoundBoard | string | null> {
   for (const slug of slugs) {
     for (const url of board.probes(slug)) {
       const answer = await fetchSource(board.source, url, {}, { data: options.data, transport: options.transport, now: options.now, timeoutMs: PROBE_TIMEOUT_MS });
@@ -294,7 +331,7 @@ async function probe(board: Board, slugs: readonly string[], companyDomain: stri
         .filter((r) => r.title !== '' && isQaTitle(r.title))
         .slice(0, MAX_ROLES)
         .map((r) => (r.url ? r : { title: r.title }));
-      return { source: board.source, slug, open: listed.length, roles };
+      return { source: board.source, slug, open: listed.length, roles, ...(namesCompany(answer, typed, companyDomain) ? { named: true as const } : {}) };
     }
   }
   return null;
@@ -309,7 +346,7 @@ export async function lookUpCompany(typed: string, options: LookupOptions): Prom
   const at = (options.now?.() ?? new Date()).toISOString();
   const { slugs, companyDomain } = candidateSlugs(typed);
   if (!slugs.length) return { asked, at, slugs, boards: [], unanswered: [], refused: 'Type a company name or its site.' };
-  const answers = await Promise.all(BOARDS.map((board) => probe(board, slugs, companyDomain, options)));
+  const answers = await Promise.all(BOARDS.map((board) => probe(board, typed, slugs, companyDomain, options)));
   return {
     asked,
     at,
