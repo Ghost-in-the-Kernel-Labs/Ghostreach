@@ -63,3 +63,4 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-017 | the crawler is forecursor: its user agent, robots.txt name, probe and crawl file | in force | crawl |
 | GR-018 | `ghostreach` alone opens the page; `--help` lists every command; `serve` and `doctor` are commands | in force | command line |
 | GR-019 | a dev-only advisory with no fix may stand as a recorded exception | in force | dependencies |
+| GR-020 | the icon is the >⩊< ghost rising out of a computer chip | in force | brand |

@@ -639,3 +639,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **See also:** GR-009
 - **subject:** dependencies
 
+### GR-020: the icon is the >⩊< ghost rising out of a computer chip
+- **Decision:** Ghostreach's icon is a cute stylised ghost with a >⩊< face and pink cheeks, rising out of a computer chip and holding up a magnifying glass, with two sparkles. `assets/icon.svg` is its one source; the PNG and the Windows `.ico` (16, 32, 48, 64, 128 and 256 px) are drawn from it.
+- **Why:** Ghost, 2026-11-20: "Why not make an icon here? Im thinking of a ghost that is coming out of a clamshell with a magnifying glass. The sylized ghost would be cutsey and funny and have an >⩊< emoji face", then "what about a ghost emerging from a kernel?", "or a computer chip?", and of three drawn versions: "Oooh that chip one is a winner :D".
+- **Held by:** `assets/icon.svg`, `assets/icon.ico`, `assets/icon-256.png`.
+- **Source:** Ghost, in chat, 2026-11-20 (J-062).
+- **Status:** in force
+- **See also:** GR-018
+- **subject:** brand
+
