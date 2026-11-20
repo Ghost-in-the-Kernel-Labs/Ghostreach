@@ -1,0 +1,345 @@
+{
+ "about": "How far in each URL's host leads (G-243, G-265): one list, read by the crawler's guard (src/crawl/destination.ts), the Java suites' LinkReport and the Cypress suites' config, each given the URL as the browser and the crawl write it (new URL(url).href). public: the open internet; private: a private network; this-computer; never: nowhere a page should lead. From the hostile review of 2026-10-20 (H1, M4).",
+ "vectors": [
+  {
+   "url": "http://8.8.8.8/",
+   "reach": "public",
+   "why": "a public address"
+  },
+  {
+   "url": "http://93.184.216.34/",
+   "reach": "public",
+   "why": "a public address"
+  },
+  {
+   "url": "http://172.32.0.1/",
+   "reach": "public",
+   "why": "just past 172.16/12"
+  },
+  {
+   "url": "http://100.128.0.1/",
+   "reach": "public",
+   "why": "just past CGNAT"
+  },
+  {
+   "url": "http://223.255.255.255/",
+   "reach": "public",
+   "why": "the last unicast address"
+  },
+  {
+   "url": "http://10.0.0.1/",
+   "reach": "private",
+   "why": "RFC 1918"
+  },
+  {
+   "url": "http://172.16.0.1/",
+   "reach": "private",
+   "why": "RFC 1918"
+  },
+  {
+   "url": "http://172.31.255.255/",
+   "reach": "private",
+   "why": "RFC 1918, its end"
+  },
+  {
+   "url": "http://192.168.1.1/",
+   "reach": "private",
+   "why": "RFC 1918"
+  },
+  {
+   "url": "http://100.64.0.1/",
+   "reach": "private",
+   "why": "CGNAT"
+  },
+  {
+   "url": "http://127.0.0.1:8080/",
+   "reach": "this-computer",
+   "why": "loopback"
+  },
+  {
+   "url": "http://127.255.255.254/",
+   "reach": "this-computer",
+   "why": "loopback, its end"
+  },
+  {
+   "url": "http://2130706433/",
+   "reach": "this-computer",
+   "why": "127.0.0.1 written as one number"
+  },
+  {
+   "url": "http://0177.1/",
+   "reach": "this-computer",
+   "why": "127.0.0.1 in octal shorthand"
+  },
+  {
+   "url": "http://127.1/",
+   "reach": "this-computer",
+   "why": "127.0.0.1 in shorthand"
+  },
+  {
+   "url": "http://0x7f000001/",
+   "reach": "this-computer",
+   "why": "127.0.0.1 in hex"
+  },
+  {
+   "url": "http://169.254.169.254/latest/meta-data/",
+   "reach": "never",
+   "why": "link-local: a cloud machine's credentials"
+  },
+  {
+   "url": "http://0.0.0.0/",
+   "reach": "never",
+   "why": "this network"
+  },
+  {
+   "url": "http://192.0.0.1/",
+   "reach": "never",
+   "why": "IETF protocol assignments"
+  },
+  {
+   "url": "http://192.0.2.2/",
+   "reach": "never",
+   "why": "documentation (TEST-NET-1)"
+  },
+  {
+   "url": "http://198.51.100.6/",
+   "reach": "never",
+   "why": "documentation (TEST-NET-2)"
+  },
+  {
+   "url": "http://203.0.113.9/",
+   "reach": "never",
+   "why": "documentation (TEST-NET-3)"
+  },
+  {
+   "url": "http://198.18.0.1/",
+   "reach": "never",
+   "why": "benchmarking"
+  },
+  {
+   "url": "http://198.19.255.255/",
+   "reach": "never",
+   "why": "benchmarking, its end"
+  },
+  {
+   "url": "http://192.88.99.1/",
+   "reach": "never",
+   "why": "the 6to4 relay anycast"
+  },
+  {
+   "url": "http://224.0.0.1/",
+   "reach": "never",
+   "why": "multicast"
+  },
+  {
+   "url": "http://240.0.0.1/",
+   "reach": "never",
+   "why": "reserved"
+  },
+  {
+   "url": "http://255.255.255.255/",
+   "reach": "never",
+   "why": "broadcast"
+  },
+  {
+   "url": "http://[2606:4700::1111]/",
+   "reach": "public",
+   "why": "a public IPv6 address"
+  },
+  {
+   "url": "http://[::ffff:8.8.8.8]/",
+   "reach": "public",
+   "why": "a public IPv4 address, mapped"
+  },
+  {
+   "url": "http://[::1]/",
+   "reach": "this-computer",
+   "why": "IPv6 loopback"
+  },
+  {
+   "url": "http://[0:0:0:0:0:0:0:1]/",
+   "reach": "this-computer",
+   "why": "IPv6 loopback, written out"
+  },
+  {
+   "url": "http://[::ffff:127.0.0.1]:8080/",
+   "reach": "this-computer",
+   "why": "loopback, mapped (the URL writes ::ffff:7f00:1)"
+  },
+  {
+   "url": "http://[0:0:0:0:0:ffff:7f00:1]/",
+   "reach": "this-computer",
+   "why": "loopback, mapped, written out"
+  },
+  {
+   "url": "http://[::ffff:169.254.169.254]/",
+   "reach": "never",
+   "why": "the credentials address, mapped"
+  },
+  {
+   "url": "http://[::ffff:10.0.0.1]/",
+   "reach": "private",
+   "why": "RFC 1918, mapped"
+  },
+  {
+   "url": "http://[64:ff9b::127.0.0.1]/",
+   "reach": "this-computer",
+   "why": "loopback, NAT64"
+  },
+  {
+   "url": "http://[64:ff9b::a9fe:a9fe]/",
+   "reach": "never",
+   "why": "the credentials address, NAT64"
+  },
+  {
+   "url": "http://[64:ff9b:1::1]/",
+   "reach": "never",
+   "why": "local-use NAT64"
+  },
+  {
+   "url": "http://[::127.0.0.1]/",
+   "reach": "this-computer",
+   "why": "loopback, IPv4-compatible"
+  },
+  {
+   "url": "http://[::ffff:0:127.0.0.1]/",
+   "reach": "this-computer",
+   "why": "loopback, SIIT"
+  },
+  {
+   "url": "http://[2002:7f00:1::]/",
+   "reach": "this-computer",
+   "why": "loopback, 6to4"
+  },
+  {
+   "url": "http://[2002:a9fe:a9fe::1]/",
+   "reach": "never",
+   "why": "the credentials address, 6to4"
+  },
+  {
+   "url": "http://[2001:0:4136:e378:8000:63bf:80ff:fffe]/",
+   "reach": "this-computer",
+   "why": "loopback, Teredo (the client inverted)"
+  },
+  {
+   "url": "http://[::]/",
+   "reach": "never",
+   "why": "unspecified"
+  },
+  {
+   "url": "http://[fe80::1]/",
+   "reach": "never",
+   "why": "link-local"
+  },
+  {
+   "url": "http://[ff02::1]/",
+   "reach": "never",
+   "why": "multicast"
+  },
+  {
+   "url": "http://[fc00::1]/",
+   "reach": "private",
+   "why": "unique local"
+  },
+  {
+   "url": "http://[fd00:ec2::254]/",
+   "reach": "private",
+   "why": "unique local: AWS's credentials address"
+  },
+  {
+   "url": "http://[fec0::1]/",
+   "reach": "private",
+   "why": "site-local (deprecated)"
+  },
+  {
+   "url": "http://[2001:db8::1]/",
+   "reach": "never",
+   "why": "documentation"
+  },
+  {
+   "url": "http://[3fff::1]/",
+   "reach": "never",
+   "why": "documentation"
+  },
+  {
+   "url": "http://[100::1]/",
+   "reach": "never",
+   "why": "discard-only"
+  },
+  {
+   "url": "http://[2001:2::1]/",
+   "reach": "never",
+   "why": "benchmarking"
+  },
+  {
+   "url": "http://[2001:10::1]/",
+   "reach": "never",
+   "why": "ORCHID"
+  },
+  {
+   "url": "http://[5f00::1]/",
+   "reach": "never",
+   "why": "SRv6"
+  },
+  {
+   "url": "http://[::2]/",
+   "reach": "never",
+   "why": "0.0.0.2, IPv4-compatible: not loopback"
+  },
+  {
+   "url": "http://[::1:7f00:1]/",
+   "reach": "never",
+   "why": "one group short of compatible: reserved, not loopback"
+  },
+  {
+   "url": "http://[::1:0:7f00:1]/",
+   "reach": "never",
+   "why": "one group short of SIIT: reserved, not loopback"
+  },
+  {
+   "url": "http://[::ffff:1:7f00:1]/",
+   "reach": "never",
+   "why": "one group past SIIT: reserved, not loopback"
+  },
+  {
+   "url": "http://[64::7f00:1]/",
+   "reach": "never",
+   "why": "not NAT64's prefix: reserved, not loopback"
+  },
+  {
+   "url": "http://[2001:ff9b::7f00:1]/",
+   "reach": "public",
+   "why": "NAT64's second group under another first: public, not loopback"
+  },
+  {
+   "url": "http://[2001:20::1]/",
+   "reach": "never",
+   "why": "ORCHIDv2"
+  },
+  {
+   "url": "http://[4000::1]/",
+   "reach": "never",
+   "why": "outside the global unicast space: reserved"
+  },
+  {
+   "url": "http://[fbff::1]/",
+   "reach": "never",
+   "why": "outside the global unicast space: reserved"
+  },
+  {
+   "url": "http://localhost:3000/",
+   "reach": "this-computer",
+   "why": "localhost"
+  },
+  {
+   "url": "http://LocalHost/",
+   "reach": "this-computer",
+   "why": "localhost, any case"
+  },
+  {
+   "url": "http://app.localhost/",
+   "reach": "this-computer",
+   "why": "a name under localhost"
+  }
+ ]
+}

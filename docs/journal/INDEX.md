@@ -10,3 +10,62 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-004 | The contract and the leaf module (TODO 0.4) | feature | `J-000-099.md` |
 | J-005 | Three kinds of gate, as Suite Builder's (GR-010) | decision | `J-000-099.md` |
 | J-006 | Tune-up commit 1, at eight commits after the stamp | measurement | `J-000-099.md` |
+| J-007 | The stamp's loose ends fixed, on Ghost's word | contradiction | `J-000-099.md` |
+| J-008 | Ghost's rulings on the cut, and autonomous development | direction | `J-000-099.md` |
+| J-009 | The founding decisions closed (TODO 0.5) | feature | `J-000-099.md` |
+| J-010 | Tune-up pass 0 (TODO 0.6), saved for the reviewer | measurement | `J-000-099.md` |
+| J-011 | Tune-up pass 0 waits on Ghost-Core; Fable's answers | decision | `J-000-099.md` |
+| J-012 | docs/CUT.md written before the copy (TODO 1.1) | feature | `J-000-099.md` |
+| J-013 | The parent's crawl, findings and audit copied (TODO 1.2); the rulings on 1.1's questions | feature | `J-000-099.md` |
+| J-014 | `src/crawl/state.ts` split by what it does (TODO 1.2 finished); the ruling grade's answer on the largest-file metric | decision | `J-000-099.md` |
+| J-015 | The four new dependencies read by the read-only reviewer | measurement | `J-000-099.md` |
+| J-016 | The flags stripped (TODO 1.3) | feature | `J-000-099.md` |
+| J-017 | The parent's unit tests carried (TODO 1.4) | feature | `J-000-099.md` |
+| J-018 | One command: ghostreach <site> (TODO 1.5) | feature | `J-000-099.md` |
+| J-019 | The audit golden against the parent (TODO 1.6); "problem" banned only as a count | feature | `J-000-099.md` |
+| J-020 | The resync recipe, and its dry run against the parent's HEAD (TODO 1.7) | feature | `J-000-099.md` |
+| J-021 | Tune-up pass 1 (TODO 1.8), saved for the reviewer; it waits on Ghost-Core in Phase W | measurement | `J-000-099.md` |
+| J-022 | Ghost settles the PDF's page size and address | decision | `J-000-099.md` |
+| J-023 | The audit page as a PDF, US Letter (TODO 2.3) | feature | `J-000-099.md` |
+| J-024 | Ghost cuts mutation testing (GR-013) | decision | `J-000-099.md` |
+| J-025 | The brand: the PDF's cover page and running footer (TODO 2.4) | feature | `J-000-099.md` |
+| J-026 | The PDF is the one artefact (TODO 2.5) | feature | `J-000-099.md` |
+| J-027 | "What this review checked" closes the PDF (TODO 2.6) | feature | `J-000-099.md` |
+| J-028 | Tune-up pass 2 (TODO 2.7), saved for the reviewer; the core-update step ran, Core still at the stamp | measurement | `J-000-099.md` |
+| J-029 | `ghostreach serve`: the local page (TODO 3.2) | feature | `J-000-099.md` |
+| J-030 | The queue on the local page (TODO 3.3) | feature | `J-000-099.md` |
+| J-031 | Concurrency: up to N reviews at once, one Chromium (TODO 3.4) | feature | `J-000-099.md` |
+| J-032 | SITE-22 withheld under load (TODO 3.1 recorded, 3.5 built) | decision | `J-000-099.md` |
+| J-033 | The ranking waits on GR-007 | decision | `J-000-099.md` |
+| J-034 | docs/SOURCES.md before any code (TODO 4.3) | decision | `J-000-099.md` |
+| J-035 | Keys in code (TODO 4.4) | feature | `J-000-099.md` |
+| J-036 | One fetch function (TODO 4.5) | decision | `J-000-099.md` |
+| J-037 | The company lane (TODO 4.6) | decision | `J-000-099.md` |
+| J-038 | The discovery lane (TODO 4.7) | decision | `J-000-099.md` |
+| J-039 | Website resolution by the salesperson (TODO 4.8) | decision | `J-000-099.md` |
+| J-040 | The paste lane (TODO 4.9) | decision | `J-000-099.md` |
+| J-041 | Queue this site (TODO 4.10) | decision | `J-000-099.md` |
+| J-042 | Attribution (TODO 4.11) | decision | `J-000-099.md` |
+| J-043 | The local page's forms were refused in a real browser (found by tune-up pass 4's security read) | failure-missed | `J-000-099.md` |
+| J-044 | Tune-up pass 4 (TODO 4.12), saved for the reviewer; Core still at the stamp; a read of `src/project/` and of the local server | measurement | `J-000-099.md` |
+| J-045 | Four faults of the local server, left by tune-up pass 4's security read, fixed | failure-caught | `J-000-099.md` |
+| J-046 | Ghost: the audit at a4c8045 is the product; deployment first, no resync planned | direction | `J-000-099.md` |
+| J-047 | Packaging (TODO 5.1): the tarball installs with one command and reviews the fixture | feature | `J-000-099.md` |
+| J-048 | Windows on GitHub Actions (TODO 5.2): the workflow written, its run waits on Ghost | feature | `J-000-099.md` |
+| J-049 | The salesperson's guide (TODO 5.3): written against the program as built; its reader waits | feature | `J-000-099.md` |
+| J-050 | Windows and Linux, not the Mac | direction | `J-000-099.md` |
+| J-051 | The reputation check run for the four new dependencies | measurement | `J-000-099.md` |
+| J-052 | Ghost: a distributable that does not say how much was taken from Suite Builder | direction | `J-000-099.md` |
+| J-053 | The distributable names no source: comments dropped, a salesperson's README, a lineage check on the tarball | feature | `J-000-099.md` |
+| J-054 | Ghostreach as a service behind an API | direction | `J-000-099.md` |
+| J-055 | Ghost: the crawler goes by forecursor | direction | `J-000-099.md` |
+| J-056 | The crawler is forecursor: user agent, robots.txt, probe, globals, crawl file | feature | `J-000-099.md` |
+| J-057 | The footer names the forecursor crawler | direction | `J-000-099.md` |
+| J-058 | The server's setup script and service unit, while the API contract waits | feature | `J-000-099.md` |
+| J-059 | `ghostreach` alone opens the page; `--help` lists every command | direction | `J-000-099.md` |
+| J-060 | The command line: the page by default, one per data folder, a help that lists every command, launchers for a copy of the source | feature | `J-000-099.md` |
+| J-061 | Dev-only advisories: Ghost allows a recorded exception | decision | `J-000-099.md` |
+| J-062 | The icon: a ghost out of a chip | decision | `J-000-099.md` |
+| J-063 | The free review gets the full PDF | decision | `J-000-099.md` |
+| J-064 | @types/node approved, and the branch landed on Ghost's word | decision | `J-000-099.md` |
+| J-065 | The landing: the branch's net change as the reviewer's tune-up commit | decision | `J-000-099.md` |

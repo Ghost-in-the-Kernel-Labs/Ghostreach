@@ -231,7 +231,7 @@ how work is done, then how the repository is kept.
 - **Source:** Ghost; inherited from SB G-239, G-287 and G-290, Katana R-056, EE E-019 and E-059, NR R-015.
 - **Status:** in force
 - **Core:** part of Ghost-Core; may not apply to every project, but a rule that appears in four projects is there for a reason.
-- **See also:** C-001, C-017
+- **See also:** C-001, C-017, GR-013 (Ghostreach refuses this decision)
 - **subject:** mutation
 
 ### C-019: A long run's output goes to a file; an agent reads its verdict and its failures
@@ -479,8 +479,8 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** Ghostreach's crawl, findings and audit are Suite Builder's at commit `a4c8045` (v1.39.0), copied under `src/` with every file and what it lost recorded in `docs/CUT.md`; the parent is never a dependency, and a later parent commit comes in only by a numbered resync item (TODO 1.7, 5.5).
 - **Why:** The parent changes daily and its flags moved on 2026-11-10 alone (RF-02); a salesperson's tool has to be the same tool tomorrow. Ghost's ask (2026-11-13): clone the crawl and audit as a new program.
 - **Held by:** `docs/CUT.md`, `test/unit/cut.test.ts` (TODO 1.1), `docs/CONTRACT.md` REV-07.
-- **Source:** drafted by an agent from Ghost's words in chat, 2026-11-13; the commit is the agent's choice; awaiting Ghost (TODO 0.5).
-- **Status:** proposed
+- **Source:** drafted by an agent from Ghost's words in chat, 2026-11-13; confirmed by Ghost in chat, 2026-11-14 ("The suite builder repo crawl should be copied"; "Only copy and reuse the code").
+- **Status:** in force
 - **See also:** GR-004
 - **subject:** cut
 
@@ -490,15 +490,15 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `src/cli/main.ts`, `test/unit/main.test.ts`, `test/unit/no-flags.test.ts` (TODO 1.3), `docs/CONTRACT.md` REV-05.
 - **Source:** Ghost, in chat, 2026-11-13.
 - **Status:** in force
-- **See also:** GR-008
+- **See also:** GR-008, GR-018 (superseding the command words in part)
 - **subject:** command line
 
 ### GR-004: no suite
 - **Decision:** Nothing of the parent's `src/kits/`, `src/model/` or its back ends is copied; no module generates a test, a page object, a locator or a project (`docs/modules.json` MOD-05).
 - **Why:** The review is the door and the suite is the sale (`docs/ROADMAP.md` §1); a free tool that wrote suites would undercut the thing it sells.
 - **Held by:** `docs/modules.json`, `test/test_modules.py`, `docs/CONTRACT.md` REV-08.
-- **Source:** drafted by an agent from Ghost's ask of 2026-11-13 (the crawl and audit only); awaiting Ghost (TODO 0.5).
-- **Status:** proposed
+- **Source:** drafted by an agent from Ghost's ask of 2026-11-13 (the crawl and audit only); confirmed by Ghost in chat, 2026-11-14 ("make the code here as lean as possible, and not give away suite builder functionality as far as we can").
+- **Status:** in force
 - **See also:** GR-002
 - **subject:** scope
 
@@ -512,11 +512,11 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **subject:** fetched text
 
 ### GR-006: the PDF's page size
-- **Decision:** One page size for every PDF, Letter or A4; the salesperson picks nothing.
+- **Decision:** One page size for every PDF, US Letter; the salesperson picks nothing.
 - **Why:** One artefact, one shape; US prospects read Letter.
-- **Held by:** `src/pdf/` (TODO 2.3).
-- **Source:** the agent's question; awaiting Ghost's choice (TODO 2.1).
-- **Status:** proposed
+- **Held by:** `src/pdf/pdf.ts` (TODO 2.3).
+- **Source:** Ghost, in chat, 2026-11-14 ("Yes that works", to "Page size: is US Letter right?"; J-022).
+- **Status:** in force
 - **See also:** GR-003
 - **subject:** pdf
 
@@ -524,7 +524,7 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** A site's score is `major × 3 + minor × 1` over its summary's counts, shown beside the pages read; ties break by findings per page. Provisional until ten real audits are read (TODO 5.4).
 - **Why:** The parent grades each finding major or minor already (RF-04); a second scale would be a second opinion. The weights are a first guess, to be checked against what sold.
 - **Held by:** `src/rank/` (TODO 3.6).
-- **Source:** drafted by an agent, 2026-11-13; awaiting Ghost (TODO 0.5, settled at 5.4).
+- **Source:** drafted by an agent, 2026-11-13; awaiting Ghost (settled at TODO 5.4).
 - **Status:** proposed
 - **See also:** GR-008
 - **subject:** ranking
@@ -533,18 +533,18 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Decision:** The queue runs up to N reviews at once, N set once in the settings file, default 3, ceiling 5; one Chromium shared as N contexts (RF-09); never two reviews of one host together. SITE-22 (slow pages) under concurrency is guarded, either against a reference timing or withheld above N=1 with a sentence in the PDF; which one waits on Ghost (TODO 3.1).
 - **Why:** Ghost, 2026-11-13: five separate audits of five separate websites at once, so the salespeople get reviews in volume. A loaded laptop can manufacture a slow-page finding (RF-10), and a wrong finding in a prospect's hands loses the sale.
 - **Held by:** `test/unit/queue.test.ts`, `test/crawl/concurrent.spec.ts` (TODO 3.4, 3.5), `docs/CONTRACT.md` REV-03.
-- **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard are the agent's, awaiting Ghost.
+- **Source:** Ghost, in chat, 2026-11-13 (the five); the default of 3 and the guard drafted by the agent, confirmed by Ghost in chat 2026-11-14; which guard is still Ghost's choice (TODO 3.1).
 - **Status:** in force
-- **See also:** GR-003, GR-007
+- **See also:** GR-003, GR-007, GR-014
 - **subject:** concurrency
 
 ### GR-009: the dev dependencies, and why each
 - **Decision:** `vitest` (the fast loop and the integration project), `typescript` (the types), `knip` (nothing floats: no unused export, file or dependency), `@stryker-mutator/core` (mutation with the command runner); Playwright `~1.63.0` arrives at TODO 1.2 as the one runtime dependency, the parent's. Each pinned exactly; each update by `docs/DEPENDENCY-REVIEW.md`.
 - **Why:** The TypeScript starter's four (`stacks/typescript/README.md`); the stamp recipe asks for each with its reason here.
 - **Held by:** `package.json`, `package-lock.json`, `docs/REVIEWED-VERSIONS.md`.
-- **Source:** Ghost, by the stamp recipe, 2026-11-13.
+- **Source:** Ghost, by the stamp recipe, 2026-11-13; confirmed by Ghost in chat, 2026-11-14.
 - **Status:** in force
-- **See also:** Core C-035
+- **See also:** Core C-035, GR-013
 - **subject:** dependencies
 
 ### GR-010: three kinds of gate, as Suite Builder's: fast, medium, and the slow sweep
@@ -553,5 +553,107 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **Held by:** `scripts/gate.sh`, `stacks/typescript/gate.sh`, `scripts/commit.sh`, `scripts/ship.sh`, `scripts/sweep.sh`, `test/test_gates.py`.
 - **Source:** Ghost, in chat, 2026-11-14.
 - **Status:** in force
-- **See also:** Core C-037, Core C-040, GR-009
+- **See also:** Core C-037, Core C-040, GR-009, GR-013
 - **subject:** gate
+
+### GR-011: Node's type declarations, @types/node, a dev dependency
+- **Decision:** `@types/node` 22.20.5, pinned exactly, a dev dependency beside GR-009's four (it brings `undici-types`); `tsconfig.json` names it in `types`. Reason: the copied crawl imports `node:fs`, `node:path`, `node:crypto`, `node:dns/promises` and more, and `tsc --noEmit` cannot check them without Node's types; Node 22's, the parent's major (it pins `^22.20.5`).
+- **Why:** TODO 1.2's check is `tsc --noEmit` green over the parent's copy (`docs/CUT.md`, "What 1.2 needs"); no dependency brings Node's types and GR-009 names none. The ruling grade recommended adding it on the session branch, its approval left to Ghost (J-013).
+- **Held by:** `package.json`, `package-lock.json`, `tsconfig.json`, `docs/REVIEWED-VERSIONS.md`.
+- **Source:** Ghost, in chat, 2026-11-20 (J-064), answering the coordinator's request to land the branch and approve `@types/node` 22.20.5 with `undici-types`: "Yes please land it. You have explicit approval". Proposed by an agent on the ruling grade's recommendation (J-013).
+- **Status:** in force
+- **See also:** GR-009, Core C-035
+- **subject:** dependencies
+
+### GR-012: the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel
+- **Decision:** The address every PDF carries, on its cover and in its running footer, is `github.com/ghost-in-the-kernel`, written once as a constant; the byline "Prepared with Suite Builder, Ghost in the Kernel Labs" stands beside it.
+- **Why:** Ghost, 2026-11-14: "Ghost in the kernel labs is my git hub organization. Used for managing projects that are complicated/private/need selective sharing." A prospect is sent to the public face, Ghost's own GitHub, as `docs/ROADMAP.md` §1 says ("carrying Ghost's GitHub").
+- **Held by:** `src/leaf/words.ts` (`ADDRESS`, `BYLINE`; TODO 2.4), read by `src/pdf/brand.ts`; `test/unit/words.test.ts`, `test/crawl/ghostreach.spec.ts`.
+- **Source:** Ghost, in chat, 2026-11-14 ("Yes that works", to "The PDF address: is github.com/ghost-in-the-kernel right?"; J-022).
+- **Status:** in force
+- **See also:** GR-006
+- **subject:** pdf
+
+### GR-013: no mutation testing: Core C-018 refused, Stryker removed
+- **Decision:** Ghostreach runs no mutation testing: not in the full gate, not in the sweep, not in a tune-up. It refuses Core C-018 for itself: no mutation tool, no survivors list in `docs/MUTATION.md`, no declared mutation per check in its place (C-001's planted breaks and AGT-06 still hold every check). It keeps C-018's rule that a test is never weakened to make code pass, and the weakened-tests notice (`scripts/weakened.mjs`) that lists one for the reviewer. `@stryker-mutator/core` leaves the dev dependencies with every package only it brought (158 lockfile entries) and the 34 cooldown overrides that existed only for its tree, together with its config (`stryker.config.mjs`), its runner (`scripts/mutate.mjs`), the `mutate` npm script and knip's Stryker setting. The full gate is the medium checks and the metrics; the sweep is that gate run cold, overnight.
+- **Why:** Ghost, 2026-11-14: "Cut the mutant testing. Its been copied in and is mostly already done for the crawl. There are minimal benefits from it, and suite builder needed it for the compiler. Our faults are less systemic if they occur." The copied crawl and audit carry the parent's tests, which were mutated there; the first full gate over the copy ran its mutation step for over two hours and stopped red with 2,637 survivors in code the parent had already tried (J-021, `docs/HANDOFF.md` "For Ghost" F). A compiler's fault reaches every suite it writes; a review's fault reaches one PDF.
+- **Held by:** `package.json`, `package-lock.json`, `stacks/typescript/gate.sh`, `stacks/typescript/README.md`, `test/test_stacks.py` (`mutation_refused`: the runner's checks stand aside while this entry is in force), `docs/MUTATION.md`.
+- **Source:** Ghost, in chat, 2026-11-14 (the quote above; J-024); his word is also the approval the supply-chain rule asks for to remove a dependency. Recorded by an agent.
+- **Status:** in force
+- **See also:** Core C-018, Core C-001, Core C-035, GR-009, GR-010
+- **subject:** mutation
+- **Supersedes:** Core C-018 for this project (refused; its never-weaken rule kept), and GR-009 and GR-010, in part: GR-009's `@stryker-mutator/core` (mutation with the command runner) among the dev dependencies; GR-010's "then mutation (warm cache)" in the full gate (3), now the medium checks then the metrics, and its sweep's "every cache off" (4), with no mutation cache left to turn off. The rest of each stands, so its Status stays `in force` and its See also names GR-013.
+
+### GR-014: SITE-22 withheld from a review that ran alongside another
+- **Decision:** SITE-22 (slow pages) is withheld from a review when any other review was running at any moment of its crawl: the actual overlap, which the queue's runner knows, not merely a setting above one review at once. `ghostreach <site>`, and a queued review that ran alone, report SITE-22 exactly as before, its thresholds untouched. The overlap is passed into the findings as a flag, never read from a clock, so it is deterministic. A withheld review's page and PDF say, before the findings it qualifies (REV-03), in the review's words (REV-04): "This review ran alongside others, so it did not time the pages: it has no finding on slow pages." Its "What this review checked" row for SITE-22 says not timed rather than checked.
+- **Why:** The other guard GR-008 named, a reference timing, needs a known-fast page fetched beside every review (a third host asked each time, or the prospect's own site, which is the thing measured) and thresholds relative to it in place of the parent's absolute ones (`H.SLOW_PAGE_MS`, `H.SLOW_FIRST_BYTE_MS`), which still do not scale linearly under contention for the processor: more code, a departure from the parent, and a major finding that can still be wrong. Withholding cannot manufacture a finding, and is a few lines. A loaded machine can make a slow-page finding (RF-10), and a wrong finding in a prospect's hands loses the sale (GR-008).
+- **Held by:** `test/unit/queue.test.ts` (the runner's overlap), `test/unit/audit-alongside.test.ts` (the page withheld and said), `test/unit/words.test.ts` (the sentence in the review's words), `test/crawl/concurrent.spec.ts` (TODO 3.5: serial reports SITE-22 on a slow page, the queue's concurrent run withholds it and its PDF carries the sentence); `src/leaf/words.ts` (`ALONGSIDE`).
+- **Source:** the ruling grade (Fable) under Ghost's delegation (J-008), 2026-11-14, after the coordinator's question went unanswered; for Ghost to confirm (TODO 3.1, J-032).
+- **Status:** in force
+- **See also:** GR-008
+- **subject:** concurrency
+
+### GR-015: Ghostreach is a service behind an API; the website is the salesperson's interface
+- **Decision:** Ghostreach runs on a server (a VPS behind a Cloudflare Tunnel hostname, with Access in front of a bearer token) and offers a JSON API that the website (forecursor.com's Worker) calls server to server: queue a review, read its state and result (summary numbers and a short view of the top findings), fetch its PDF, delete it, and a health check. The website signs salespeople in; Ghostreach holds no accounts. The API never returns the crawl, AUDIT.html or the code. This replaces the downloadable zip and launcher; the local page stays for development. The contract is drafted with the web design session and confirmed by Ghost before it is built (`docs/API.md`).
+- **Why:** Ghost, 2026-11-14: "can we make ghostreach compatible with the website hosting with an API?" and "You have my approval." A hosted service ships no code to anyone, which also closes the lineage exposure a distributed package carries (J-052), and a link is simpler for a salesperson than any install.
+- **Held by:** `docs/HANDOFF.md` (docs/API.md once Ghost confirms the contract).
+- **Source:** Ghost, in chat, 2026-11-14 (J-054).
+- **Status:** in force
+- **See also:** GR-003, GR-016
+- **subject:** delivery
+
+### GR-016: esbuild approved, deferred while no code ships
+- **Decision:** A bundler and minifier (esbuild, one pinned dev dependency, reviewed by `docs/DEPENDENCY-REVIEW.md`) may be added to bundle the shipped code; it is deferred while Ghostreach is delivered as a service (GR-015), since no code then leaves the server.
+- **Why:** Ghost, 2026-11-14, "yes" to "May I add esbuild?"; the reason was to hide file layout and names in a distributed package, which GR-015 makes moot for now.
+- **Held by:** `package.json` (when added), `docs/REVIEWED-VERSIONS.md`.
+- **Source:** Ghost, in chat, 2026-11-14 (J-054).
+- **Status:** in force
+- **See also:** GR-015
+- **subject:** dependencies
+
+### GR-017: the crawler is forecursor: its user agent, robots.txt name, probe and crawl file
+- **Decision:** The crawler names itself forecursor, after the website (forecursor.com, GR-015): its user agent is `Mozilla/5.0 (compatible; forecursor/1.0; +https://forecursor.com)`, the standard bot form, its robots.txt product token `forecursor`, its not-found probe `/forecursor-no-such-page-<hash>`, its in-page globals `__forecursor*`, and the crawl files it writes say `tool: 'forecursor'`. It still obeys a robots.txt group written for `SuiteBuilder`, the name it went by before, beside its own (both groups' rules together; `*` only when neither is named), and still reads the parent's crawl files (`tool: 'suite-builder'`), which 1.5 and 1.6 hold it to.
+- **Why:** Ghost, 2026-11-14: "The crawler should set its agent to forecursor. That way ppl google and find it." A site's owner who reads the crawler's name in a log and searches it finds the website. Obeying the old name too is the agent's conservative choice (J-056): a site that wrote rules for the crawler under its old name is not crawled against them.
+- **Held by:** `src/leaf/report.ts` (`DEFAULT_USER_AGENT`, `ROBOTS_TOKENS`), `src/crawl/robots.ts`, `src/leaf/pages/url.ts` (`notFoundPath`), `src/crawl/report-read.ts`, `test/unit/crawler-name.test.ts`, `test/crawl/ghostreach.spec.ts`, `test/support/lineage.ts`.
+- **Source:** Ghost, in chat, 2026-11-14 (J-055).
+- **Status:** in force
+- **See also:** GR-003, GR-015
+- **subject:** crawl
+
+### GR-018: `ghostreach` alone opens the page; `--help` lists every command; `serve` and `doctor` are commands
+- **Decision:** Typed alone, `ghostreach` starts the local page and opens the browser at it; when a page already serves the same data folder (a note, `page.json` in the data folder, naming its address and process, believed only when the process is alive and the address answers with the page), it opens the browser at that one and exits 0, and a stale note is replaced. `ghostreach serve` is the same command; `ghostreach doctor` checks the computer; `ghostreach <site>` reviews one site, the same full audit as before (REV-05's reason stands: two reviews of one crawl are the same review); `ghostreach --help` (or the word `help`) lists every command in plain words, where the reviews are saved and how the page stops. Still no option beginning `--` but `--help`. From a copy of the source, `ghostreach.cmd` (Windows) and `./ghostreach` (Linux) at the root build the program the first time, saying so, and run it; neither is packed.
+- **Why:** Ghost, 2026-11-18, in chat: "Ok in the meantime, lets make ghostreach more cli friendly. Ideally, when someone navigates to the ghostreach folder via cli, they should be able to type ghostreach --help and be able to see all available commands to ghostreach. Simply typing ghostreach should start the service, and it should open up a browser window pointed at the service." One page per data folder, the agent's reading of "start the service": a second page over the same `queue.json` would run its reviews twice (J-059).
+- **Held by:** `src/cli/main.ts`, `src/project/serve.ts` (`runningPage`, `showPage`), `test/unit/main.test.ts`, `test/unit/serve.test.ts`, `test/unit/no-flags.test.ts`, `ghostreach`, `ghostreach.cmd`, `test/test_launchers.py`, `README.md`, `docs/SALES-GUIDE.md`.
+- **Source:** Ghost, in chat, 2026-11-18 (J-059). The agent's parts, for Ghost to confirm (J-060): the note's name and its check; the word `help` beside `--help`; the help's wording; the launchers building on first use with `npm ci` from the lockfile.
+- **Status:** in force
+- **subject:** command line
+- **See also:** GR-003, GR-008
+- **Supersedes:** GR-003, in part: its title's "`ghostreach <site>` and `--help`, nothing else" and its "The command takes a site and nothing else" (the command takes a site, one of the words `serve`, `doctor`, `help`, or nothing; and `--help`). The rest stands (no flag, every behaviour fixed, the settings file), so its Status stays `in force` and its See also names GR-018.
+
+### GR-019: a dev-only advisory with no fix may stand as a recorded exception
+- **Decision:** A high or critical advisory reached only through dev dependencies (`npm audit --omit=dev` finds nothing), with no fixed version published, may stand as an exception: its id, package, path, date and reason recorded in `docs/HANDOFF.md`'s advisories section, removed once a fix comes in by `docs/DEPENDENCY-REVIEW.md`. An advisory in what ships is never excepted. The gate's audit step is changed to read the exceptions only when one is first needed.
+- **Why:** Ghost, 2026-11-18, "go with a", to the coordinator's options for GHSA-fc5q-39xc-vjpf (picomatch 4.0.7, dev-only through knip and vitest, no fix): "(a) allow a recorded exception for this dev-only advisory until a fix ships". By the time it was recorded, `npm audit` no longer reported it, so no exception stands today.
+- **Held by:** `docs/HANDOFF.md` (advisories), `stacks/typescript/gate.sh`.
+- **Source:** Ghost, in chat, 2026-11-18 (J-061).
+- **Status:** in force
+- **See also:** GR-009
+- **subject:** dependencies
+
+### GR-020: the icon is the >⩊< ghost rising out of a computer chip
+- **Decision:** Ghostreach's icon is a cute stylised ghost with a >⩊< face and pink cheeks, rising out of a computer chip and holding up a magnifying glass, with two sparkles. `assets/icon.svg` is its one source; the PNG and the Windows `.ico` (16, 32, 48, 64, 128 and 256 px) are drawn from it.
+- **Why:** Ghost, 2026-11-20: "Why not make an icon here? Im thinking of a ghost that is coming out of a clamshell with a magnifying glass. The sylized ghost would be cutsey and funny and have an >⩊< emoji face", then "what about a ghost emerging from a kernel?", "or a computer chip?", and of three drawn versions: "Oooh that chip one is a winner :D".
+- **Held by:** `assets/icon.svg`, `assets/icon.ico`, `assets/icon-256.png`.
+- **Source:** Ghost, in chat, 2026-11-20 (J-062).
+- **Status:** in force
+- **See also:** GR-018
+- **subject:** brand
+
+### GR-021: the free review hands over the full PDF
+- **Decision:** Every review requested through the website, the free one included, hands over the full PDF; the API's short view is for the website's own page, never a substitute for the PDF.
+- **Why:** Ghost, 2026-11-20: "The free review from the ghostreach gets the full pdf. yes. That pdf is how the salesfolks sell services."
+- **Held by:** `docs/HANDOFF.md` (the API contract, GR-015), `docs/ROADMAP.md` §1.
+- **Source:** Ghost, in chat, 2026-11-20 (J-063).
+- **Status:** in force
+- **See also:** GR-015
+- **subject:** delivery
+

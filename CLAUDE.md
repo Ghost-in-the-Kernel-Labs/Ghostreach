@@ -12,18 +12,18 @@ workpath's file, never here.
 | --- | --- | --- | --- |
 | Process: a decision, the plan, the journal, a word, a finding, the metrics, a routing row, a check, the supply chain, the gates | `docs/paths/process.md` (its rows) | C-008 to C-016 | `scripts/fast.sh` |
 | The philosophy, and why a rule is what it is | `docs/GHOST-IN-THE-KERNEL.md`, `docs/LESSONS.md` | | |
-| The kernel contract: invariants, the leaf module, entry points | `docs/CONTRACT.md`, `docs/modules.json` | C-012 | `test/test_contract.py`, `test/test_modules.py` |
-| A stack's tooling: its fast loop, lockfile, mutation runner | `stacks/<language>/README.md` | C-018, C-034 | `scripts/gate.sh` |
+| The code: the kernel contract, where a file goes, the lead finder, the local page, a fixture | `docs/paths/code.md` (its rows) | C-012 | `scripts/gate.sh --fast` |
+| A stack's tooling: its fast loop, lockfile | `stacks/<language>/README.md` | C-034, GR-013 | `scripts/gate.sh` |
 
 ## Commands
 
 `scripts/fast.sh` is the fast loop: every doc check and unit test, under 30 s (`docs/AGENT.md` has the last measure), nothing
 installed. Three checkpoints (C-040), three kinds of gate (GR-010). `scripts/save.sh -m <message>` saves a session's work on
-its own branch (key scan, a plain commit as Ghost, a push of that branch; no gate). `scripts/gate.sh --fast` is the landing's
+its own branch (key scan, a commit as Ghost, a push; no gate). `scripts/gate.sh --fast` is the landing's
 check: the fast loop, the key scan, the stack's fast checks (unit tests, typecheck, knip, cooldown, advisories), under a minute;
-`--medium` adds the integration project and the crawl specs, minutes, and is what a ship carrying code needs; bare, the full
-gate adds mutation and the metrics, the release checkpoint at each tune-up. Each records the tree it passed on (C-037).
-`scripts/commit.sh -a -F <message>` is the only way a commit reaches `main` (it refuses an unrecorded tree, and any but a
+`--medium` adds the integration project and the crawl specs, what a ship carrying code needs; bare, the full
+gate adds the metrics (no mutation, GR-013), the release checkpoint at each tune-up. Each records its tree (C-037).
+`scripts/commit.sh -a -F <message>` is the only way to `main` (it refuses an unrecorded tree, and any but a
 `tune-up:` commit while one is due); `scripts/ship.sh` is the only push, and refuses a fast record when code changed.
 `scripts/sweep.sh` is the slow overnight run, the cold full gate, never a gate itself. Long output goes to a file
 (`docs/when/long-run.md`).

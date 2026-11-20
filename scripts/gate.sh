@@ -21,7 +21,7 @@
 # tune-up reads it to report step times without rerunning the gate (docs/when/tune-up.md step 2).
 # The tree record names its kind: .git/ghost/kind holds `full` or `fast`, written beside the tree, removed with it.
 # The cold run: `GHOST_COLD=1 scripts/gate.sh` bypasses every cache a step keeps. Core's own steps keep none; the
-# variable is exported to the stack gates (the TypeScript stack's mutate.mjs reads it as MUTATE_CACHE=0) and `--cold`
+# variable is exported to the stack gates (this project's keeps none either: no mutation, GR-013) and `--cold`
 # is passed to scripts/metrics.py, which never writes a cold run's numbers to docs/AGENT.md. Its verdict line begins
 # `gate (cold):`, its output goes to build/gate-cold.log and its times to build/gate-cold-times.txt, so the warm run's
 # files stay; its minutes go to the journal's Cost line and the tune-up commit's verdict line only (C-024).

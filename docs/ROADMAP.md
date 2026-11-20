@@ -172,7 +172,8 @@ Numbers are `TODO.md`'s; a Ghost's-choice item heads its phase and waits in Phas
 ### Phase 3: the queue and the ranking
 
 - 3.1 SITE-22 under load, Ghost's choice (GR-008): a reference timing (a known-fast page fetched at the same moment,
-  SITE-22 reported relative to it) or SITE-22 withheld above concurrency 1 with one sentence in the PDF saying so.
+  SITE-22 reported relative to it) or SITE-22 withheld above concurrency 1 with one sentence in the PDF saying so. Answered
+  (GR-014): withheld, from a review whose crawl another review ran beside.
 - 3.2 `ghostreach serve`: a local web page on `127.0.0.1` (Node's `http`, no framework; P-04), opened in the browser.
   Check: the test fetches the page; it binds to loopback only.
 - 3.3 The queue: paste one site per line; `queue.json` holds them with a state each (`waiting`, `running`, `done`,
@@ -183,7 +184,13 @@ Numbers are `TODO.md`'s; a Ghost's-choice item heads its phase and waits in Phas
   once; `ghostreach doctor` reports the machine's memory and the N it recommends. Check: `test/unit/queue.test.ts`: N
   running and no more, two entries of one host never together; `test/crawl/concurrent.spec.ts`: three fixture sites
   crawled together give the same findings as one after another.
-- 3.5 SITE-22 built as 3.1 chose. Check: the concurrent spec's SITE-22 result equals the serial run's.
+- 3.5 SITE-22 withheld under load (GR-014, 3.1's answer): SITE-22 is withheld from a review when any other review was running at
+  any moment of its crawl (the actual overlap, known to the queue's runner; not merely a setting above one), passed into the
+  findings as a flag, never read from a clock; `ghostreach <site>` and a queued review that ran alone report it as before, the
+  thresholds untouched. A withheld review's page and PDF say, before the findings: "This review ran alongside others, so it did
+  not time the pages: it has no finding on slow pages.", and its "What this review checked" row for SITE-22 says not timed.
+  Check: the concurrent spec's SITE-22 result equals the serial run's, read under GR-014: on fixture sites with a slow page, the
+  concurrent run reports no SITE-22 the serial run lacks, its PDF carries the sentence, and the serial PDF does not.
 - 3.6 The ranking, `src/rank/`: score = `major × 3 + minor × 1` over `summary.json` (GR-007, provisional until ten
   real audits are read), with pages read beside it; sorted most first; each row links its PDF. Check: a fixture set of
   three summaries ranks in the known order; a tie breaks by findings per page.
@@ -214,8 +221,9 @@ third-party text chosen by a search, so every source is read through one fetch f
   "key present / absent", never the key; a source without its key is skipped and said so. Check:
   `scripts/checks/secrets.py` on the tree; a test that the UI's HTML contains no key-shaped string.
 - 4.5 One fetch function (P-16): returns text or JSON, strips markup, follows no link, honours each source's cap with a
-  per-source token bucket persisted in the data folder so a restart does not reset Adzuna's 250/day. Check:
-  `test/unit/fetch.test.ts`: a redirect is not followed, HTML comes back as text, the bucket refuses the 251st call.
+  per-source token bucket persisted in the data folder so a restart does not reset Jooble's 100/day (Adzuna, first named
+  here, is excluded by its terms: J-034, J-036). Check: `test/unit/fetch.test.ts`: a redirect is not followed, HTML comes
+  back as text, the bucket refuses the 101st Jooble call of a UTC day.
 - 4.6 The company lane, `src/leads/company.ts`: the salesperson types a company name or its site; the program derives
   candidate board slugs and probes each ATS endpoint; a hit lists the open roles filtered to QA/test/SDET titles.
   Check: recorded fixtures per ATS (no network in the unit loop); a company on Greenhouse under one slug is found; a

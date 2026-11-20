@@ -1,0 +1,344 @@
+{
+  "tool": "suite-builder",
+  "reportVersion": 6,
+  "startUrl": "http://frames.test/",
+  "origin": "http://frames.test",
+  "options": {
+    "maxPages": 10,
+    "delayMs": 0,
+    "userAgent": "Mozilla/5.0 (compatible; SuiteBuilder/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)",
+    "maxConsecutiveErrors": 3,
+    "include": [],
+    "exclude": []
+  },
+  "adsBlocked": true,
+  "robots": {
+    "url": "http://frames.test/robots.txt",
+    "status": 200,
+    "source": "parsed",
+    "crawlDelaySeconds": null
+  },
+  "notFound": {
+    "url": "http://frames.test/suite-builder-no-such-page-08a3d11e",
+    "status": 404
+  },
+  "site": {
+    "sitemap": {
+      "url": "http://frames.test/sitemap.xml",
+      "status": 404
+    },
+    "securityTxt": {
+      "url": "http://frames.test/.well-known/security.txt",
+      "status": 404
+    }
+  },
+  "stopReason": "complete",
+  "discovery": {
+    "newAt": [
+      1,
+      2,
+      3
+    ]
+  },
+  "pages": [
+    {
+      "url": "http://frames.test/",
+      "finalUrl": "http://frames.test/",
+      "status": 200,
+      "redirects": [],
+      "title": "Home | Framed",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 0,
+      "fingerprint": {
+        "hash": "bb4129f2a5212f14",
+        "paths": [
+          "a",
+          "h1"
+        ]
+      },
+      "headings": [
+        "Framed"
+      ],
+      "structure": {
+        "h1": [
+          "Framed"
+        ],
+        "main": false
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Framed",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Frames",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Nested",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Late",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Frames",
+          "url": "/frames"
+        },
+        {
+          "role": "link",
+          "name": "Nested",
+          "url": "/nested"
+        },
+        {
+          "role": "link",
+          "name": "Late",
+          "url": "/late"
+        }
+      ]
+    },
+    {
+      "url": "http://frames.test/late",
+      "finalUrl": "http://frames.test/late",
+      "status": 200,
+      "redirects": [],
+      "title": "Late | Framed",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "0d6e4079e36703eb",
+        "paths": [
+          "main"
+        ]
+      },
+      "headings": [],
+      "structure": {
+        "h1": [],
+        "main": false
+      },
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": []
+    },
+    {
+      "url": "http://frames.test/nested",
+      "finalUrl": "http://frames.test/nested",
+      "status": 200,
+      "redirects": [],
+      "title": "Nested | Framed",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "abe38d09d50919cb",
+        "paths": [
+          "h1",
+          "iframe"
+        ]
+      },
+      "headings": [
+        "Nested Frames"
+      ],
+      "structure": {
+        "h1": [
+          "Nested Frames"
+        ],
+        "main": false
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Nested Frames",
+          "count": 1
+        }
+      ],
+      "frames": [
+        {
+          "path": [
+            "//iframe[@id='parent']"
+          ],
+          "url": null,
+          "sameSite": true,
+          "shown": true,
+          "title": null,
+          "width": 404,
+          "height": 304,
+          "headings": [
+            "Parent frame"
+          ]
+        },
+        {
+          "path": [
+            "//iframe[@id='parent']",
+            "//iframe[@id='child']"
+          ],
+          "url": null,
+          "sameSite": true,
+          "shown": true,
+          "title": null,
+          "width": 304,
+          "height": 154,
+          "headings": [
+            "Child frame"
+          ]
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": []
+    },
+    {
+      "url": "http://frames.test/frames",
+      "finalUrl": "http://frames.test/frames",
+      "status": 200,
+      "redirects": [],
+      "title": "Frames | Framed",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "abe38d09d50919cb",
+        "paths": [
+          "h1",
+          "iframe"
+        ]
+      },
+      "headings": [
+        "Frames"
+      ],
+      "structure": {
+        "h1": [
+          "Frames"
+        ],
+        "main": false
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Frames",
+          "count": 1
+        }
+      ],
+      "frames": [
+        {
+          "path": [
+            "//iframe[@id='sample']"
+          ],
+          "url": "http://frames.test/sample",
+          "sameSite": true,
+          "shown": true,
+          "title": "Sample",
+          "width": 500,
+          "height": 300,
+          "headings": [
+            "This is a sample page",
+            "Email"
+          ],
+          "links": [
+            {
+              "href": "http://frames.test/late",
+              "text": "Late"
+            }
+          ],
+          "controls": [
+            {
+              "kind": "text field",
+              "words": [
+                "Email"
+              ],
+              "region": "main",
+              "form": "a form",
+              "xpath": "//input[@name='email']",
+              "stability": "Strong"
+            },
+            {
+              "kind": "button",
+              "words": [
+                "Send"
+              ],
+              "region": "main",
+              "form": "a form",
+              "xpath": "//button[normalize-space()='Send']",
+              "stability": "OK"
+            }
+          ]
+        },
+        {
+          "path": [
+            "//iframe[@title='Widget']"
+          ],
+          "url": "http://other.test/widget",
+          "sameSite": false,
+          "shown": true,
+          "title": "Widget",
+          "width": 304,
+          "height": 254
+        },
+        {
+          "path": [
+            "(//iframe)[3]"
+          ],
+          "url": "http://other.test/captcha",
+          "sameSite": false,
+          "shown": false,
+          "title": null,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "http://frames.test/",
+      "to": "http://frames.test/frames",
+      "href": "/frames",
+      "text": "Frames",
+      "external": false
+    },
+    {
+      "from": "http://frames.test/",
+      "to": "http://frames.test/nested",
+      "href": "/nested",
+      "text": "Nested",
+      "external": false
+    },
+    {
+      "from": "http://frames.test/",
+      "to": "http://frames.test/late",
+      "href": "/late",
+      "text": "Late",
+      "external": false
+    }
+  ],
+  "notCrawled": []
+}

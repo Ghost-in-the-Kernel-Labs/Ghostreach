@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>{{name}} Pokédex entry | Fixture Dex</title></head>
+<body>
+  <header class="site-header">
+    <nav class="main-nav"><ul><li><a href="/">Home</a></li><li><a href="/pokedex/all">All Pokémon</a></li></ul></nav>
+  </header>
+  <main>
+    <h1>{{name}}</h1>
+    <div class="grid-row">
+      <div class="grid-col">
+        <table class="vitals-table">
+          <tbody>
+            <tr><th>National №</th><td><strong>{{number}}</strong></td></tr>
+            <tr><th>Type</th><td><a class="type-icon" href="/type/{{typeSlug}}">{{type}}</a></td></tr>
+            <tr><th>HP</th><td>{{hp}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      {{extra}}
+    </div>
+    <nav class="entity-nav">
+      <a class="entity-nav-prev" href="/pokedex/{{prev}}">Previous</a>
+      <a class="entity-nav-next" href="/pokedex/{{next}}">Next</a>
+    </nav>
+  </main>
+</body>
+</html>

@@ -4,7 +4,7 @@
 #   --fast    the fast checks, seconds to a minute: the unit tests, typecheck, knip, the cooldown, advisories; the landing;
 #   --medium  the fast checks, then the integration project and the crawl specs (Playwright, when playwright.config.ts
 #             exists), minutes; the ship when code changed; the weakened-tests notice (never fails);
-#   (bare)    the full gate: the medium checks, then mutation with every survivor explained; the release and each tune-up.
+#   (bare)    the full gate: the medium checks; the release and each tune-up (no mutation: GR-013, refusing Core C-018).
 # Each kind ends with one line, `typescript gate: <kind> checks passed` or `typescript gate: passed`.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -31,6 +31,4 @@ if [ -f playwright.config.ts ]; then
 fi
 node scripts/weakened.mjs || true
 [ "$kind" != medium ] || { echo "typescript gate: medium checks passed"; exit 0; }
-# The full gate: mutation, warm cache per run, cache off under GHOST_COLD=1 (the sweep, scripts/sweep.sh).
-node scripts/mutate.mjs || { echo "typescript gate: a surviving mutant with no line in docs/MUTATION.md"; exit 1; }
 echo "typescript gate: passed"

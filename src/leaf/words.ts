@@ -15,8 +15,8 @@ export const BANNED_PHRASES = [
   'nothing wrong',
   'defect',
   'defects',
-  'problem',
-  'problems',
+  'problem found',
+  'problems found',
   'the site is broken',
   'nobody looks after',
   'nobody checked',
@@ -33,3 +33,17 @@ export function bannedIn(sentence: string): string[] {
 function phrasePattern(phrase: string): RegExp {
   return new RegExp(`\\b${phrase.split(' ').join('\\s+')}\\b`, 'i');
 }
+
+/** Ghost's address, which the review's PDF carries on its cover and in the footer of every page (TODO 2.2, 2.4). */
+// Decision: GR-012
+export const ADDRESS = 'github.com/ghost-in-the-kernel';
+
+/** Who prepared the review, as the PDF's cover and the audit page's footer say it (J-019): Suite Builder's name, never this program's. */
+export const BYLINE = 'Prepared with Suite Builder, Ghost in the Kernel Labs';
+
+/**
+ * What a review whose crawl ran beside another review says before its findings (GR-014, REV-03): its pages were not timed, so it
+ * has no finding on slow pages (SITE-22). Only such a review's page and PDF carry it; a review that ran alone never does.
+ */
+// Decision: GR-014
+export const ALONGSIDE = 'This review ran alongside others, so it did not time the pages: it has no finding on slow pages.';

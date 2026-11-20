@@ -1,0 +1,2308 @@
+{
+  "tool": "suite-builder",
+  "reportVersion": 6,
+  "startUrl": "http://fixture.test/",
+  "origin": "http://fixture.test",
+  "options": {
+    "maxPages": 300,
+    "delayMs": 0,
+    "userAgent": "Mozilla/5.0 (compatible; SuiteBuilder/1.0; +https://github.com/Ghost-in-the-Kernel-Labs/Ghost-in-the-Kernel-Labs-suite-builder-docs)",
+    "maxConsecutiveErrors": 3,
+    "include": [],
+    "exclude": []
+  },
+  "adsBlocked": true,
+  "robots": {
+    "url": "http://fixture.test/robots.txt",
+    "status": 200,
+    "source": "parsed",
+    "crawlDelaySeconds": null
+  },
+  "notFound": {
+    "url": "http://fixture.test/suite-builder-no-such-page-08a3d11e",
+    "status": 404
+  },
+  "site": {
+    "sitemap": {
+      "url": "http://fixture.test/sitemap.xml",
+      "status": 404
+    },
+    "securityTxt": {
+      "url": "http://fixture.test/.well-known/security.txt",
+      "status": 404
+    },
+    "images": {
+      "asked": 1,
+      "seen": 1,
+      "notOnPage": 0
+    }
+  },
+  "stopReason": "complete",
+  "discovery": {
+    "newAt": [
+      1,
+      2,
+      3,
+      4,
+      7,
+      9
+    ]
+  },
+  "pages": [
+    {
+      "url": "http://fixture.test/",
+      "finalUrl": "http://fixture.test/",
+      "status": 200,
+      "redirects": [],
+      "title": "Fixture Dex | Home",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 0,
+      "fingerprint": {
+        "hash": "efe911dbf1bd9b58",
+        "paths": [
+          "footer.site-footer",
+          "footer.site-footer/a",
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "header.site-header/nav.main-nav/ul/li/a.logo-link",
+          "header.site-header/nav.main-nav/ul/li/a.logo-link/img",
+          "main",
+          "main/h1",
+          "main/p",
+          "main/ul.link-list",
+          "main/ul.link-list/li",
+          "main/ul.link-list/li/a"
+        ]
+      },
+      "headings": [
+        "Welcome to Fixture Dex"
+      ],
+      "structure": {
+        "h1": [
+          "Welcome to Fixture Dex"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Welcome to Fixture Dex",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "About",
+          "count": 2
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Fixture Dex logo",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "The old list page (moved)",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "A page that does not exist",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Type chart (PDF)",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Admin area",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Example (another site)",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Email us",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Generation 1",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "About",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "Fixture Dex logo",
+          "url": "/about"
+        },
+        {
+          "role": "link",
+          "name": "The old list page (moved)",
+          "url": "old-list"
+        },
+        {
+          "role": "link",
+          "name": "A page that does not exist",
+          "url": "/missing"
+        },
+        {
+          "role": "link",
+          "name": "Type chart (PDF)",
+          "url": "/files/type-chart.pdf"
+        },
+        {
+          "role": "link",
+          "name": "Admin area",
+          "url": "/private/admin"
+        },
+        {
+          "role": "link",
+          "name": "Example (another site)",
+          "url": "https://example.com/"
+        },
+        {
+          "role": "link",
+          "name": "Email us",
+          "url": "mailto:hello@example.com"
+        },
+        {
+          "role": "link",
+          "name": "Generation 1",
+          "url": "/pokedex/all#gen1"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/missing",
+      "finalUrl": "http://fixture.test/missing",
+      "status": 404,
+      "redirects": [],
+      "title": "Fixture Dex | Page not found",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "e83c3a4246e78581",
+        "paths": [
+          "main.error-page",
+          "main.error-page/h1",
+          "main.error-page/p",
+          "main.error-page/p/a"
+        ]
+      },
+      "headings": [
+        "Page not found"
+      ],
+      "structure": {
+        "h1": [
+          "Page not found"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Page not found",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Back to the home page",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Back to the home page",
+          "url": "/"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/old-list",
+      "finalUrl": "http://fixture.test/pokedex/all",
+      "status": 200,
+      "redirects": [
+        {
+          "url": "http://fixture.test/old-list",
+          "status": 301
+        }
+      ],
+      "title": "Fixture Dex | All Pokémon",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "3c05d41a720b3e63",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/h1",
+          "main/table.data-table",
+          "main/table.data-table/tbody",
+          "main/table.data-table/tbody/tr",
+          "main/table.data-table/tbody/tr/td",
+          "main/table.data-table/tbody/tr/td/a.ent-name",
+          "main/table.data-table/tbody/tr/td/span.infocard-cell-data",
+          "main/table.data-table/thead",
+          "main/table.data-table/thead/tr",
+          "main/table.data-table/thead/tr/th"
+        ]
+      },
+      "headings": [
+        "All Pokémon",
+        "#",
+        "Name",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "All Pokémon"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "#",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Name",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Bulbasaur",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Ivysaur",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Charmander",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Squirtle",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Wartortle",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Pikachu",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "Bulbasaur",
+          "url": "/pokedex/bulbasaur"
+        },
+        {
+          "role": "link",
+          "name": "Ivysaur",
+          "url": "/pokedex/ivysaur"
+        },
+        {
+          "role": "link",
+          "name": "Charmander",
+          "url": "/pokedex/charmander"
+        },
+        {
+          "role": "link",
+          "name": "Squirtle",
+          "url": "/pokedex/squirtle"
+        },
+        {
+          "role": "link",
+          "name": "Wartortle",
+          "url": "/pokedex/wartortle"
+        },
+        {
+          "role": "link",
+          "name": "Pikachu",
+          "url": "/pokedex/pikachu"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/pikachu",
+      "finalUrl": "http://fixture.test/pokedex/pikachu",
+      "status": 200,
+      "redirects": [],
+      "title": "Pikachu Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "25781c7cf8dcb655",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Pikachu",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Pikachu"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Pikachu",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Electric",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Electric",
+          "url": "/type/electric"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/wartortle"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/bulbasaur"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/charmander",
+      "finalUrl": "http://fixture.test/pokedex/charmander",
+      "status": 200,
+      "redirects": [],
+      "title": "Charmander Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "181e4cce9f184fcd",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/p.evolution-note",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Charmander",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Charmander"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Charmander",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Fire",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Fire",
+          "url": "/type/fire"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/ivysaur"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/squirtle"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/bulbasaur",
+      "finalUrl": "http://fixture.test/pokedex/bulbasaur",
+      "status": 200,
+      "redirects": [],
+      "title": "Bulbasaur Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "25781c7cf8dcb655",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Bulbasaur",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Bulbasaur"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Bulbasaur",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Grass",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Grass",
+          "url": "/type/grass"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/pikachu"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/ivysaur"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/type/grass",
+      "finalUrl": "http://fixture.test/type/grass",
+      "status": 200,
+      "redirects": [],
+      "title": "Grass type Pokémon | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 3,
+      "fingerprint": {
+        "hash": "4948dae24c48263b",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/h1",
+          "main/ul.type-members",
+          "main/ul.type-members/li",
+          "main/ul.type-members/li/a"
+        ]
+      },
+      "headings": [
+        "Grass type"
+      ],
+      "structure": {
+        "h1": [
+          "Grass type"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Grass type",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Bulbasaur",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Ivysaur",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Bulbasaur",
+          "url": "/pokedex/bulbasaur"
+        },
+        {
+          "role": "link",
+          "name": "Ivysaur",
+          "url": "/pokedex/ivysaur"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/type/fire",
+      "finalUrl": "http://fixture.test/type/fire",
+      "status": 200,
+      "redirects": [],
+      "title": "Fire type Pokémon | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 3,
+      "fingerprint": {
+        "hash": "4948dae24c48263b",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/h1",
+          "main/ul.type-members",
+          "main/ul.type-members/li",
+          "main/ul.type-members/li/a"
+        ]
+      },
+      "headings": [
+        "Fire type"
+      ],
+      "structure": {
+        "h1": [
+          "Fire type"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Fire type",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Charmander",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Charmander",
+          "url": "/pokedex/charmander"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/about",
+      "finalUrl": "http://fixture.test/about",
+      "status": 200,
+      "redirects": [],
+      "title": "Fixture Dex | About",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 1,
+      "fingerprint": {
+        "hash": "74ca200b2b8c33d4",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/form",
+          "main/form/button",
+          "main/form/input",
+          "main/form/label",
+          "main/form/label/input",
+          "main/form/select",
+          "main/form/select/option",
+          "main/form/textarea",
+          "main/h1",
+          "main/h2",
+          "main/p"
+        ]
+      },
+      "headings": [
+        "About",
+        "Write to us",
+        "Name (required)",
+        "Email (required)",
+        "Topic",
+        "Message",
+        "Send me the newsletter"
+      ],
+      "structure": {
+        "h1": [
+          "About"
+        ],
+        "main": true
+      },
+      "controls": [
+        {
+          "kind": "text field",
+          "words": [
+            "Name (required)",
+            "name"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='name']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "email field",
+          "words": [
+            "Email (required)",
+            "email"
+          ],
+          "region": "main",
+          "form": "a form",
+          "required": true,
+          "xpath": "//input[@id='email']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "dropdown",
+          "words": [
+            "Topic"
+          ],
+          "region": "main",
+          "form": "a form",
+          "options": [
+            "A question",
+            "A correction"
+          ],
+          "xpath": "//select[@id='topic']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "text area",
+          "words": [
+            "Message"
+          ],
+          "region": "main",
+          "form": "a form",
+          "xpath": "//textarea[@id='message']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "checkbox",
+          "words": [
+            "Send me the newsletter",
+            "news"
+          ],
+          "region": "main",
+          "form": "a form",
+          "xpath": "//input[@name='news']",
+          "stability": "Strong"
+        },
+        {
+          "kind": "button",
+          "words": [
+            "Send"
+          ],
+          "region": "main",
+          "form": "a form",
+          "xpath": "//button[normalize-space()='Send']",
+          "stability": "OK"
+        }
+      ],
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "About",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Write to us",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Name (required)",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Email (required)",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Topic",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Message",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Send me the newsletter",
+          "count": 0
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Name (required)",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Email (required)",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "combobox",
+          "name": "Topic",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "textbox",
+          "name": "Message",
+          "count": 1
+        },
+        {
+          "by": "label",
+          "role": "checkbox",
+          "name": "Send me the newsletter",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "button",
+          "name": "Send",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "textbox",
+          "name": "Name (required)"
+        },
+        {
+          "role": "textbox",
+          "name": "Email (required)"
+        },
+        {
+          "role": "combobox",
+          "name": "Topic"
+        },
+        {
+          "role": "textbox",
+          "name": "Message"
+        },
+        {
+          "role": "checkbox",
+          "name": "Send me the newsletter"
+        },
+        {
+          "role": "button",
+          "name": "Send"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/type/electric",
+      "finalUrl": "http://fixture.test/type/electric",
+      "status": 200,
+      "redirects": [],
+      "title": "Electric type Pokémon | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 3,
+      "fingerprint": {
+        "hash": "4948dae24c48263b",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/h1",
+          "main/ul.type-members",
+          "main/ul.type-members/li",
+          "main/ul.type-members/li/a"
+        ]
+      },
+      "headings": [
+        "Electric type"
+      ],
+      "structure": {
+        "h1": [
+          "Electric type"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Electric type",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Pikachu",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Pikachu",
+          "url": "/pokedex/pikachu"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/wartortle",
+      "finalUrl": "http://fixture.test/pokedex/wartortle",
+      "status": 200,
+      "redirects": [],
+      "title": "Wartortle Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "25781c7cf8dcb655",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Wartortle",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Wartortle"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Wartortle",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Water",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Water",
+          "url": "/type/water"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/squirtle"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/pikachu"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/squirtle",
+      "finalUrl": "http://fixture.test/pokedex/squirtle",
+      "status": 200,
+      "redirects": [],
+      "title": "Squirtle Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "25781c7cf8dcb655",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Squirtle",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Squirtle"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Squirtle",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Water",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Water",
+          "url": "/type/water"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/charmander"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/wartortle"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/pokedex/ivysaur",
+      "finalUrl": "http://fixture.test/pokedex/ivysaur",
+      "status": 200,
+      "redirects": [],
+      "title": "Ivysaur Pokédex entry | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 2,
+      "fingerprint": {
+        "hash": "25781c7cf8dcb655",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/div.grid-row",
+          "main/div.grid-row/div.grid-col",
+          "main/div.grid-row/div.grid-col/table.vitals-table",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/a.type-icon",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/td/strong",
+          "main/div.grid-row/div.grid-col/table.vitals-table/tbody/tr/th",
+          "main/h1",
+          "main/nav.entity-nav",
+          "main/nav.entity-nav/a.entity-nav-next",
+          "main/nav.entity-nav/a.entity-nav-prev"
+        ]
+      },
+      "headings": [
+        "Ivysaur",
+        "National №",
+        "Type",
+        "HP"
+      ],
+      "structure": {
+        "h1": [
+          "Ivysaur"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Ivysaur",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "National №",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Type",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "HP",
+          "count": 0
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Grass",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Previous",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Next",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Grass",
+          "url": "/type/grass"
+        },
+        {
+          "role": "link",
+          "name": "Previous",
+          "url": "/pokedex/bulbasaur"
+        },
+        {
+          "role": "link",
+          "name": "Next",
+          "url": "/pokedex/charmander"
+        }
+      ]
+    },
+    {
+      "url": "http://fixture.test/type/water",
+      "finalUrl": "http://fixture.test/type/water",
+      "status": 200,
+      "redirects": [],
+      "title": "Water type Pokémon | Fixture Dex",
+      "contentType": "text/html; charset=utf-8",
+      "depth": 3,
+      "fingerprint": {
+        "hash": "4948dae24c48263b",
+        "paths": [
+          "header.site-header",
+          "header.site-header/nav.main-nav",
+          "header.site-header/nav.main-nav/ul",
+          "header.site-header/nav.main-nav/ul/li",
+          "header.site-header/nav.main-nav/ul/li/a",
+          "main",
+          "main/h1",
+          "main/ul.type-members",
+          "main/ul.type-members/li",
+          "main/ul.type-members/li/a"
+        ]
+      },
+      "headings": [
+        "Water type"
+      ],
+      "structure": {
+        "h1": [
+          "Water type"
+        ],
+        "main": true
+      },
+      "roleForms": [
+        {
+          "by": "role",
+          "role": "heading",
+          "name": "Water type",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Home",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "All Pokémon",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Squirtle",
+          "count": 1
+        },
+        {
+          "by": "role",
+          "role": "link",
+          "name": "Wartortle",
+          "count": 1
+        }
+      ],
+      "markup": {
+        "lang": "en",
+        "viewport": null,
+        "description": null
+      },
+      "seen": [
+        {
+          "role": "link",
+          "name": "Home",
+          "url": "/"
+        },
+        {
+          "role": "link",
+          "name": "All Pokémon",
+          "url": "/pokedex/all"
+        },
+        {
+          "role": "link",
+          "name": "Squirtle",
+          "url": "/pokedex/squirtle"
+        },
+        {
+          "role": "link",
+          "name": "Wartortle",
+          "url": "/pokedex/wartortle"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/about",
+      "href": "/about",
+      "text": "Fixture Dex logo",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/old-list",
+      "href": "old-list",
+      "text": "The old list page (moved)",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/missing",
+      "href": "/missing",
+      "text": "A page that does not exist",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/files/type-chart.pdf",
+      "href": "/files/type-chart.pdf",
+      "text": "Type chart (PDF)",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/private/admin",
+      "href": "/private/admin",
+      "text": "Admin area",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "https://example.com/",
+      "href": "https://example.com/",
+      "text": "Example (another site)",
+      "external": true
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all#gen1",
+      "text": "Generation 1",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/",
+      "to": "http://fixture.test/about",
+      "href": "/about",
+      "text": "About",
+      "external": false,
+      "region": "footer"
+    },
+    {
+      "from": "http://fixture.test/missing",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Back to the home page",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/bulbasaur",
+      "href": "/pokedex/bulbasaur",
+      "text": "Bulbasaur",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/ivysaur",
+      "href": "/pokedex/ivysaur",
+      "text": "Ivysaur",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/charmander",
+      "href": "/pokedex/charmander",
+      "text": "Charmander",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/squirtle",
+      "href": "/pokedex/squirtle",
+      "text": "Squirtle",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/wartortle",
+      "href": "/pokedex/wartortle",
+      "text": "Wartortle",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/all",
+      "to": "http://fixture.test/pokedex/pikachu",
+      "href": "/pokedex/pikachu",
+      "text": "Pikachu",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/pikachu",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/pikachu",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/pikachu",
+      "to": "http://fixture.test/type/electric",
+      "href": "/type/electric",
+      "text": "Electric",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/pikachu",
+      "to": "http://fixture.test/pokedex/wartortle",
+      "href": "/pokedex/wartortle",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/pikachu",
+      "to": "http://fixture.test/pokedex/bulbasaur",
+      "href": "/pokedex/bulbasaur",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/charmander",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/charmander",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/charmander",
+      "to": "http://fixture.test/type/fire",
+      "href": "/type/fire",
+      "text": "Fire",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/charmander",
+      "to": "http://fixture.test/pokedex/ivysaur",
+      "href": "/pokedex/ivysaur",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/charmander",
+      "to": "http://fixture.test/pokedex/squirtle",
+      "href": "/pokedex/squirtle",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/bulbasaur",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/bulbasaur",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/bulbasaur",
+      "to": "http://fixture.test/type/grass",
+      "href": "/type/grass",
+      "text": "Grass",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/bulbasaur",
+      "to": "http://fixture.test/pokedex/pikachu",
+      "href": "/pokedex/pikachu",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/bulbasaur",
+      "to": "http://fixture.test/pokedex/ivysaur",
+      "href": "/pokedex/ivysaur",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/grass",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/grass",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/grass",
+      "to": "http://fixture.test/pokedex/bulbasaur",
+      "href": "/pokedex/bulbasaur",
+      "text": "Bulbasaur",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/type/grass",
+      "to": "http://fixture.test/pokedex/ivysaur",
+      "href": "/pokedex/ivysaur",
+      "text": "Ivysaur",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/type/fire",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/fire",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/fire",
+      "to": "http://fixture.test/pokedex/charmander",
+      "href": "/pokedex/charmander",
+      "text": "Charmander",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/about",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/electric",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/electric",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/electric",
+      "to": "http://fixture.test/pokedex/pikachu",
+      "href": "/pokedex/pikachu",
+      "text": "Pikachu",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/wartortle",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/wartortle",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/wartortle",
+      "to": "http://fixture.test/type/water",
+      "href": "/type/water",
+      "text": "Water",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/wartortle",
+      "to": "http://fixture.test/pokedex/squirtle",
+      "href": "/pokedex/squirtle",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/wartortle",
+      "to": "http://fixture.test/pokedex/pikachu",
+      "href": "/pokedex/pikachu",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/squirtle",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/squirtle",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/squirtle",
+      "to": "http://fixture.test/type/water",
+      "href": "/type/water",
+      "text": "Water",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/squirtle",
+      "to": "http://fixture.test/pokedex/charmander",
+      "href": "/pokedex/charmander",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/squirtle",
+      "to": "http://fixture.test/pokedex/wartortle",
+      "href": "/pokedex/wartortle",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/ivysaur",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/ivysaur",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/ivysaur",
+      "to": "http://fixture.test/type/grass",
+      "href": "/type/grass",
+      "text": "Grass",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/pokedex/ivysaur",
+      "to": "http://fixture.test/pokedex/bulbasaur",
+      "href": "/pokedex/bulbasaur",
+      "text": "Previous",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/pokedex/ivysaur",
+      "to": "http://fixture.test/pokedex/charmander",
+      "href": "/pokedex/charmander",
+      "text": "Next",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/water",
+      "to": "http://fixture.test/",
+      "href": "/",
+      "text": "Home",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/water",
+      "to": "http://fixture.test/pokedex/all",
+      "href": "/pokedex/all",
+      "text": "All Pokémon",
+      "external": false,
+      "region": "header"
+    },
+    {
+      "from": "http://fixture.test/type/water",
+      "to": "http://fixture.test/pokedex/squirtle",
+      "href": "/pokedex/squirtle",
+      "text": "Squirtle",
+      "external": false
+    },
+    {
+      "from": "http://fixture.test/type/water",
+      "to": "http://fixture.test/pokedex/wartortle",
+      "href": "/pokedex/wartortle",
+      "text": "Wartortle",
+      "external": false
+    }
+  ],
+  "notCrawled": [
+    {
+      "url": "http://fixture.test/files/type-chart.pdf",
+      "reason": "not-html"
+    },
+    {
+      "url": "http://fixture.test/private/admin",
+      "reason": "robots"
+    }
+  ]
+}

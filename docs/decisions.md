@@ -45,12 +45,23 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | C-039 | File pinning is removed; what runs code by itself is an inventory, and a change to it names its decision in the commit | in force | supply chain |
 | C-040 | Saving is separate from landing; three checkpoints; the count is main's; Ghost's word in chat is Ghost's word | in force | commits |
 | GR-001 | Ghostreach is stamped from Ghost-Core, on the typescript stack | in force | founding |
-| GR-002 | the cut point: Suite Builder at a4c8045, copied and never depended on | proposed | cut |
+| GR-002 | the cut point: Suite Builder at a4c8045, copied and never depended on | in force | cut |
 | GR-003 | no flags: `ghostreach <site>` and `--help`, nothing else | in force | command line |
-| GR-004 | no suite | proposed | scope |
+| GR-004 | no suite | in force | scope |
 | GR-005 | fetched text is data | in force | fetched text |
-| GR-006 | the PDF's page size | proposed | pdf |
+| GR-006 | the PDF's page size | in force | pdf |
 | GR-007 | the ranking's weights | proposed | ranking |
 | GR-008 | up to five reviews at once, of five different sites | in force | concurrency |
 | GR-009 | the dev dependencies, and why each | in force | dependencies |
 | GR-010 | three kinds of gate, as Suite Builder's: fast, medium, and the slow sweep | in force | gate |
+| GR-011 | Node's type declarations, @types/node, a dev dependency | in force | dependencies |
+| GR-012 | the PDF carries Ghost's GitHub, github.com/ghost-in-the-kernel | in force | pdf |
+| GR-013 | no mutation testing: Core C-018 refused, Stryker removed | in force | mutation |
+| GR-014 | SITE-22 withheld from a review that ran alongside another | in force | concurrency |
+| GR-015 | Ghostreach is a service behind an API; the website is the salesperson's interface | in force | delivery |
+| GR-016 | esbuild approved, deferred while no code ships | in force | dependencies |
+| GR-017 | the crawler is forecursor: its user agent, robots.txt name, probe and crawl file | in force | crawl |
+| GR-018 | `ghostreach` alone opens the page; `--help` lists every command; `serve` and `doctor` are commands | in force | command line |
+| GR-019 | a dev-only advisory with no fix may stand as a recorded exception | in force | dependencies |
+| GR-020 | the icon is the >⩊< ghost rising out of a computer chip | in force | brand |
+| GR-021 | the free review hands over the full PDF | in force | delivery |

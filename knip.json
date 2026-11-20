@@ -2,6 +2,7 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     "src/cli/main.ts",
+    "src/cli/bin.ts",
     "scripts/*.mjs",
     "test/unit/**/*.test.ts"
   ],
@@ -15,5 +16,7 @@
     "src/**/*.gen.ts",
     "test/fixtures/**"
   ],
-  "stryker": false
+  "ignoreBinaries": [
+    "openssl"
+  ]
 }

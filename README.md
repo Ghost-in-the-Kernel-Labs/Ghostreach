@@ -1,16 +1,51 @@
 # Ghostreach
 
-Ghostreach is the tool for the people who reach out to find Suite Builder's clients: Suite Builder's crawl and site audit cut out as one flag-free program. Give it a site, it crawls, writes the review and hands back a Suite Builder-branded PDF carrying Ghost's GitHub; the prospect sees Suite Builder's name, never Ghostreach's.
+Ghostreach reviews a website and hands back its review as a PDF, ready to send to the site's owner.
 
-## Status
+## Install (for the salesperson)
 
-No feature exists yet. The project is stamped from Ghost-Core 9a29945; it begins at TODO 0.1, and
-`docs/HANDOFF.md` says what the human fills in first.
+You need Node.js 24 LTS (or 22.18 or later) and the file `ghostreach-<version>.tgz` you were sent.
 
-## Running the fast loop
+Ghostreach runs on Windows and Linux; a Mac is not supported (it may work).
 
-    bash scripts/fast.sh
+1. Node.js. Windows: in a terminal, `winget install OpenJS.NodeJS.LTS`. Linux: Node.js 24 LTS from your distribution
+   or https://nodejs.org/en/download. Open a new terminal afterwards.
+2. Ghostreach, one command, from the folder holding the file:
 
-Every document check and unit test, with nothing installed; `scripts/save.sh` saves a session's work on its own
-branch, `scripts/gate.sh --fast` is the check before a landing (`scripts/commit.sh`), `scripts/ship.sh` the only push
-to `main`, and the full `scripts/gate.sh` runs at each tune-up (C-040).
+       npm install -g ghostreach-0.1.0.tgz
+
+3. The browser the review drives:
+
+       npx playwright@1.63.0 install chromium
+
+   (On Linux, `npx playwright@1.63.0 install --with-deps chromium`, which adds the system libraries Chromium needs.)
+
+   (Playwright's own version, the one Ghostreach carries; `ghostreach doctor` prints the exact command if the browser
+   is still missing, and a first review downloads it too.)
+4. Check: `ghostreach doctor` says whether Node.js and the browser are ready, each with the command that fixes it.
+
+## Use
+
+Type `ghostreach` and your browser opens the Ghostreach page: the reviews, the queue and the lead finder. If the page is
+already running, `ghostreach` opens it again instead of starting a second one. Keep that terminal window open while you
+work; Ctrl+C in it stops the page.
+
+    ghostreach                 Open the Ghostreach page in your browser (starts it if needed)
+    ghostreach <site>          Review one website and write its PDF, for example: ghostreach www.example.com
+    ghostreach doctor          Check this computer: Node.js, the browser, how many reviews at once
+    ghostreach serve           Same as ghostreach
+    ghostreach --help          This list (ghostreach help too)
+
+Reviews are kept in the `Ghostreach` folder of your home folder.
+
+## From a copy of this folder
+
+In a copy of Ghostreach's own folder (not the installed package), the folder holds two small launchers that build
+Ghostreach the first time (they say so; it takes a minute) and then run it:
+
+- Windows, in Command Prompt: go to the folder and type `ghostreach` (in PowerShell, `.\ghostreach`).
+- Linux: go to the folder and type `./ghostreach`. The shell does not look in the current folder, so the bare word
+  `ghostreach` works there only once it is linked.
+
+To make the bare word `ghostreach` work in any folder, run `npm link` once in this folder (or `npm install -g .`).
+

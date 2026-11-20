@@ -11,3 +11,5 @@
 /reports/
 /.tmp/
 /dist/
+# Playwright Test output (the crawl specs)
+/test-results/

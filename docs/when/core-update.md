@@ -25,6 +25,12 @@ compare page: `https://github.com/Ghost-in-the-Kernel-Labs/Ghost-Core/compare/<h
 Read the log for new `C-nnn` entries in Core's `theGhost.md` (`git -C <core clone> diff <hash>..main -- theGhost.md`),
 and for the files that enforce them: the changes under `docs/`, `scripts/`, `test/` and `stacks/<stack>/`.
 
+Ask for Core to be attached to the session before calling it unreachable: asked, it came at once (J-028, J-044).
+A session that can reach neither a clone nor the compare page (Core is private, and the session holds no access to it) does
+every other step of the pass and leaves this one open: the hand-back and the journal name it, the recorded hash stays, and the
+pass moves to `TODO.md`'s Phase W with `Waits on: environment (github.com/Ghost-in-the-Kernel-Labs/Ghost-Core, private: the
+core-update step)` and its `Moved:` line, keeping its check (J-011, J-021).
+
 ## 3. Adopt or refuse each new C-nnn, never ignore one
 
 Every new `C-nnn` Core gained since the recorded commit gets one project decision, in this pass:
