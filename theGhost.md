@@ -648,3 +648,12 @@ The core decisions above are inherited (Core C-001 to C-040); this project's beg
 - **See also:** GR-018
 - **subject:** brand
 
+### GR-021: the free review hands over the full PDF
+- **Decision:** Every review requested through the website, the free one included, hands over the full PDF; the API's short view is for the website's own page, never a substitute for the PDF.
+- **Why:** Ghost, 2026-11-20: "The free review from the ghostreach gets the full pdf. yes. That pdf is how the salesfolks sell services."
+- **Held by:** `docs/HANDOFF.md` (the API contract, GR-015), `docs/ROADMAP.md` §1.
+- **Source:** Ghost, in chat, 2026-11-20 (J-063).
+- **Status:** in force
+- **See also:** GR-015
+- **subject:** delivery
+

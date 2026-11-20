@@ -66,3 +66,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-060 | The command line: the page by default, one per data folder, a help that lists every command, launchers for a copy of the source | feature | `J-000-099.md` |
 | J-061 | Dev-only advisories: Ghost allows a recorded exception | decision | `J-000-099.md` |
 | J-062 | The icon: a ghost out of a chip | decision | `J-000-099.md` |
+| J-063 | The free review gets the full PDF | decision | `J-000-099.md` |

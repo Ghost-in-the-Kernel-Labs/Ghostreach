@@ -54,7 +54,7 @@ Read `CLAUDE.md` first, then this. `TODO.md` is the chain in order; `docs/DONE.m
 
 ## For Ghost: waiting on you
 
-O. The API contract (GR-015, J-054): a draft v1 went to the web design session; confirm it before either side builds. Also: does the free review get the full PDF, or only the short view? The VPS, the Tunnel hostname under forecursor.com and Access are yours to create.
+O. The API contract (GR-015, J-054): a draft v1 went to the web design session; confirm it before either side builds. The free review gets the full PDF (GR-021, J-063). The VPS, the Tunnel hostname under forecursor.com and Access are yours to create.
 
 P. The server (J-058), in this order once you want it up: create the Ubuntu 24.04 server (2 vCPU, 4 GB); `npm pack` and copy the tarball and the `deploy/` folder; `bash deploy/setup.sh --check <tarball>`, then without `--check`; install cloudflared, create the Tunnel and route `api.forecursor.com` (or the name you pick) to it; in Zero Trust, a service token and a Service Auth application for the hostname; the token into `/etc/ghostreach/env` and the website's secrets (`deploy/README.md`, steps 1 to 6). Placeholders until the API item: the unit's `ExecStart` (`TODO(API)`; the service stays stopped), the port (8787 proposed), and the bearer token's variable name. The agent's choices (J-058) are the ruling grade's to read; shellcheck was not run (not installed in the session).
 
