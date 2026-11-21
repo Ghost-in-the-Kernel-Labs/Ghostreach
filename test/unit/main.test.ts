@@ -71,6 +71,9 @@ describe('ghostreach <site> and --help (GR-003: no flag; GR-018)', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(await main(['--help'], '/home/someone/Ghostreach')).toBe(0);
     const help = said();
+    // J-070: the first line names the version, and the commit built from where the launchers' stamp names one.
+    const { version } = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8')) as { version: string };
+    expect(help[0]).toMatch(new RegExp(`^Ghostreach ${version.replaceAll('.', '\\.')}( \\([0-9a-f]+\\))?$`));
     expect(help.filter((line) => /^ {2}ghostreach/.test(line)).map((line) => line.trim().split(/ {2,}/)[0])).toEqual([
       'ghostreach', 'ghostreach <site>', 'ghostreach doctor', 'ghostreach shortcut', 'ghostreach serve', 'ghostreach --help',
     ]);

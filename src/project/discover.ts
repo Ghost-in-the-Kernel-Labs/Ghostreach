@@ -178,7 +178,7 @@ async function ask(source: DiscoverySource, search: SavedSearch, options: Discov
   const keyed = KEYED_SOURCES.find((k) => k.source === source.source);
   let calls: Call[];
   if (keyed) {
-    const got = withKey(keyed, (key) => source.calls(search, key), options.env);
+    const got = withKey(keyed, (key) => source.calls(search, key), options.env, options.data);
     if ('skipped' in got) return { found: [], why: got.skipped };
     calls = got.ran;
   } else calls = source.calls(search, {});

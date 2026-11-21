@@ -46,6 +46,14 @@ const FETCH_FUNCTION = 'src/project/fetch.ts fetch';
 /** The lead finder's files in src/project/ (no `leads` module until Ghost rules, HANDOFF "For Ghost" I). */
 const LEAD_FINDER = ['src/project/keys.ts', 'src/project/fetch.ts', 'src/project/company.ts', 'src/project/discover.ts', 'src/project/leads.ts', 'src/project/page-leads.ts'];
 
+/**
+ * The addresses off the allow-list that the lead finder's page shows as links for the salesperson to open, and never fetches,
+ * each with its reason: the guide to getting a key (GR-023), the provider's own sign-up and terms pages.
+ */
+const SHOWN: Record<string, string> = {
+  'src/project/page-leads.ts developer.usajobs.gov': "USAJOBS's API key request and its terms of service, links in the key guide; never fetched",
+};
+
 /** Each network use found in src/ outside the crawl, as `<file> <name>`. */
 function uses(): string[] {
   return files.filter((f) => !f.startsWith('src/crawl/')).flatMap((file) => {
@@ -96,7 +104,10 @@ describe('no fetch in src/ leaves the allow-list (GR-005, REV-09)', () => {
     const leads = files.filter((f) => f.startsWith('src/leads/') || LEAD_FINDER.includes(f));
     expect(LEAD_FINDER.filter((f) => !files.includes(f))).toEqual([]);
     const hosts = leads.flatMap((f) => [...read(f).matchAll(/https?:\/\/([a-z0-9.-]+)/gi)].map((m) => `${f} ${m[1]}`));
-    expect(hosts.filter((h) => !allowed(list, h.split(' ')[1]))).toEqual([]);
+    expect(hosts.filter((h) => !allowed(list, h.split(' ')[1]) && !Object.hasOwn(SHOWN, h))).toEqual([]);
+    // Each shown link's host is still written there, and named in docs/SOURCES.md, so the list does not outlive its code.
+    expect(Object.keys(SHOWN).filter((h) => !hosts.includes(h))).toEqual([]);
+    expect(Object.keys(SHOWN).filter((h) => !sourcesText().includes(`\`${h.split(' ')[1]}\``))).toEqual([]);
   });
 });
 

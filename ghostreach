@@ -1,14 +1,10 @@
 #!/bin/sh
 # Ghostreach from this folder, for a copy of its source (GR-018): `./ghostreach`, `./ghostreach --help`, `./ghostreach <site>`.
-# The first time, it installs the program's packages from the lockfile and builds it, saying so. The installed package has its own
-# command, so this file is not packed. `npm link` once in this folder makes the bare word `ghostreach` work in any folder.
+# scripts/launch.mjs installs the packages from the lockfile and builds the program when this copy is new or was updated (a
+# `git pull`), saying so in one line, and does nothing when nothing changed (J-070); then the program runs. The installed package
+# has its own command, so this file is not packed. `npm link` once in this folder makes the bare word `ghostreach` work in any folder.
 set -eu
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-if [ ! -f "$here/dist/cli/bin.js" ]; then
-  echo "Ghostreach is not built in this folder yet. Building it once now (this takes a minute)..."
-  if [ ! -d "$here/node_modules" ]; then
-    (cd "$here" && npm ci --no-audit --no-fund) || { echo "Could not install Ghostreach's packages. It needs Node.js 24 (or 22.18 or later) and npm 11. Copy the message above to Ghost."; exit 1; }
-  fi
-  (cd "$here" && npm run build --silent) || { echo "Could not build Ghostreach. Copy the message above to Ghost."; exit 1; }
-fi
+command -v node >/dev/null 2>&1 || { echo "Ghostreach needs Node.js 24 (or 22.18 or later). Copy this message to Ghost."; exit 1; }
+node "$here/scripts/launch.mjs" || exit 1
 exec node "$here/dist/cli/bin.js" "$@"

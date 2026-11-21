@@ -2,11 +2,13 @@
  * The lead finder's sections of the local page (split out of `serve.ts`): the company lane's lookups (4.6, `company.ts`), each
  * board's QA roles as text and a kept address as a link, no board offering the paste lane (4.9); the discovery lane (4.7,
  * `discover.ts`), the saved search's form, the last run's rows one per company and each skipped source named; on each company row,
- * what the salesperson keeps about it (`leads.ts`): its website (4.8), the closed sites' postings pasted (4.9).
+ * what the salesperson keeps about it (`leads.ts`): its website (4.8), the closed sites' postings pasted (4.9); the lead sources'
+ * keys, saved from the page, with a guide to getting each (GR-023).
  */
 import type { CompanyLookup } from './company.js';
 import { LINK_BACK, type DiscoveryRow, type DiscoveryRun, type SavedSearch } from './discover.js';
 import { esc, plainError } from './html.js';
+import type { KeyState } from './keys.js';
 import { companyKey, postingsOf, websiteOf, type CompanyNotes, type Lane } from './leads.js';
 import type { QueueEntry } from './queue.js';
 import type { ListedReview } from './page.js';
@@ -106,4 +108,55 @@ ${refused ? `<p class="refused">${esc(refused)}</p>\n` : ''}`;
   const head = `<p>Last run ${esc(run.at.slice(0, 10))} (${esc(run.search.titles.join(', '))}; ${esc(run.search.location)}): ${esc(run.rows.length)} compan${run.rows.length === 1 ? 'y' : 'ies'}.</p>`;
   const items = run.rows.length ? `\n<ul>\n${run.rows.map((row) => discoveryItem(row, rows)).join('\n')}\n</ul>` : '';
   return `${form}${head}${items}${run.skipped.map((why) => `\n<p class="error">Skipped: ${esc(plainError(why))}</p>`).join('')}`;
+}
+
+/** A link out of the page to a provider's own page: a new tab, no opener, no referrer. */
+const outLink = (href: string, text: string): string => `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+
+/**
+ * "How do I get a key?" under each keyed source (GR-023): plain steps, each from the provider's own pages (docs/SOURCES.md's
+ * rows; read 2026-11-21), its sign-up link, and what its terms ask of the salesperson.
+ */
+const GUIDES: Readonly<Record<string, readonly string[]>> = {
+  Jooble: [
+    `Open Jooble's API page, ${outLink('https://jooble.org/api/about', 'jooble.org/api/about')}.`,
+    'Under "How to get started?", fill in your name, position, email, website and phone, and press "Send request".',
+    'Jooble sends the key to that email address (look in the spam folder too). Paste it in the Key box above and press Save.',
+    'A key from jooble.org finds jobs in the USA only, and allows 100 searches a day, counted again from midnight UTC. Each posting found links back to Jooble.',
+    `The API documentation sets no terms of its own; Jooble's ${outLink('https://jooble.org/info/terms', 'terms of service')} may apply.`,
+  ],
+  USAJOBS: [
+    `Open the USAJOBS API key request, ${outLink('https://developer.usajobs.gov/apirequest/', 'developer.usajobs.gov/apirequest')}.`,
+    'Fill in your first and last name, email address, phone number and company, and say in a sentence how you will use the job data.',
+    `Tick the box agreeing to the USAJOBS ${outLink('https://developer.usajobs.gov/guides/terms-of-service', 'Terms of Service')}, and send the request.`,
+    'USAJOBS sends the key to that email address. Paste it in the Key box above, type the same email address in the Email box, and press Save: USAJOBS asks for the two together on every search.',
+    "The terms let the job data be used for business; never show it with the government's seal, or changed, as if official. USAJOBS sets no daily limit.",
+  ],
+};
+
+/** What the page says of a key, never the key: where it comes from, or that there is none yet. */
+export const KEY_SAID: Readonly<Record<'computer' | 'page' | 'none', string>> = {
+  computer: 'Key set on this computer by its settings',
+  page: 'Key saved',
+  none: 'No key yet',
+};
+
+/**
+ * The lead sources' keys (4.4, GR-023): each keyed source, what is said of its key (`KEY_SAID`), the box to save one (a password
+ * box, never filled: the page never writes a saved key back, not even in part; USAJOBS's email box, which may show the address),
+ * Remove when one is saved from the page, a save refused said under it, and the closed guide. A key set by the computer's
+ * settings wins over a saved one, so its source shows no box.
+ */
+export function keysSection(keys: readonly KeyState[], refused?: { source: string; why: string }): string {
+  const items = keys.map((k) => {
+    const state = `<span class="state">${esc(KEY_SAID[k.from ?? 'none'])}</span>`;
+    const source = `<input type="hidden" name="source" value="${esc(k.source)}">`;
+    const email = k.source === 'USAJOBS' ? ` <label>Email: <input name="email" type="email" maxlength="254" autocomplete="off" value="${esc(k.email ?? '')}"></label>` : '';
+    const save = k.from === 'computer' ? '' : `\n<form method="post" action="/keys/save">${source}<label>Key: <input name="key" type="password" maxlength="200" autocomplete="off"></label>${email} <button>Save</button></form>`;
+    const remove = k.from === 'page' ? ` <form method="post" action="/keys/remove">${source}<button>Remove</button></form>` : '';
+    const why = refused?.source === k.source ? `\n<p class="refused">${esc(refused.why)}</p>` : '';
+    const steps = (GUIDES[k.source] ?? []).map((step) => `<li>${step}</li>`).join('\n');
+    return `<li><strong>${esc(k.source)}</strong> ${state}${remove}${save}${why}\n<details class="guide"><summary>How do I get a key?</summary>\n<ol>\n${steps}\n</ol>\n</details></li>`;
+  });
+  return `<ul>\n${items.join('\n')}\n</ul>`;
 }

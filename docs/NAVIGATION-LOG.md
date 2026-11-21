@@ -121,3 +121,15 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: the review folder's name is built in `review.ts` and parsed back in `serve.ts` (`FOLDER`), with three specs each spelling it again; nothing routes a change of it to all five.
 - **Suggestions**: none.
 
+
+### 2026-11-21 · A pulled copy ran its old build (J-070) · Opus
+
+- **Task**: make the root launchers rebuild a copy whose source changed since its build (Ghost's Windows bug after `git pull`), with tests and a version line.
+- **Opened**: the brief, `ghostreach`, `ghostreach.cmd`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md` (J-060 to J-069), `test/test_launchers.py`, `.npmrc`, `package.json`, `src/cli/main.ts`, `knip.json`, `docs/paths/code.md`, `docs/modules.json`, `src/cli/bin.ts`, `test/unit/main.test.ts`, `test/crawl/package.spec.ts`, `docs/SUPPLY-CHAIN.md`, `theGhost.md` (GR-018), `README.md`, `scripts/gate.sh`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the package spec's refusal of any `.json` under the packed `dist/` is the only place that says where a build-time file may not go; I found it only by reading the spec before choosing the stamp's place.
+- **Suggestions**: the package row in `docs/paths/code.md` says that nothing but built `.js` may sit in `dist/`.
+
+- **Task**: let the salesperson type each lead source's key on the local page, with a closed guide to getting one (Ghost's word, J-071, GR-023).
+- **Opened**: the brief, `CLAUDE.md`, `docs/HANDOFF.md` (first section), `src/project/keys.ts`, `src/project/page-leads.ts`, `src/project/page.ts`, `src/project/serve.ts`, `src/project/settings.ts`, `src/project/html.ts`, `src/project/kept.ts`, `src/project/leads.ts`, `src/project/discover.ts`, `test/unit/keys.test.ts`, `test/unit/launch-page.test.ts`, `test/unit/serve-faults.test.ts`, `test/unit/hosts.test.ts`, `test/support/sources.ts`, `docs/SOURCES.md`, `docs/SALES-GUIDE.md`, `docs/CUT.md`, `theGhost.md` (GR-005, GR-022), `docs/journal/J-000-099.md` (J-035, J-070), `docs/ROADMAP.md` (4.4).
+- **Complaints**: HANDOFF's first section is over 30 KB, so reading "the first section" costs most of a context's opening; the brief named "the keys decision", but the keys rule lives in 4.4 and J-035, never in a GR entry.
+- **Suggestions**: a tune-up moves HANDOFF's finished bullets into DONE.md so its first section stays a page; `hosts.test.ts`'s header could say that a link shown and never fetched is named in `SHOWN`.

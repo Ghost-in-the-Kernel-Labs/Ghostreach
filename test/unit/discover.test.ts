@@ -112,7 +112,7 @@ describe('a run (TODO 4.7)', () => {
 
   it('runs the keyless sources alone without keys, each keyed one skipped and named, never called', async () => {
     const run = await discover(DEFAULT_SEARCH, { data, transport: sources(), now: NOW, env: {} });
-    expect(run.skipped).toEqual(['Jooble skipped: no key (set JOOBLE_API_KEY).', 'USAJOBS skipped: no key (set USAJOBS_API_KEY and USAJOBS_EMAIL).']);
+    expect(run.skipped).toEqual(['Jooble skipped: no key yet (save one under Lead sources).', 'USAJOBS skipped: no key yet (save one under Lead sources).']);
     expect(hostsAsked().sort()).toEqual(['remotive.com', 'www.arbeitnow.com']);
     expect(run.rows.map((r) => `${r.company} ${r.source} ${r.others}`)).toEqual(['ACME Robotics Arbeitnow 0', 'Globex Corporation Remotive 0', 'Hooli Remotive 0']);
   });
@@ -125,7 +125,7 @@ describe('a run (TODO 4.7)', () => {
     const started = Date.now();
     const third = await discover(DEFAULT_SEARCH, { data, transport: sources(), now: NOW, env: {} });
     expect(Date.now() - started).toBeLessThan(1000);
-    expect(third.skipped).toEqual(['Jooble skipped: no key (set JOOBLE_API_KEY).', 'Remotive: over its cap of 2 a minute; skipped.', 'USAJOBS skipped: no key (set USAJOBS_API_KEY and USAJOBS_EMAIL).']);
+    expect(third.skipped).toEqual(['Jooble skipped: no key yet (save one under Lead sources).', 'Remotive: over its cap of 2 a minute; skipped.', 'USAJOBS skipped: no key yet (save one under Lead sources).']);
     expect(hostsAsked()).toEqual(['www.arbeitnow.com']);
     expect(third.rows.map((r) => r.company)).toEqual(['ACME Robotics']);
   });
@@ -150,7 +150,7 @@ describe('a run (TODO 4.7)', () => {
         return null;
       }),
     });
-    expect(run.skipped).toEqual(['Jooble skipped: no key (set JOOBLE_API_KEY).', 'Arbeitnow: answered 503.', 'Remotive: answered in a shape its documentation does not give.', 'USAJOBS skipped: no key (set USAJOBS_API_KEY and USAJOBS_EMAIL).']);
+    expect(run.skipped).toEqual(['Jooble skipped: no key yet (save one under Lead sources).', 'Arbeitnow: answered 503.', 'Remotive: answered in a shape its documentation does not give.', 'USAJOBS skipped: no key yet (save one under Lead sources).']);
     expect(run.rows).toEqual([]);
   });
 
@@ -230,8 +230,8 @@ describe('the discovery lane on the local page (TODO 4.7)', () => {
     expect(html).not.toMatch(/<script/i);
     expect(html).toContain('3 companies.');
     expect(html).toContain('<li><strong>ACME Robotics</strong>: <a href="https://arbeitnow.com/view/qa-engineer-mwd-acme-robotics-1001" rel="noreferrer">QA Engineer (m/w/d)</a> <span class="day">Arbeitnow, 2026-11-13</span>');
-    expect(html).toContain('<p class="error">Skipped: Jooble skipped: no key (set JOOBLE_API_KEY).</p>');
-    expect(html).toContain('<p class="error">Skipped: USAJOBS skipped: no key (set USAJOBS_API_KEY and USAJOBS_EMAIL).</p>');
+    expect(html).toContain('<p class="error">Skipped: Jooble skipped: no key yet (save one under Lead sources).</p>');
+    expect(html).toContain('<p class="error">Skipped: USAJOBS skipped: no key yet (save one under Lead sources).</p>');
     // Kept, and shown again from the data folder.
     expect(await (await fetch(page.url)).text()).toContain('<strong>Globex Corporation</strong>');
   });

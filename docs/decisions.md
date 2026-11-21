@@ -66,3 +66,4 @@ Written by `scripts/decisions_index.py` from `theGhost.md`; do not edit here. Se
 | GR-020 | the icon is the >⩊< ghost rising out of a computer chip | in force | brand |
 | GR-021 | the free review hands over the full PDF | in force | delivery |
 | GR-022 | the launch: a fixed port, an honest opener, the doctor's own number, and `ghostreach shortcut`, opt-in | in force | command line |
+| GR-023 | a lead source's key is typed on the local page, kept in `<data>/keys.json`; an environment variable still wins | in force | lead finder keys |

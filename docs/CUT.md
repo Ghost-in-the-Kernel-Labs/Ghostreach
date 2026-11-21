@@ -265,7 +265,7 @@ the review's folder, the queue) adds its line here. `src/project/review.ts` (1.5
 and, for the lead finder's sections, `src/project/page-leads.ts`, each name escaped by `src/project/html.ts`, its launch (one page per data folder, the opener) `src/project/show.ts`; `src/project/queue.ts` (3.3) the
 sites pasted there, kept in `queue.json` with a state each and reviewed up to N at once (3.4), never two of one host together;
 `src/project/settings.ts` (3.4, GR-008) the program's settings file, `<data>/settings.json`, and `ghostreach doctor`'s report;
-`src/project/keys.ts` (4.4) the lead finder's keys, one environment variable per keyed source, read only where a fetch uses it;
+`src/project/keys.ts` (4.4, GR-023) the lead finder's keys, one environment variable per keyed source, else the key saved on the local page in `<data>/keys.json`, read only where a fetch uses it;
 `src/project/fetch.ts` (4.5, P-16) the lead finder's one fetch function, to docs/SOURCES.md's `in` hosts alone, each capped source's
 bucket kept in `<data>/buckets.json`; `src/project/company.ts` (4.6) the company lane, a typed company's board names probed on the
 company-lane sources through it, the QA roles of each board found kept in `<data>/companies.json`; `src/project/discover.ts` (4.7) the
