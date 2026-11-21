@@ -2,7 +2,8 @@
  * The page's launch (GR-018, split out of `serve.ts`): one page per data folder, its note `<data>/page.json` naming its address
  * and process, a second `ghostreach` opening the running page instead of starting another, and the platform's opener. Since the
  * launch fixes (GR-022): a fixed port first (`PAGE_PORT`), the address said as the way in when the browser could not be opened,
- * Ctrl+C saying "Stopped." and taking the note with it, and the shortcut's tip said on the first launch alone.
+ * Ctrl+C saying "Stopped." and taking the note with it, and the shortcut's tip said on the first launch alone. Since J-073, every
+ * stop (Ctrl+C, SIGTERM, a closed window, Ctrl+Break) takes one path that ends the program within a deadline.
  */
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
@@ -87,23 +88,37 @@ async function runningPage(data: string): Promise<string | null> {
   }
 }
 
-/** What a launch may be given beyond the data folder: the port tried first, where Ctrl+C is heard, and the system (a test's). */
+/**
+ * The signals that stop the page, each taking the one path (J-073): Ctrl+C, SIGTERM, a closed window (SIGHUP: on Windows, closing
+ * the console window sends CTRL_CLOSE_EVENT, which Node hears as SIGHUP, and Windows kills the process some seconds later), and
+ * Ctrl+Break (SIGBREAK, Windows alone). SIGHUP matters most: after a review Playwright listens for it itself (it closes its
+ * browsers and does not exit), so the signal no longer ends the process, and a page that did not hear it kept the window open.
+ */
+export const STOP_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'] as const;
+type StopSignal = (typeof STOP_SIGNALS)[number];
+
+/** The most a stop by signal may take before the program ends regardless: nothing it waits on can keep the window open (J-073). */
+export const STOP_DEADLINE_MS = 3000;
+
+/** What a launch may be given beyond the data folder: the port tried first, where the stop is heard, the system and its exit (a test's). */
 export interface Launch {
   port?: number;
-  signals?: { once(event: 'SIGINT' | 'SIGTERM', listener: () => void): unknown; off(event: 'SIGINT' | 'SIGTERM', listener: () => void): unknown };
+  signals?: { on(event: StopSignal, listener: () => void): unknown; off(event: StopSignal, listener: () => void): unknown };
   platform?: NodeJS.Platform;
+  exit?: (code: number) => void;
 }
 
 /**
  * `ghostreach` alone (and `ghostreach serve`): one page per data folder. When one already runs, the browser opens it and this
  * returns; else the page starts on `PAGE_PORT` (a free port when that one is taken), its note is written, the shortcut's tip is
- * said if it never was, the browser opens it, and this returns when it stops (Ctrl+C, or a test's close): "Stopped.", its note
- * removed. `open` is handed the address, and the page this call serves (a test's opener stops it); when it says the browser did
- * not open, the address is said as the way in.
+ * said if it never was, the browser opens it, and this returns when it stops (a test's close), or the program ends when a signal
+ * stops it (`STOP_SIGNALS`): the page closed (`ServedPage.close`), its note removed, "Stopped." said, then the exit, at
+ * `STOP_DEADLINE_MS` at the latest whatever is still closing. `open` is handed the address, and the page this call serves (a
+ * test's opener stops it); when it says the browser did not open, the address is said as the way in.
  */
 // Decision: GR-018, GR-022
 export async function showPage(data: string, say: (line: string) => void, open: Open, launch: Launch = {}): Promise<void> {
-  const { port = PAGE_PORT, signals = process, platform = process.platform } = launch;
+  const { port = PAGE_PORT, signals = process, platform = process.platform, exit = (code: number) => process.exit(code) } = launch;
   const running = await runningPage(data);
   if (running) {
     if ((await open(running)) === false) say(`Ghostreach is already open (this computer only). Open this address in your browser: ${running}`);
@@ -111,8 +126,37 @@ export async function showPage(data: string, say: (line: string) => void, open: 
     return;
   }
   const page = await servePage(data, undefined, undefined, undefined, port);
-  const stop = () => void page.close();
-  for (const signal of ['SIGINT', 'SIGTERM'] as const) signals.once(signal, stop);
+  let stopping: Promise<void> | null = null;
+  let deadline: NodeJS.Timeout | undefined;
+  let finished = false;
+  // Said once, whichever comes first: the stop's own end, or the deadline's.
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    for (const signal of STOP_SIGNALS) signals.off(signal, stop);
+    try {
+      // Only this page's own note is removed; another's written since is left.
+      if (readFileSync(pageFile(data), 'utf8').includes(`"${page.url}"`)) unlinkSync(pageFile(data));
+    } catch {
+      // Gone already: nothing to remove.
+    }
+    try {
+      say('Stopped.');
+    } catch {
+      // A closed window has nowhere to say it.
+    }
+  };
+  // Decision: GR-022
+  function stop(): void {
+    if (stopping) return;
+    deadline = setTimeout(() => {
+      finish();
+      exit(0);
+    }, STOP_DEADLINE_MS);
+    deadline.unref();
+    stopping = page.close();
+  }
+  for (const signal of STOP_SIGNALS) signals.on(signal, stop);
   mkdirSync(data, { recursive: true });
   writeFileSync(pageFile(data), `${JSON.stringify({ url: page.url, pid: process.pid })}\n`);
   say(`The reviews are at ${page.url} (this computer only). Ctrl+C stops the page.`);
@@ -124,12 +168,10 @@ export async function showPage(data: string, say: (line: string) => void, open: 
   }
   if ((await open(page.url, page)) === false) say(`Open this address in your browser: ${page.url}`);
   await page.closed;
-  for (const signal of ['SIGINT', 'SIGTERM'] as const) signals.off(signal, stop);
-  try {
-    // Only this page's own note is removed; another's written since is left.
-    if (readFileSync(pageFile(data), 'utf8').includes(`"${page.url}"`)) unlinkSync(pageFile(data));
-  } catch {
-    // Gone already: nothing to remove.
-  }
-  say('Stopped.');
+  // The server is closed: "Stopped." now, while the queue's Chromium closes within its bound.
+  finish();
+  if (!stopping) return;
+  await stopping;
+  clearTimeout(deadline);
+  exit(0);
 }

@@ -85,14 +85,16 @@ export function auditedCrawl(crawlFile: string): CrawlReport {
  * The queue's one Chromium (RF-09, GR-008): launched as the crawl launches its own (no proxy, no option), at the first review that
  * asks, and again when it has gone (a crash); every review running at once is a context of it, so N reviews cost one browser.
  * `get` gives undefined when it cannot launch (a new machine, the browser not yet downloaded): that review launches its own,
- * which downloads it first. `close` closes it; the page's stop calls it.
+ * which downloads it first. `close` closes it, waiting `within` ms at most (J-073): a browser busy with a page that never answers
+ * can hold its close for good, and the page's stop must not wait on it; the process's exit then kills what is left (Playwright's
+ * own exit handler kills every browser it launched). `launch` is a test's stand-in; else Playwright's Chromium.
  */
 // Decision: GR-008
-export function sharedBrowser(): { get: () => Promise<Browser | undefined>; close: () => Promise<void> } {
+export function sharedBrowser(launch: () => Promise<Browser> = () => chromium.launch()): { get: () => Promise<Browser | undefined>; close: (within?: number) => Promise<void> } {
   let launched: Promise<Browser | undefined> | null = null;
   const get = async (): Promise<Browser | undefined> => {
     // One launch however many reviews ask at once: each awaits the same promise.
-    const asked = (launched ??= chromium.launch().catch(() => undefined));
+    const asked = (launched ??= launch().catch(() => undefined));
     const open = await asked;
     if (open?.isConnected()) return open;
     // Gone, or never launched: the next ask launches again; a review whose browser had gone asks once more now.
@@ -101,10 +103,13 @@ export function sharedBrowser(): { get: () => Promise<Browser | undefined>; clos
   };
   return {
     get,
-    close: async () => {
+    close: async (within = 2000) => {
       const was = launched;
       launched = null;
-      await (await was)?.close().catch(() => undefined);
+      let timer: NodeJS.Timeout | undefined;
+      const bound = new Promise<void>((done) => (timer = setTimeout(done, within)));
+      await Promise.race([(async () => (await was)?.close().catch(() => undefined))(), bound]);
+      clearTimeout(timer);
     },
   };
 }

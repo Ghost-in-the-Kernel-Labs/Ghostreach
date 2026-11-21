@@ -51,7 +51,7 @@ async function launch(port: number, opens: boolean | void = true, platform: Node
   const lines: string[] = [];
   const signals = new EventEmitter();
   let url = '';
-  const running = showPage(data, (line) => void lines.push(line), (u) => ((url = u), opens), { port, signals, platform });
+  const running = showPage(data, (line) => void lines.push(line), (u) => ((url = u), opens), { port, signals, platform, exit: () => {} });
   await vi.waitFor(() => expect(existsSync(pageFile(data))).toBe(true));
   await vi.waitFor(() => expect(url).not.toBe(''));
   signals.emit('SIGINT');

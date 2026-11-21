@@ -174,6 +174,15 @@ class WindowsLauncher(unittest.TestCase):
         self.assertIn("exit /b %ERRORLEVEL%", text)
         self.assertNotIn("npm", text.replace("npm link", ""))
 
+    def test_no_launcher_outlives_the_program_or_stands_between_it_and_the_console(self):
+        # J-073 (Ghost's bug: a closed window after a crawl locked up): the program itself must hear the console's close. Neither
+        # launcher keeps a Node parent waiting on it: launch.mjs runs to its end (spawnSync alone, npm and git, never the program)
+        # before the program starts; the Linux launcher execs the program in its own place, cmd.exe runs it as its next line.
+        launch = LAUNCH.read_text()
+        self.assertNotIn("bin.js'", launch.replace("'dist', 'cli', 'bin.js'", ""))
+        self.assertNotRegex(launch, r"\bspawn\(|\bexec\(|\bfork\(")
+        self.assertIn('exec node "$here/dist/cli/bin.js" "$@"', LINUX.read_text())
+
     def test_neither_launcher_is_packed(self):
         files = json.loads((ROOT / "package.json").read_text())["files"]
         # The build, the page's icon (launch fixes 6, J-066) and the shortcut's (launch fixes 10, GR-022), never a launcher.

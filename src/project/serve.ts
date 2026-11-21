@@ -342,7 +342,11 @@ export async function servePage(data: string, run?: ReviewRun, transport?: Trans
   return {
     url: `http://${LOOPBACK}:${bound}/`,
     settings,
+    // The one stop (J-073): nothing more taken and a running review back to waiting, every connection cut (a browser tab holds
+    // a keep-alive one, and its meta refresh another, which `server.close` alone would wait on for good), the server closed, then
+    // the queue's Chromium closed within its bound.
     close: () => new Promise<void>((done) => {
+      runner.stop();
       server.close(() => {
         if (shared) void shared.close().finally(done);
         else done();

@@ -172,9 +172,14 @@ function finish(data: string, id: number, error: string | null): void {
   });
 }
 
-/** The runner: `kick` starts it when something may be waiting; `idle` settles when nothing is running. */
+/**
+ * The runner: `kick` starts it when something may be waiting; `idle` settles when nothing is running; `stop` (the page's stop,
+ * J-073) takes nothing more and puts each running entry back to `waiting` at once, as `recover` does at the next start, so a
+ * review cut short is reviewed again from the start, and its failure (its browser closed under it) is never written over that.
+ */
 export interface QueueRunner {
   kick: () => void;
+  stop: () => void;
   idle: () => Promise<void>;
   /** Each running entry's latest plain progress line, by its id; held in memory alone, gone when the review ends. */
   progress: () => ReadonlyMap<number, string>;
@@ -201,9 +206,10 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
     };
   };
   const latest = new Map<number, string>();
+  let stopped = false;
   const work = async (): Promise<void> => {
     // A queue file that cannot be read stops the runner, not the program: nothing more is taken, nothing written.
-    const next = (): QueueEntry | null => whileReadable(() => take(data), null);
+    const next = (): QueueEntry | null => (stopped ? null : whileReadable(() => take(data), null));
     for (let entry = next(); entry; entry = next()) {
       running += 1;
       for (const crawl of crawling) crawl.beside = true;
@@ -220,18 +226,23 @@ export function queueRunner(data: string, run: ReviewRun, atOnce = 1): QueueRunn
         running -= 1;
         latest.delete(entry.id);
       }
+      if (stopped) return;
       whileReadable(() => finish(data, entry.id, error), undefined);
       kick();
     }
   };
   const kick = (): void => {
-    while (working.size < atOnce) {
+    while (!stopped && working.size < atOnce) {
       const loop: Promise<void> = work().finally(() => working.delete(loop));
       working.add(loop);
     }
   };
   return {
     kick,
+    stop: () => {
+      stopped = true;
+      whileReadable(() => recover(data), undefined);
+    },
     progress: () => latest,
     idle: async () => {
       while (working.size) await Promise.all(working);

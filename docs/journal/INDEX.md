@@ -76,3 +76,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-070 | A pulled copy ran its old build: the launchers rebuild when the source changed | failure-caught | `J-000-099.md` |
 | J-071 | A lead source's key typed on the page, with a guide to getting one | direction | `J-000-099.md` |
 | J-072 | The launcher fix and the key fields landed on Ghost's word | decision | `J-000-099.md` |
+| J-073 | A closed window after a review locked up: every stop takes one path with a deadline | failure-caught | `J-000-099.md` |
