@@ -75,3 +75,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-069 | The launch fixes landed on Ghost's word | decision | `J-000-099.md` |
 | J-070 | A pulled copy ran its old build: the launchers rebuild when the source changed | failure-caught | `J-000-099.md` |
 | J-071 | A lead source's key typed on the page, with a guide to getting one | direction | `J-000-099.md` |
+| J-072 | The launcher fix and the key fields landed on Ghost's word | decision | `J-000-099.md` |
