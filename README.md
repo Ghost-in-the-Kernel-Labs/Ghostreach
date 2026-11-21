@@ -44,7 +44,9 @@ Reviews are kept in the `Ghostreach` folder of your home folder.
 ## From a copy of this folder
 
 In a copy of Ghostreach's own folder (not the installed package), the folder holds two small launchers that build
-Ghostreach the first time (they say so; it takes a minute) and then run it:
+Ghostreach the first time (they say so; it takes a minute) and then run it. After a `git pull` that changed the program,
+the next launch rebuilds it once, saying "Ghostreach was updated; rebuilding it once", and installs the packages again
+first when the lockfile changed; `ghostreach --help` names the version and the commit the build came from:
 
 - Windows, in Command Prompt: go to the folder and type `ghostreach` (in PowerShell, `.\ghostreach`).
 - Linux: go to the folder and type `./ghostreach`. The shell does not look in the current folder, so the bare word

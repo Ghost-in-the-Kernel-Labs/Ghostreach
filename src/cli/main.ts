@@ -4,15 +4,36 @@
 // then the machine's memory and the reviews at once it uses (src/project/settings.ts). `ghostreach shortcut` puts a shortcut with
 // the icon on the desktop and in the menu (src/project/shortcut.ts, GR-022). Each is a word, never an option.
 // Decision: GR-003, GR-018, GR-022
+import { readFileSync } from 'node:fs';
 import { dataDir, review } from '../project/review.js';
 import { openInBrowser, showPage, type Open } from '../project/show.js';
 import { makeShortcut } from '../project/shortcut.js';
 import { readyLines, thisInstall } from '../project/ready.js';
 import { doctorLines, thisMachine } from '../project/settings.js';
 
-/** Every command, in plain words, then where the reviews are kept and how the page stops: `--help`'s answer, and a refusal's. */
+/**
+ * `Ghostreach <version> (<commit>)`: the package's version, and the commit the build was made from when the launchers' stamp
+ * (build/launch.json, scripts/launch.mjs) names one, so a copy of the source running an old build shows it (J-070). Read from the
+ * folder two above the running file: the copy's (or the installed package's) package.json, and the stamp where one was written.
+ */
+export function versionLine(): string {
+  const read = (path: string): { version?: unknown; commit?: unknown } => {
+    try {
+      return JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+    } catch {
+      return {};
+    }
+  };
+  const { version } = read('../../package.json');
+  const { commit } = read('../../build/launch.json');
+  return ['Ghostreach', typeof version === 'string' ? version : '', typeof commit === 'string' ? `(${commit})` : '']
+    .filter(Boolean).join(' ');
+}
+
+/** The version, every command in plain words, then where the reviews are kept and how the page stops: `--help`'s answer, and a refusal's. */
 export function helpLines(data: string): string[] {
   return [
+    versionLine(),
     'Ghostreach reviews websites and writes each review as a PDF.',
     '',
     '  ghostreach                 Open the Ghostreach page in your browser (starts it if needed)',

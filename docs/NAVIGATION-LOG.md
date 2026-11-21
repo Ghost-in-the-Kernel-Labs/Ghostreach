@@ -121,3 +121,10 @@ An entry is `### <date> · <task> · <model>` and these lines:
 - **Complaints**: the review folder's name is built in `review.ts` and parsed back in `serve.ts` (`FOLDER`), with three specs each spelling it again; nothing routes a change of it to all five.
 - **Suggestions**: none.
 
+
+### 2026-11-21 · A pulled copy ran its old build (J-070) · Opus
+
+- **Task**: make the root launchers rebuild a copy whose source changed since its build (Ghost's Windows bug after `git pull`), with tests and a version line.
+- **Opened**: the brief, `ghostreach`, `ghostreach.cmd`, `docs/HANDOFF.md`, `docs/journal/J-000-099.md` (J-060 to J-069), `test/test_launchers.py`, `.npmrc`, `package.json`, `src/cli/main.ts`, `knip.json`, `docs/paths/code.md`, `docs/modules.json`, `src/cli/bin.ts`, `test/unit/main.test.ts`, `test/crawl/package.spec.ts`, `docs/SUPPLY-CHAIN.md`, `theGhost.md` (GR-018), `README.md`, `scripts/gate.sh`, `docs/NAVIGATION-LOG.md`.
+- **Complaints**: the package spec's refusal of any `.json` under the packed `dist/` is the only place that says where a build-time file may not go; I found it only by reading the spec before choosing the stamp's place.
+- **Suggestions**: the package row in `docs/paths/code.md` says that nothing but built `.js` may sit in `dist/`.

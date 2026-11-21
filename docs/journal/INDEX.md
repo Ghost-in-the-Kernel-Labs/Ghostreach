@@ -73,3 +73,4 @@ Written from `docs/journal/` by `scripts/journal_index.py`; do not edit by hand.
 | J-067 | The launch fixes, item B: the launch's messages and `ghostreach shortcut` | decision | `J-000-099.md` |
 | J-068 | The launch fixes, item C: two ports are two sites, a guessed board is a maybe, a failed review set aside | decision | `J-000-099.md` |
 | J-069 | The launch fixes landed on Ghost's word | decision | `J-000-099.md` |
+| J-070 | A pulled copy ran its old build: the launchers rebuild when the source changed | failure-caught | `J-000-099.md` |
