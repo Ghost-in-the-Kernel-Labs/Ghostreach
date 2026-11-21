@@ -7,7 +7,8 @@
  * Every form posts (`POSTS`) from this page's own origin alone. The queue (3.3, `queue.ts`): the sites to `/queue`, a
  * failed one's retry to `/queue/retry`; while a site waits or runs, the page reloads itself (a meta refresh; no script runs in it).
  * The company lane (4.6, `company.ts`): a company to `/company`. The discovery lane (4.7, `discover.ts`): the saved search edited
- * at `/discover/search`, run at `/discover/run`; one lookup and one run at a time. The page's HTML is `page.ts` and `page-leads.ts`.
+ * at `/discover/search`, run at `/discover/run`; one lookup and one run at a time. The lead sources' keys (GR-023): saved at
+ * `/keys/save`, removed at `/keys/remove`, never shown. The page's HTML is `page.ts` and `page-leads.ts`.
  * A data file that cannot be read is said on the page in one line and left as it is (`kept.ts`); no request stops the server
  * (J-045). The ranking (3.6) comes later.
  */
@@ -26,6 +27,7 @@ import { discover, keepRun, parseSearch, readDiscovery, saveSearch } from './dis
 import { reviewsPage, type ListedReview, type Said } from './page.js';
 import { keepPosting, keepWebsite, leadOf, readNotes } from './leads.js';
 import { isRecord, Unreadable } from './kept.js';
+import { keyStates, removeKey, saveKey } from './keys.js';
 
 /** The one address the page is served on: the loopback, so no other machine on the network can read a review. */
 export const LOOPBACK = '127.0.0.1';
@@ -120,7 +122,8 @@ function sendPage(data: string, served: Served, req: IncomingMessage, res: Serve
   };
   const view = {
     reviews: listReviews(data), sites: read(readQueue, []), settings: served.settings, lookups: read(readLookups, []),
-    discovery: read(readDiscovery, { search: { titles: [], location: '' } }), notes: read(readNotes, {}), unreadable, progress: served.runner.progress(),
+    discovery: read(readDiscovery, { search: { titles: [], location: '' } }), notes: read(readNotes, {}),
+    keys: read((d) => keyStates(d, served.env ?? process.env), []), unreadable, progress: served.runner.progress(),
   };
   res.writeHead(200, { ...HEADERS, 'Content-Type': 'text/html; charset=utf-8' });
   res.end(req.method === 'HEAD' ? undefined : reviewsPage(view, said));
@@ -148,7 +151,7 @@ function failed(data: string, served: Served, req: IncomingMessage, res: ServerR
 const MAX_BODY = 64 * 1024;
 
 /** The POST routes. */
-const POSTS = new Set(['/queue', '/queue/retry', '/queue/lead', '/company', '/company/site', '/company/posting', '/discover/search', '/discover/run']);
+const POSTS = new Set(['/queue', '/queue/retry', '/queue/lead', '/company', '/company/site', '/company/posting', '/discover/search', '/discover/run', '/keys/save', '/keys/remove']);
 
 /** What the page's routes are given beyond the data folder: the settings, the queue's runner, and the lead finder's network and keys (a test's). */
 interface Served {
@@ -214,6 +217,16 @@ function post(data: string, served: Served, origin: string, path: string, req: I
       const company = form.get('company') ?? '';
       const why = path === '/company/site' ? keepWebsite(data, company, form.get('site') ?? '') : keepPosting(data, company, form.get('posting') ?? '');
       return send(why ? { row: { company, why } } : undefined);
+    }
+    if (path === '/keys/save' || path === '/keys/remove') {
+      // A lead source's key (GR-023): saved to keys.json or removed; fetches nothing; the answer is the page, which never shows a key.
+      const source = form.get('source') ?? '';
+      if (path === '/keys/remove') {
+        removeKey(data, source);
+        return send();
+      }
+      const why = saveKey(data, source, { key: form.get('key') ?? '', email: form.get('email') ?? undefined });
+      return send(why ? { key: { source, why } } : undefined);
     }
     if (path === '/discover/search') {
       const parsed = parseSearch(form.get('titles') ?? '', form.get('location') ?? '');

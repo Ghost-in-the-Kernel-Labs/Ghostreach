@@ -50,8 +50,11 @@ it may belong to another company with a similar name, so check its roles before 
 
 **Companies hiring QA right now.** Under "Who is hiring QA?", the search lists job titles (QA engineer, test
 automation, SDET, QA analyst) and a location. Change them if you like and press Search. You get one row per company, with its newest QA posting and where it was posted. Two boards, Jooble and
-USAJOBS, need a key Ghost sets up: the "Lead sources" part at the bottom of the page says "needs a key from Ghost" for
-each one not set up yet, and the search skips it.
+USAJOBS, need a free key of your own: under "Lead sources" at the bottom of the folded part, each says "No key yet",
+"Key saved", or "Key set on this computer by its settings". Click "How do I get a key?" under a board for the steps and
+its sign-up page; when the key arrives by email, paste it in that board's Key box (for USAJOBS, also the email address
+you asked with) and press Save. The key stays on this computer, in `keys.json` in the Ghostreach folder, and the page
+never shows it again; Remove deletes it. Until a board has a key, the search skips it and says so.
 
 **On every company row** you can:
 

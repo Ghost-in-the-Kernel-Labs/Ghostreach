@@ -82,6 +82,7 @@ describe('the local server under hostile or broken data (J-044, J-045)', () => {
     ['companies.json', '/company', { company: 'Acme Robotics' }],
     ['discovery.json', '/discover/search', { titles: 'QA Engineer', location: 'remote' }],
     ['leads.json', '/company/site', { company: 'Acme Robotics', site: 'acme.example' }],
+    ['keys.json', '/keys/remove', { source: 'Jooble' }],
   ];
   it.each(writes)('%s unreadable: the server stays up, says so in one line naming it, and never writes it', async (name, path, fields) => {
     const broken = '{"kept by the salesperson", not JSON';

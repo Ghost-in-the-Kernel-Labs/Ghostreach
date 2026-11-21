@@ -129,7 +129,7 @@ describe('the lead finder folded away (launch fixes 5)', () => {
     expect(html.indexOf('<details>')).toBeGreaterThan(html.indexOf('<h2>Done</h2>'));
     const first = firstScreen(html);
     for (const word of ['_API_KEY', 'SDET', 'QA']) expect(first).not.toContain(word);
-    expect(html).toContain('Jooble <span class="state">needs a key from Ghost</span>');
+    expect(html).toContain('<strong>Jooble</strong> <span class="state">No key yet</span>');
   });
   it('has one "Search" button, which saves the search and runs it', async () => {
     page = await servePage(data, async () => null, async () => new Response('', { status: 404 }), {});

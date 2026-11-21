@@ -1,14 +1,14 @@
 /**
  * The local page's HTML (TODO 3.2, split out of `serve.ts`): the queue's form and list (3.3), the reviews done, each linking its
- * PDF, the lead finder's sections (`page-leads.ts`), and the lead sources' keys (4.4). Every name it shows comes from the data
+ * PDF, the lead finder's sections (`page-leads.ts`), and the lead sources' keys, saved here (4.4, GR-023). Every name it shows comes from the data
  * folder, the salesperson's paste or a source's answer and is written as text, never as markup (P-16); no script runs in it.
  */
 import type { Added, QueueEntry } from './queue.js';
 import type { Settings } from './settings.js';
-import { keyStates } from './keys.js';
+import type { KeyState } from './keys.js';
 import type { CompanyLookup } from './company.js';
 import type { readDiscovery } from './discover.js';
-import { discoverySection, lookupsList, type Rows } from './page-leads.js';
+import { discoverySection, keysSection, lookupsList, type Rows } from './page-leads.js';
 import type { CompanyNotes } from './leads.js';
 import { esc, plainError } from './html.js';
 import { unreadableLine } from './kept.js';
@@ -42,6 +42,8 @@ export interface View {
   unreadable?: readonly string[];
   /** Each running entry's latest plain progress line, by its id (`QueueRunner.progress`). */
   progress?: ReadonlyMap<number, string>;
+  /** The lead sources' keys, where each comes from (`keyStates`), never a key. */
+  keys: readonly KeyState[];
 }
 
 /** What a post did, said back on the page: the paste's queued and refused lines, a company lookup refused, or a search refused. */
@@ -51,6 +53,8 @@ export interface Said {
   searchRefused?: string;
   /** A post on one company row refused (4.8): said under that row. */
   row?: Rows['refused'];
+  /** A key's save refused (GR-023): said under its source, never repeating what was typed. */
+  key?: { source: string; why: string };
   /** The answer to a lead finder's form: its folded part shown open, where the salesperson was. */
   leads?: boolean;
 }
@@ -91,17 +95,6 @@ function queueList(sites: readonly QueueEntry[], reviews: readonly ListedReview[
 }
 
 /**
- * The lead finder's keyed sources (TODO 4.4), each "key present" or "needs a key from Ghost" (no variable named, launch fixes 5): whether its variables are set, asked at each
- * request, never a key's value, which the page never reads.
- */
-function keysList(): string {
-  const rows = keyStates().map((k) => k.present
-    ? `<li>${esc(k.source)} <span class="state">key present</span></li>`
-    : `<li>${esc(k.source)} <span class="state">needs a key from Ghost</span></li>`);
-  return `<ul>\n${rows.join('\n')}\n</ul>`;
-}
-
-/**
  * The page: the form and the queue, then the reviews in the data folder, each its PDF to open or download, then, folded under one
  * closed <details> (launch fixes 5), the company and discovery lanes and the lead sources' keys, shown open only in the answer to
  * one of their own forms. The salesperson's own screen, not the prospect's (REV-04).
@@ -134,6 +127,8 @@ li a { white-space: nowrap; }
 ul.roles { padding-left: 1.5rem; list-style: disc; }
 ul.roles li { border: none; padding: 0.1rem 0; }
 details { margin-top: 2rem; }
+details.guide { margin-top: 0.5rem; }
+details.guide summary { font-weight: normal; }
 summary { cursor: pointer; font-weight: 600; }
 </style>
 </head>
@@ -163,8 +158,8 @@ ${said?.refused ? `<p class="refused">${esc(said.refused)}</p>\n` : ''}${lookups
 <p>A saved search, run on request across every job board below whose key is set, within each board's own limits. One row per company.</p>
 ${discoverySection(discovery.search, discovery.run, said?.searchRefused, companies)}
 <h2>Lead sources</h2>
-<p>Each source that needs a key, and whether its key is set.</p>
-${keysList()}
+<p>Two job boards need a free key of your own before the search asks them. Save it here: it stays on this computer, and this page never shows it again.</p>
+${keysSection(view.keys, said?.key)}
 </details>
 </body>
 </html>
